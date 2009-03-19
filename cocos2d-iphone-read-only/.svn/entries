@@ -1,0 +1,160 @@
+8
+
+dir
+688
+http://cocos2d-iphone.googlecode.com/svn/trunk
+http://cocos2d-iphone.googlecode.com/svn
+
+
+
+2009-03-14T16:14:03.996978Z
+688
+valentin.milea
+has-props
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+79afc9a6-2f50-0410-804d-6f1bdedaafc9
+
+doxygen.config
+file
+
+
+
+
+2009-03-15T04:09:25.000000Z
+d1533a6acf597dbf9db38a795dc9e552
+2009-02-05T22:03:04.947780Z
+512
+ricardoquesada
+
+LICENSE
+file
+
+
+
+
+2009-03-15T04:09:25.000000Z
+63e89d1bed59e17abf0e96af185ff2d0
+2008-12-23T23:00:01.795293Z
+395
+ricardoquesada
+
+external
+dir
+
+AUTHORS
+file
+
+
+
+
+2009-03-15T04:09:25.000000Z
+cbf9fcb3200eb6a4523063bf2eebc1e8
+2009-03-13T18:13:24.916597Z
+676
+ricardoquesada
+
+cocoslive
+dir
+
+CHANGELOG
+file
+
+
+
+
+2009-03-15T04:09:25.000000Z
+39ad13e9a6530536ebee896d44c66ebc
+2009-03-13T20:06:05.150307Z
+680
+ricardoquesada
+
+cocos2d
+dir
+
+README
+file
+
+
+
+
+2009-03-15T04:09:25.000000Z
+ae652ac3652e2036dd17f40a992900bd
+2009-02-13T16:48:57.142827Z
+561
+ricardoquesada
+
+LICENSE.TouchJSON
+file
+
+
+
+
+2009-03-15T04:09:25.000000Z
+5e1978bb6420fd2792b533297057a708
+2009-03-13T02:01:24.607462Z
+673
+ricardoquesada
+
+experimental
+dir
+
+LICENSE.chipmunk
+file
+
+
+
+
+2009-03-15T04:09:25.000000Z
+1f8f975fa02de7e821005afd4004e866
+2008-10-20T15:33:30.828155Z
+271
+ricardoquesada
+
+tools
+dir
+
+tests
+dir
+
+DONORS
+file
+
+
+
+
+2009-03-15T04:09:25.000000Z
+b0dad4f0683ad99ccadf10a02b158c75
+2009-03-03T16:22:16.920438Z
+605
+ricardoquesada
+
+cocos2d-iphone.xcodeproj
+dir
+
+Resources
+dir
+
+LICENSE.artwork
+file
+
+
+
+
+2009-03-15T04:09:25.000000Z
+36cc47e743bc094f9ba147bb15b8e846
+2009-03-13T17:42:40.480996Z
+675
+ricardoquesada
+

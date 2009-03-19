@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/673/trunk/external/TouchJSON/JSON
+END
+CJSONSerializer.m
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/673/trunk/external/TouchJSON/JSON/CJSONSerializer.m
+END
+CJSONScanner.m
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/673/trunk/external/TouchJSON/JSON/CJSONScanner.m
+END
+CJSONDeserializer.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/673/trunk/external/TouchJSON/JSON/CJSONDeserializer.h
+END
+CJSONDeserializer.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/673/trunk/external/TouchJSON/JSON/CJSONDeserializer.m
+END
+CJSONSerializer.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/673/trunk/external/TouchJSON/JSON/CJSONSerializer.h
+END
+CJSONScanner.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/673/trunk/external/TouchJSON/JSON/CJSONScanner.h
+END

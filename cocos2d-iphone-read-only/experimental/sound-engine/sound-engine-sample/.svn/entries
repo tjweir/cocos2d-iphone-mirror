@@ -1,0 +1,81 @@
+8
+
+dir
+688
+http://cocos2d-iphone.googlecode.com/svn/trunk/experimental/sound-engine/sound-engine-sample
+http://cocos2d-iphone.googlecode.com/svn
+
+
+
+2009-03-14T14:19:15.194384Z
+686
+dumitrescu
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+79afc9a6-2f50-0410-804d-6f1bdedaafc9
+
+sfx
+dir
+
+source-marker.png
+file
+
+
+
+
+2009-03-15T04:08:40.000000Z
+ef913c90723a8ec04c7ceca5e1877826
+2009-03-14T14:19:15.194384Z
+686
+dumitrescu
+has-props
+
+SoundEngineTest.h
+file
+
+
+
+
+2009-03-15T04:08:40.000000Z
+ea54398a9b830bba0e1c25cc56616a11
+2009-03-14T14:19:15.194384Z
+686
+dumitrescu
+
+listener-marker.png
+file
+
+
+
+
+2009-03-15T04:08:40.000000Z
+e9eb80ae8092d5da612d97c43c063cce
+2009-03-14T14:19:15.194384Z
+686
+dumitrescu
+has-props
+
+SoundEngineTest.m
+file
+
+
+
+
+2009-03-15T04:08:40.000000Z
+5c041b6f48af3a44976f7b20fd29ec44
+2009-03-14T14:19:15.194384Z
+686
+dumitrescu
+

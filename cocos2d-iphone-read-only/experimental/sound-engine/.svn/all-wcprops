@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/686/trunk/experimental/sound-engine
+END
+PASoundSource.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/665/trunk/experimental/sound-engine/PASoundSource.h
+END
+PASoundListener.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/665/trunk/experimental/sound-engine/PASoundListener.h
+END
+PASoundMgr.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/665/trunk/experimental/sound-engine/PASoundMgr.h
+END
+PASoundSource.m
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/686/trunk/experimental/sound-engine/PASoundSource.m
+END
+MyOpenALSupport.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/664/trunk/experimental/sound-engine/MyOpenALSupport.h
+END
+PASoundListener.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/686/trunk/experimental/sound-engine/PASoundListener.m
+END
+PASoundMgr.m
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/665/trunk/experimental/sound-engine/PASoundMgr.m
+END

@@ -1,0 +1,34 @@
+8
+
+dir
+688
+http://cocos2d-iphone.googlecode.com/svn/trunk/external
+http://cocos2d-iphone.googlecode.com/svn
+
+
+
+2009-03-13T20:06:05.150307Z
+680
+ricardoquesada
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+79afc9a6-2f50-0410-804d-6f1bdedaafc9
+
+TouchJSON
+dir
+
+Chipmunk
+dir
+

@@ -1,0 +1,431 @@
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/!svn/ver/688/trunk/cocos2d
+END
+CameraAction.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/612/trunk/cocos2d/CameraAction.m
+END
+AtlasSprite.h
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/675/trunk/cocos2d/AtlasSprite.h
+END
+cocos2d.h
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/678/trunk/cocos2d/cocos2d.h
+END
+AtlasSprite.m
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/675/trunk/cocos2d/AtlasSprite.m
+END
+cocos2d.m
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/647/trunk/cocos2d/cocos2d.m
+END
+CocosNodeExtras.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/678/trunk/cocos2d/CocosNodeExtras.h
+END
+Menu.h
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/666/trunk/cocos2d/Menu.h
+END
+LabelAtlas.h
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/560/trunk/cocos2d/LabelAtlas.h
+END
+CocosNodeExtras.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/688/trunk/cocos2d/CocosNodeExtras.m
+END
+Menu.m
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/682/trunk/cocos2d/Menu.m
+END
+LabelAtlas.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/527/trunk/cocos2d/LabelAtlas.m
+END
+ccTypes.h
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/577/trunk/cocos2d/ccTypes.h
+END
+Grid3DAction.h
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/577/trunk/cocos2d/Grid3DAction.h
+END
+Director.h
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/688/trunk/cocos2d/Director.h
+END
+Grid3DAction.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/577/trunk/cocos2d/Grid3DAction.m
+END
+Director.m
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/688/trunk/cocos2d/Director.m
+END
+Grid.h
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/577/trunk/cocos2d/Grid.h
+END
+TextureAtlas.h
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/610/trunk/cocos2d/TextureAtlas.h
+END
+AtlasSpriteManager.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/669/trunk/cocos2d/AtlasSpriteManager.h
+END
+Camera.h
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/560/trunk/cocos2d/Camera.h
+END
+TextureAtlas.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/618/trunk/cocos2d/TextureAtlas.m
+END
+Transition.h
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/577/trunk/cocos2d/Transition.h
+END
+Grid.m
+K 25
+svn:wc:ra_dav:version-url
+V 38
+/svn/!svn/ver/579/trunk/cocos2d/Grid.m
+END
+AtlasSpriteManager.m
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/645/trunk/cocos2d/AtlasSpriteManager.m
+END
+Camera.m
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/676/trunk/cocos2d/Camera.m
+END
+Transition.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/638/trunk/cocos2d/Transition.m
+END
+Particle.h
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/666/trunk/cocos2d/Particle.h
+END
+Grabber.h
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/488/trunk/cocos2d/Grabber.h
+END
+TiledGridAction.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/577/trunk/cocos2d/TiledGridAction.h
+END
+TextureNode.h
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/636/trunk/cocos2d/TextureNode.h
+END
+Particle.m
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/666/trunk/cocos2d/Particle.m
+END
+Grabber.m
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/563/trunk/cocos2d/Grabber.m
+END
+AtlasNode.h
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/636/trunk/cocos2d/AtlasNode.h
+END
+TiledGridAction.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/577/trunk/cocos2d/TiledGridAction.m
+END
+TextureNode.m
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/560/trunk/cocos2d/TextureNode.m
+END
+AtlasNode.m
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/636/trunk/cocos2d/AtlasNode.m
+END
+Label.h
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/560/trunk/cocos2d/Label.h
+END
+TileMapAtlas.h
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/578/trunk/cocos2d/TileMapAtlas.h
+END
+GridAction.h
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/577/trunk/cocos2d/GridAction.h
+END
+Label.m
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/560/trunk/cocos2d/Label.m
+END
+TileMapAtlas.m
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/578/trunk/cocos2d/TileMapAtlas.m
+END
+GridAction.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/577/trunk/cocos2d/GridAction.m
+END
+ccMacros.h
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/655/trunk/cocos2d/ccMacros.h
+END
+Primitives.h
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/560/trunk/cocos2d/Primitives.h
+END
+Primitives.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/560/trunk/cocos2d/Primitives.m
+END
+TextureMgr.h
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/560/trunk/cocos2d/TextureMgr.h
+END
+TextureMgr.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/560/trunk/cocos2d/TextureMgr.m
+END
+Layer.h
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/688/trunk/cocos2d/Layer.h
+END
+CocosNode.h
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/684/trunk/cocos2d/CocosNode.h
+END
+InstantAction.h
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/560/trunk/cocos2d/InstantAction.h
+END
+CocosNode.m
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/685/trunk/cocos2d/CocosNode.m
+END
+Layer.m
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/653/trunk/cocos2d/Layer.m
+END
+InstantAction.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/560/trunk/cocos2d/InstantAction.m
+END
+MenuItem.h
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/676/trunk/cocos2d/MenuItem.h
+END
+MenuItem.m
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/676/trunk/cocos2d/MenuItem.m
+END
+ParticleSystems.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/560/trunk/cocos2d/ParticleSystems.h
+END
+Scene.h
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/560/trunk/cocos2d/Scene.h
+END
+ParticleSystems.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/560/trunk/cocos2d/ParticleSystems.m
+END
+Scene.m
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/560/trunk/cocos2d/Scene.m
+END
+Sprite.h
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/675/trunk/cocos2d/Sprite.h
+END
+Sprite.m
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/675/trunk/cocos2d/Sprite.m
+END
+EaseAction.h
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/666/trunk/cocos2d/EaseAction.h
+END
+Action.h
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/663/trunk/cocos2d/Action.h
+END
+Scheduler.h
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/560/trunk/cocos2d/Scheduler.h
+END
+EaseAction.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/666/trunk/cocos2d/EaseAction.m
+END
+Action.m
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/663/trunk/cocos2d/Action.m
+END
+IntervalAction.h
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/669/trunk/cocos2d/IntervalAction.h
+END
+Scheduler.m
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/652/trunk/cocos2d/Scheduler.m
+END
+CameraAction.h
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/560/trunk/cocos2d/CameraAction.h
+END
+IntervalAction.m
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/669/trunk/cocos2d/IntervalAction.m
+END
+ccExceptions.h
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/560/trunk/cocos2d/ccExceptions.h
+END
