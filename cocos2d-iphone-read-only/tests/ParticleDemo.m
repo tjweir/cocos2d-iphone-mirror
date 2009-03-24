@@ -8,7 +8,7 @@
 #import "ParticleDemo.h"
 
 #define kTagLabelAtlas	0xAABBCCDD
-#define kTagEmitter		0xAABBCCDE
+#define kTagEmitter		  0xAABBCCDE
 
 static int sceneIdx=-1;
 static NSString *transitions[] = {
@@ -76,10 +76,13 @@ Class restartAction()
 	item3.position = cpv( s.width/2 + 100,30);
 	[self addChild: menu z:-1];	
 	
+
+  
 	LabelAtlas *labelAtlas = [LabelAtlas labelAtlasWithString:@"0000" charMapFile:@"fps_images.png" itemWidth:16 itemHeight:24 startCharMap:'.'];
 	[self addChild:labelAtlas z:0 tag:kTagLabelAtlas];
 	labelAtlas.position = cpv(254,50);
-		
+
+  
 	[self schedule:@selector(step:)];
 	return self;
 }
