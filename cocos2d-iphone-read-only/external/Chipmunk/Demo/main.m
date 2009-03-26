@@ -279,12 +279,11 @@ void drawCollisions(void *ptr, void *data)
 	[Director useFastDirector];
 	
 	// before creating any layer, set the landscape mode
-//	[[Director sharedDirector] setLandscape: YES];
+  // [[Director sharedDirector] setLandscape: YES];
 	[[Director sharedDirector] setDisplayFPS:YES];
 
 	// Fast Director doesn't support setAnimationInterval yet
-//	[[Director sharedDirector] setAnimationInterval:1.0/60];
-	
+  // [[Director sharedDirector] setAnimationInterval:1.0/60];
 	[[Director sharedDirector] attachInView:window];
 	
 	Scene *scene = [Scene node];
