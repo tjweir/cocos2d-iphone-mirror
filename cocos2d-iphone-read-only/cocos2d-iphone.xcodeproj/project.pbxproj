@@ -750,6 +750,9 @@
 		8EDF3FDD0F6BE3FC00F54643 /* listener-marker.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EDF3FD90F6BE3F400F54643 /* listener-marker.png */; };
 		8EDF3FDE0F6BE3FC00F54643 /* source-marker.png in Resources */ = {isa = PBXBuildFile; fileRef = 8EDF3FDA0F6BE3F400F54643 /* source-marker.png */; };
 		8EDF40240F6BED9900F54643 /* ATTRIBUTION in Resources */ = {isa = PBXBuildFile; fileRef = 8EDF40230F6BED9900F54643 /* ATTRIBUTION */; };
+		CABFD5440F811E3A00BB6F60 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CABFD5430F811E3A00BB6F60 /* Info.plist */; };
+		CABFD5450F811E3A00BB6F60 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CABFD5430F811E3A00BB6F60 /* Info.plist */; };
+		CABFD5460F811E3A00BB6F60 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CABFD5430F811E3A00BB6F60 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1221,7 +1224,6 @@
 		50B2CB280E10EE4A00AE9530 /* grossini.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grossini.png; sourceTree = "<group>"; };
 		50B2CB290E10EE4A00AE9530 /* grossinis_sister1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grossinis_sister1.png; sourceTree = "<group>"; };
 		50B2CB2A0E10EE4A00AE9530 /* grossinis_sister2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grossinis_sister2.png; sourceTree = "<group>"; };
-		50B2CB2B0E10EE4A00AE9530 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/Info.plist; sourceTree = "<group>"; };
 		50B2CCC20E119B8E00AE9530 /* Primitives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Primitives.h; sourceTree = "<group>"; };
 		50B2CCC30E119B8E00AE9530 /* Primitives.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Primitives.m; sourceTree = "<group>"; };
 		50B2CE460E129FD900AE9530 /* ChipmunkDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChipmunkDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1355,6 +1357,7 @@
 		8EDF3FD90F6BE3F400F54643 /* listener-marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "listener-marker.png"; path = "experimental/sound-engine/sound-engine-sample/listener-marker.png"; sourceTree = SOURCE_ROOT; };
 		8EDF3FDA0F6BE3F400F54643 /* source-marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "source-marker.png"; path = "experimental/sound-engine/sound-engine-sample/source-marker.png"; sourceTree = SOURCE_ROOT; };
 		8EDF40230F6BED9900F54643 /* ATTRIBUTION */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ATTRIBUTION; sourceTree = "<group>"; };
+		CABFD5430F811E3A00BB6F60 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1784,8 +1787,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				CABFD5430F811E3A00BB6F60 /* Info.plist */,
 				8EDF3E8D0F6BD8CD00F54643 /* sfx */,
-				50B2CB2B0E10EE4A00AE9530 /* Info.plist */,
 				50B2CEA70E12A58900AE9530 /* ChipmunkDemo-Info.plist */,
 				50B2CB240E10EE4A00AE9530 /* Default.png */,
 				50B2CB250E10EE4A00AE9530 /* Icon.png */,
@@ -3239,6 +3242,7 @@
 				50E6764D0F65857D003DAA90 /* sprite-7-7.png in Resources */,
 				50E676970F6587FD003DAA90 /* spritesheet1.pvr in Resources */,
 				50E676A70F658B68003DAA90 /* grossinis_sister1.pvr in Resources */,
+				CABFD5450F811E3A00BB6F60 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3408,6 +3412,7 @@
 				50A783B60F3AFCE500104C45 /* fps_images.png in Resources */,
 				50A783DA0F3AFDB300104C45 /* README in Resources */,
 				50A783DD0F3AFDD700104C45 /* streak.png in Resources */,
+				CABFD5460F811E3A00BB6F60 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3581,6 +3586,7 @@
 				8EDF3FDD0F6BE3FC00F54643 /* listener-marker.png in Resources */,
 				8EDF3FDE0F6BE3FC00F54643 /* source-marker.png in Resources */,
 				8EDF40240F6BED9900F54643 /* ATTRIBUTION in Resources */,
+				CABFD5440F811E3A00BB6F60 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5415,7 +5421,7 @@
 				GCC_THUMB_SUPPORT = NO;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
-				INFOPLIST_FILE = "/Users/florind/Desktop/Xcode Projects/iPhone/Engines/cocos2d-iphone/Resources/Info.plist";
+				INFOPLIST_FILE = "/Users/tjweir/g/cocos2d-iphone-mirror/cocos2d-iphone-read-only/Resources/Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"-ObjC",
