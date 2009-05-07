@@ -199,7 +199,7 @@ enum {
     [title1 setIsEnabled:NO];
 	[MenuItemFont setFontName: @"Marker Felt"];
 	[MenuItemFont setFontSize:34];
-    MenuItemToggle *item1 = [MenuItemToggle itemWithTarget:self selector:@selector(menuCallback:) items:
+    MenuItemToggle *item1 = [MenuItemToggle itemWithTarget:self selector:@selector(start:) items:
                              [MenuItemFont itemFromString: @"On"],
                              [MenuItemFont itemFromString: @"Off"],
                              nil];
