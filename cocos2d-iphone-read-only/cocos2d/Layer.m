@@ -19,6 +19,7 @@
 #import "Layer.h"
 #import "Director.h"
 #import "ccMacros.h"
+#import "Support/CGPointExtension.h"
 
 #pragma mark -
 #pragma mark Layer
@@ -33,11 +34,10 @@
 		return nil;
 	
 	CGSize s = [[Director sharedDirector] winSize];
-	relativeTransformAnchor = NO;
+	anchorPoint_ = ccp(0.5f, 0.5f);
+	[self setContentSize:s];
+	self.relativeTransformAnchor = NO;
 
-	transformAnchor.x = s.width / 2;
-	transformAnchor.y = s.height / 2;
-	
 	isTouchEnabled = NO;
 	isAccelerometerEnabled = NO;
 	
@@ -152,20 +152,6 @@
 	}
 }
 
--(void) setRGB: (GLubyte)rr :(GLubyte)gg :(GLubyte)bb
-{
-	r = rr;
-	g = gg;
-	b = bb;
-	[self updateColor];
-}
-
--(void) setOpacity: (GLubyte) o
-{
-	opacity = o;
-	[self updateColor];
-}
-
 - (void) initWidth: (GLfloat) w height:(GLfloat) h
 {
 	for (NSUInteger i=0; i<sizeof(squareVertices) / sizeof( squareVertices[0]); i++ )
@@ -185,7 +171,13 @@
 	glColorPointer(4, GL_UNSIGNED_BYTE, 0, squareColors);
 	glEnableClientState(GL_COLOR_ARRAY);
 	
+	if( opacity != 255 )
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	
+	if( opacity != 255 )
+		glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
 	
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
@@ -209,6 +201,32 @@
 {
 	GLuint ret;
 	ret = (r << 24) | (g << 16) | (b << 8) | opacity;
+	return ret;
+}
+
+#pragma mark Protocols
+// Color Protocol
+-(void) setRGB: (GLubyte)rr :(GLubyte)gg :(GLubyte)bb
+{
+	r = rr;
+	g = gg;
+	b = bb;
+	[self updateColor];
+}
+
+// Opacity Protocol
+-(void) setOpacity: (GLubyte) o
+{
+	opacity = o;
+	[self updateColor];
+}
+
+// Size protocol
+-(CGSize) contentSize
+{
+	CGSize ret;
+	ret.width = squareVertices[2];
+	ret.height = squareVertices[5];
 	return ret;
 }
 @end

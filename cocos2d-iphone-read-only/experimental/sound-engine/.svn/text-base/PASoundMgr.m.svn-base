@@ -25,9 +25,9 @@ static PASoundMgr *sharedSoundManager = nil;
 
 + (PASoundMgr *)sharedSoundManager {
 	@synchronized(self)	{
-		if (!sharedSoundManager)
-			[[PASoundMgr alloc] init];
-		
+		if (!sharedSoundManager){
+			sharedSoundManager = [[PASoundMgr alloc] init];            
+        }
 		return sharedSoundManager;
 	}
 	// to avoid compiler warning
@@ -46,19 +46,19 @@ static PASoundMgr *sharedSoundManager = nil;
 }
 
 - (id)init {
-    if (self = [super init]) {
+    if ((self = [super init])) {
         sounds = [[NSMutableDictionary alloc] initWithCapacity:3];
         soundsMasterGain = 1.0f;
         // setup our audio session
 		OSStatus result = AudioSessionInitialize(NULL, NULL, NULL, self);
-		if (result) printf("Error initializing audio session! %d\n", result);
+		if (result) printf("Error initializing audio session! %d\n", (int)result);
 		else {
 			UInt32 category = kAudioSessionCategory_AmbientSound;
 			result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);
-			if (result) printf("Error setting audio session category! %d\n", result);
+			if (result) printf("Error setting audio session category! %d\n", (int)result);
 			else {
 				result = AudioSessionSetActive(true);
-				if (result) printf("Error setting audio session active! %d\n", result);
+				if (result) printf("Error setting audio session active! %d\n", (int)result);
 			}
 		}
 		
@@ -94,33 +94,51 @@ static PASoundMgr *sharedSoundManager = nil;
     listener = [[PASoundListener alloc] init];
 }
 
-- (void)addSound:(NSString *)name withPosition:(cpVect)pos looped:(BOOL)yn {
-    PASoundSource *sound = [[PASoundSource alloc] initWithPosition:pos file:name looped:yn];
+- (PASoundSource *)addSound:(NSString *)name withExtension:(NSString *)ext position:(CGPoint)pos looped:(BOOL)yn {
+    PASoundSource *sound = [[PASoundSource alloc] initWithPosition:pos file:name extension:ext looped:yn];
     if (sound) {
-        [sounds setObject:sound forKey:name];
+        [sounds setObject:sound forKey:[NSString stringWithFormat:@"%@.%@",name,ext]];
         [sound release];
     }
+    return sound;
 }
-- (PASoundSource *)sound:(NSString *)name {
-    if ([[sounds allKeys] containsObject:name]) {
-        return [sounds objectForKey:name];
-    }
-    return nil;    
+- (PASoundSource *)addSound:(NSString *)name withPosition:(CGPoint)pos looped:(BOOL)yn {
+    return [self addSound:name withExtension:@"wav" position:pos looped:yn];
 }
 
+- (PASoundSource *)sound:(NSString *)name withExtension:(NSString *)ext {
+    NSString *key = [NSString stringWithFormat:@"%@.%@",name,ext];
+    if ([[sounds allKeys] containsObject:key]) {
+        return [sounds objectForKey:key];
+    }
+    return nil;
+}
+- (PASoundSource *)sound:(NSString *)name {
+    return [self sound:name withExtension:@"wav"];
+}
+
+- (BOOL)play:(NSString *)name withExtension:(NSString *)ext {
+    PASoundSource *sound = [self sound:name withExtension:ext];
+    if (sound) {
+        [sound playAtListenerPosition];
+        return YES;
+    }
+    return NO;
+}
 - (BOOL)play:(NSString *)name {
-    if ([[sounds allKeys] containsObject:name]) {
-        [[sounds objectForKey:name] play];
+    return [self play:name withExtension:@"wav"];
+}
+
+- (BOOL)stop:(NSString *)name withExtension:(NSString *)ext {
+    PASoundSource *sound = [self sound:name withExtension:ext];
+    if (sound) {
+        [sound stop];
         return YES;
     }
     return NO;
 }
 - (BOOL)stop:(NSString *)name {
-    if ([[sounds allKeys] containsObject:name]) {
-        [[sounds objectForKey:name] stop];
-        return YES;
-    }
-    return NO;
+    return [self stop:name withExtension:@"wav"];
 }
 
 - (void)dealloc {

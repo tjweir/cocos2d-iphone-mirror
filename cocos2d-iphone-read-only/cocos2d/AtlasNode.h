@@ -15,37 +15,47 @@
 #import "TextureAtlas.h"
 #import "CocosNode.h"
 
-/** An Atlas node. Knows how to render Atlas */
-@interface AtlasNode :CocosNode <CocosNodeOpacity, CocosNodeRGB, CocosNodeSize> {
+/** AtlasNode is a subclass of CocosNode that implements the CocosNodeRGBA and
+ CocosNodeTexture protocol
+ 
+ It knows how to render a TextureAtlas object.
+ If you are going to render a TextureAtlas consider subclassing AtlasNode (or a subclass of AtlasNode)
+ 
+ All features from CocosNode are valid, plus the following features:
+ - opacity and RGB colors
+ */
+@interface AtlasNode : CocosNode <CocosNodeRGBA, CocosNodeTexture> {
 	
-	/// texture atlas
-	TextureAtlas	*textureAtlas;
-	/// chars per row
+	// texture atlas
+	TextureAtlas	*textureAtlas_;
+	// chars per row
 	int				itemsPerRow;
-	/// chars per column
+	// chars per column
 	int				itemsPerColumn;
 	
-	/// texture coordinate x increment
+	// texture coordinate x increment
 	float			texStepX;
-	/// texture coordinate y increment
+	// texture coordinate y increment
 	float			texStepY;
 	
-	/// width of each char
+	// width of each char
 	int				itemWidth;
-	/// height of each char
+	// height of each char
 	int				itemHeight;
 	
-	/// texture opacity
-	GLubyte opacity;
+	// texture opacity
+	GLubyte opacity_;
 	
-	/// texture color
-	GLubyte	r,g,b;
+	// texture color
+	GLubyte	r_,g_,b_;
 	
 }
 
-/// property of opacity. Conforms to CocosNodeOpacity protocol
-@property (readwrite,assign) GLubyte opacity, r, g, b;
+/** conforms to CocosNodeTexture protocol */
+@property (readwrite,retain) TextureAtlas *textureAtlas;
 
+/** conforms to CocosNodeRGBA protocol */
+@property (readonly) GLubyte r, g, b, opacity;
 
 /** creates an AtlasNode  with an Atlas file the width and height of each item and the quantity of items to render*/
 +(id) atlasWithTileFile:(NSString*)tile tileWidth:(int)w tileHeight:(int)h itemsToRender: (int) c;
@@ -57,10 +67,4 @@
  * Shall be overriden in subclasses
  */
 -(void) updateAtlasValues;
-
-/** returns the content size of the Atlas in pixels
- * Conforms to CocosNodeSize protocol
- */
--(CGSize) contentSize;
-
 @end

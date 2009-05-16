@@ -1,15 +1,15 @@
 8
 
 dir
-688
+951
 http://cocos2d-iphone.googlecode.com/svn/trunk/tests
 http://cocos2d-iphone.googlecode.com/svn
 
 
 
-2009-03-14T09:08:23.007081Z
-683
-valentin.milea
+2009-05-15T17:07:58.323545Z
+950
+ricardoquesada
 
 
 svn:special svn:externals svn:needs-lock
@@ -39,29 +39,67 @@ d207590500c684c9eb786e160e8eb681
 ricardoquesada
 has-props
 
-IntervalDemo.h
+SpritesTest.h
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-1be8119adccc1f42e0e1fe8ebd6752bc
-2009-02-01T22:30:05.338157Z
-482
+2009-05-16T12:56:22.000000Z
+537b342123a0f78630800c2ea8589072
+2009-05-08T08:31:05.155531Z
+905
 ricardoquesada
 has-props
 
-IntervalDemo.m
+Texture2dTest.m
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-e45b80d7307e29973c3f1c4f5f55a8ab
-2009-03-10T23:12:43.743994Z
-638
+2009-05-16T12:56:22.000000Z
+c064bce386270ab252c0b4ed4e9dbb46
+2009-05-14T19:27:46.401988Z
+942
+ricardoquesada
+has-props
+
+AtlasSpriteTest.h
+file
+
+
+
+
+2009-05-16T12:56:22.000000Z
+5b793342ecfd185d2106df80a9335074
+2009-05-12T15:22:00.529886Z
+925
+ricardoquesada
+
+SpritesTest.m
+file
+
+
+
+
+2009-05-16T12:56:22.000000Z
+306f6f663a15aecae9777530263350a3
+2009-05-15T16:09:21.330221Z
+949
+ricardoquesada
+has-props
+
+AtlasSpriteTest.m
+file
+
+
+
+
+2009-05-16T12:56:22.000000Z
+501fa2106d7281e7c9fbff8aeeac7381
+2009-05-15T17:07:58.323545Z
+950
 ricardoquesada
 
 MenuTest.h
@@ -70,23 +108,10 @@ file
 
 
 
-2009-03-15T04:08:42.000000Z
-07dc16a1468b31ac13e7d7abd6c8d67d
-2009-03-11T20:11:26.051674Z
-656
-lhunath
-has-props
-
-Chipmunk_Accel.h
-file
-
-
-
-
-2009-03-15T04:08:42.000000Z
-4508514ce5c1ee8000fd377adfd45dee
-2009-02-01T22:30:05.338157Z
-482
+2009-05-16T12:56:22.000000Z
+9b382ae579a1c08479d97680019defe8
+2009-04-16T10:50:12.186057Z
+804
 ricardoquesada
 has-props
 
@@ -96,35 +121,22 @@ file
 
 
 
-2009-03-15T04:08:42.000000Z
-95ad134597df0ef242e8614bb1cb34e3
-2009-02-09T01:57:30.773476Z
-534
+2009-05-16T12:56:22.000000Z
+4be0baedb78059e853dfed34f66b0136
+2009-03-27T16:31:20.514957Z
+732
 ricardoquesada
 
-RotateWorld.h
+RotateWorldTest.h
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-b9ecc8eb246b0a605fa4c7b92edbf407
-2009-02-01T22:30:05.338157Z
-482
-ricardoquesada
-has-props
-
-ParticleDemo.h
-file
-
-
-
-
-2009-03-15T04:08:42.000000Z
-85467d1fa4452487aa28cde116021ac9
-2009-02-01T22:30:05.338157Z
-482
+2009-05-16T12:56:22.000000Z
+fdd21ca1537c6b169acd835c59198582
+2009-03-27T16:31:20.514957Z
+732
 ricardoquesada
 has-props
 
@@ -135,24 +147,36 @@ file
 
 
 2009-03-15T04:08:42.000000Z
-dd2a14acc2293705d87395310729152b
-2009-03-14T09:08:23.007081Z
-683
-valentin.milea
+db3a45d9aaaae99b776d7381771c254c
+2009-05-15T16:09:21.330221Z
+949
+ricardoquesada
 has-props
 
-Chipmunk_Accel.m
+ChipmunkAccelTouchTest.h
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-413277c3d5fa6e20eccf512febf1ffbd
-2009-03-10T23:46:19.839544Z
-642
+2009-05-16T12:56:22.000000Z
+bba223f928af06351974751a7cbb4c8b
+2009-03-27T16:31:20.514957Z
+732
 ricardoquesada
 has-props
+
+drawPrimitivesTest.h
+file
+
+
+
+
+2009-05-16T12:56:22.000000Z
+b40b166254081d27746cae4441f72e0b
+2009-04-16T09:05:32.125729Z
+801
+ricardoquesada
 
 EffectsAdvancedTest.m
 file
@@ -160,25 +184,22 @@ file
 
 
 
-2009-03-15T04:08:42.000000Z
-1d6b112ffff3974eda448c81b1b80699
-2009-03-10T23:12:43.743994Z
-638
+2009-05-16T12:56:22.000000Z
+78b4d30e888fcb85dbfe854137bd3709
+2009-05-15T16:09:21.330221Z
+949
 ricardoquesada
 
-PerformanceTest
-dir
-
-RotateWorld.m
+RotateWorldTest.m
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-e44d1c7624b8890cf420d7c8dec146ae
-2009-03-10T23:12:43.743994Z
-638
+2009-05-16T12:56:22.000000Z
+6d55d3cf23fef56389a58c05ad97d09f
+2009-05-14T13:05:35.634954Z
+939
 ricardoquesada
 has-props
 
@@ -188,38 +209,37 @@ file
 
 
 
-2009-03-15T04:08:42.000000Z
-0316fc5df0dbfa578056a16db5007788
-2009-03-11T12:49:19.691266Z
-645
+2009-05-16T12:56:22.000000Z
+c7d55a38357af435503a8d508c06fdee
+2009-04-21T19:17:29.828813Z
+834
 ricardoquesada
 has-props
 
-AccelViewportDemo.h
+ChipmunkAccelTouchTest.m
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-77a2f217b69e480c8ff5ad7adfa5dbf7
-2009-02-12T14:04:56.826195Z
-557
-ricardoquesada
+2009-05-16T12:56:22.000000Z
+61f7cd891601558c273069fe1d864a30
+2009-05-15T12:28:29.306128Z
+948
+valentin.milea
 has-props
 
-ParticleDemo.m
+drawPrimitivesTest.m
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-a6eaab24edb6db081d4df768d27e12dd
-2009-03-10T23:12:43.743994Z
-638
+2009-05-16T12:56:22.000000Z
+4b2ecd11b4c84e5fa17d8293519ef907
+2009-05-14T13:05:35.634954Z
+939
 ricardoquesada
-has-props
 
 cocosnodeTest.m
 file
@@ -227,64 +247,38 @@ file
 
 
 
-2009-03-15T04:08:42.000000Z
-404a246a1cec2292089523a83d1434b3
-2009-03-11T12:49:19.691266Z
-645
+2009-05-16T12:56:22.000000Z
+dcc67739110aea82b472b0795f81f3b9
+2009-05-15T16:09:21.330221Z
+949
 ricardoquesada
-
-AccelViewportDemo.m
-file
-
-
-
-
-2009-03-15T04:08:42.000000Z
-aec117fbcaa18ce20ed0a0f896865602
-2009-03-10T23:12:43.743994Z
-638
-ricardoquesada
-has-props
-
-TransitionsDemo.h
-file
-
-
-
-
-2009-03-15T04:08:42.000000Z
-157e9697e584fde34147a21736bbbec5
-2009-02-03T17:52:28.187282Z
-495
-ricardoquesada
-has-props
 
 attachDemo
 dir
 
-TransitionsDemo.m
+IntervalTest.h
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-c20a18372d3c33ff96e3ff597d3bcda0
-2009-03-10T23:12:43.743994Z
-638
+2009-05-16T12:56:22.000000Z
+b13e0b86ef3383c6784a3bbf7eb77618
+2009-03-27T16:31:20.514957Z
+732
 ricardoquesada
 has-props
 
-Texture2dDemo.h
+IntervalTest.m
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-f399a958416697ed7dcfea3649d9d600
-2009-02-16T15:32:00.303257Z
-575
+2009-05-16T12:56:22.000000Z
+aaeb6238fce6311a50b3acdf6a925cd2
+2009-05-14T13:05:35.634954Z
+939
 ricardoquesada
 
 SceneTest.h
@@ -293,49 +287,38 @@ file
 
 
 
-2009-03-15T04:08:42.000000Z
-6bcf4a5c645bc73a08ad6796bd90a574
-2009-02-01T22:30:05.338157Z
-482
+2009-05-16T12:56:22.000000Z
+e048184362207943c8ae54e4316e844a
+2009-04-16T19:07:39.930084Z
+808
 ricardoquesada
 has-props
 
-SpritesDemo.h
+EaseActionsTest.h
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-02c65bddb13ef1b85f95d3f3f8c75204
-2009-02-13T18:52:09.560677Z
-563
+2009-05-16T12:56:22.000000Z
+e2cef2503585a18c7a1035310dad23d1
+2009-03-27T19:14:18.809411Z
+734
 ricardoquesada
-has-props
 
-ClickAndMove.h
+PerformanceParticleTest
+dir
+
+ClickAndMoveTest.h
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-ead26889838d00ab33086a0918fd81a3
-2009-02-03T15:24:30.572057Z
-492
-ricardoquesada
-has-props
-
-Texture2dDemo.m
-file
-
-
-
-
-2009-03-15T04:08:42.000000Z
-527816b21c9fa1e404095a1dd973a342
-2009-03-10T23:12:43.743994Z
-638
+2009-05-16T12:56:22.000000Z
+ab728b1a86dbe457446e1088589b2007
+2009-03-27T16:31:20.514957Z
+732
 ricardoquesada
 has-props
 
@@ -348,88 +331,156 @@ file
 
 
 
-2009-03-15T04:08:42.000000Z
-b22aa4789b2fc50073fec8c9d6fcf562
-2009-03-10T23:12:43.743994Z
-638
+2009-05-16T12:56:22.000000Z
+1c0aa32ec909771e7d7a01a2a9041966
+2009-05-15T16:09:21.330221Z
+949
 ricardoquesada
 has-props
 
-SpritesDemo.m
+PerformanceSpriteTest
+dir
+
+ParticleTest.h
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-8eff49904617efdff8b910afa58dbdf2
-2009-03-13T17:42:40.480996Z
-675
+2009-05-16T12:56:22.000000Z
+aa21cdcb3879b407e2e3f49bada4e450
+2009-04-26T19:20:28.300382Z
+862
 ricardoquesada
 has-props
 
-ClickAndMove.m
+EaseActionsTest.m
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-d783fd0afba1856cc0ffe361ab909018
-2009-03-11T17:52:24.358854Z
-653
+2009-05-16T12:56:22.000000Z
+6eb254d2478eff8210df5c0e716ab152
+2009-05-14T13:05:35.634954Z
+939
 ricardoquesada
 has-props
 
-TestAtlas.h
+AtlasTest.h
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-96d4ffdba82a4c44590969280e1e40fb
-2009-03-12T19:24:53.884329Z
-669
+2009-05-16T12:56:22.000000Z
+654afef00416073ff722077824c0f925
+2009-04-20T16:27:18.614302Z
+822
 ricardoquesada
 has-props
 
-TestParallax.h
+ClickAndMoveTest.m
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-cae2639a20fad0d2d4b1d5cd91eab99f
-2009-02-01T22:30:05.338157Z
-482
+2009-05-16T12:56:22.000000Z
+33bf51fb3514c6cdb67bb66a2baa67d8
+2009-05-15T12:28:29.306128Z
+948
+valentin.milea
+has-props
+
+ParallaxTest.h
+file
+
+
+
+
+2009-05-16T12:56:22.000000Z
+19a5e88ce93f146b4e8eb74337945799
+2009-05-11T17:14:29.834373Z
+919
 ricardoquesada
 has-props
 
-TestParallax.m
+AccelViewportTest.h
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-31f32e9716908dc56ea49d5ab6ea6378
-2009-03-10T23:12:43.743994Z
-638
+2009-05-16T12:56:22.000000Z
+7c0fd4306dd185d20c70baa98450c6b2
+2009-04-21T08:10:39.178792Z
+827
+ricardoquesada
+has-props
+
+ParticleTest.m
+file
+
+
+
+
+2009-05-16T12:56:22.000000Z
+736efcf7b23cd256e102729ba42cc987
+2009-05-15T12:28:29.306128Z
+948
+valentin.milea
+has-props
+
+ParallaxTest.m
+file
+
+
+
+
+2009-05-16T12:56:22.000000Z
+a5a348260eba84255ad506b76f404251
+2009-05-15T16:09:21.330221Z
+949
 ricardoquesada
 
-TestAtlas.m
+AtlasTest.m
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-eda5bf62ce65dc81cd2ada80cbf87125
-2009-03-13T17:42:40.480996Z
-675
+2009-05-16T12:56:22.000000Z
+96ce543f35673114df6c4cf28eccb6ac
+2009-05-15T16:09:21.330221Z
+949
 ricardoquesada
+
+AccelViewportTest.m
+file
+
+
+
+
+2009-05-16T12:56:22.000000Z
+251f483d99bde21154964d47c26995c8
+2009-05-15T12:28:29.306128Z
+948
+valentin.milea
+has-props
+
+TransitionsTest.h
+file
+
+
+
+
+2009-05-16T12:56:22.000000Z
+d9608834cd76a1e4c30affa4ede8c7a7
+2009-03-27T19:14:18.809411Z
+734
+ricardoquesada
+has-props
 
 EffectsTest.h
 file
@@ -437,10 +488,10 @@ file
 
 
 
-2009-03-15T04:08:42.000000Z
-7e90f5bc3e4aa297dc30b50b26ed3ad2
-2009-02-02T19:56:06.277527Z
-484
+2009-05-16T12:56:22.000000Z
+8727c39c6ddeb847b6824287f2885280
+2009-03-27T16:31:20.514957Z
+732
 ricardoquesada
 
 Prefix.pch
@@ -456,17 +507,18 @@ file
 ricardoquesada
 has-props
 
-EaseDemo.h
+TransitionsTest.m
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-d5ff03885b56378027ceab350e3667f6
-2009-03-12T15:04:42.096408Z
-666
+2009-05-16T12:56:22.000000Z
+672a9324a91841d56bcded2c6bcecd99
+2009-05-15T16:09:21.330221Z
+949
 ricardoquesada
+has-props
 
 EffectsTest.m
 file
@@ -474,22 +526,21 @@ file
 
 
 
-2009-03-15T04:08:42.000000Z
-ace9aa4a81455c6d08bcdd87a7f52660
-2009-03-10T23:12:43.743994Z
-638
+2009-05-16T12:56:22.000000Z
+f99750fe6efafa2576030480799ddeb2
+2009-05-15T16:09:21.330221Z
+949
 ricardoquesada
 
-EaseDemo.m
+Texture2dTest.h
 file
 
 
 
 
-2009-03-15T04:08:42.000000Z
-05113e9cffafa50cff46c81bcf618dfd
-2009-03-12T15:51:42.411901Z
-667
+2009-05-16T12:56:22.000000Z
+5f05dc786d520fceed976ab559eb4418
+2009-05-07T18:11:00.748049Z
+902
 ricardoquesada
-has-props
 

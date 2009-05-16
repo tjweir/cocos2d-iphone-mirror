@@ -20,14 +20,11 @@
 // InstantAction
 //
 @implementation InstantAction
-@synthesize duration;
 
 -(id) init
 {
-	if( !(self=[super init]) )
-		return nil;
-	
-	duration = 0;
+	if( (self=[super init]) )	
+		duration = 0;
 	return self;
 }
 
@@ -49,6 +46,10 @@
 {
 	// ignore
 }
+-(FiniteTimeAction*) reverse
+{
+	return [[self copy] autorelease];
+}
 @end
 
 //
@@ -60,6 +61,10 @@
 	[super start];
 	target.visible = YES;
 }
+-(FiniteTimeAction*) reverse
+{
+	return [Hide action];
+}
 @end
 
 //
@@ -70,6 +75,10 @@
 {
 	[super start];
 	target.visible = NO;
+}
+-(FiniteTimeAction*) reverse
+{
+	return [Show action];
 }
 @end
 
@@ -88,16 +97,15 @@
 // Place
 //
 @implementation Place
-+(id) actionWithPosition: (cpVect) pos
++(id) actionWithPosition: (CGPoint) pos
 {
 	return [[[self alloc]initWithPosition:pos]autorelease];
 }
 
--(id) initWithPosition: (cpVect) pos
+-(id) initWithPosition: (CGPoint) pos
 {
-	if( ! (self=[super init]) )
-		return nil;
-	position = pos;
+	if( (self=[super init]) )
+		position = pos;
 	return self;
 }
 
@@ -125,11 +133,10 @@
 
 -(id) initWithTarget: (id) t selector:(SEL) s
 {
-	if( ! (self=[super init]) )
-		return nil;
-	
-	targetCallback = [t retain];
-	selector = s;
+	if( (self=[super init]) ) {
+		targetCallback = [t retain];
+		selector = s;
+	}
 	return self;
 }
 
@@ -181,15 +188,14 @@
 
 -(id) initWithTarget:(id) t selector:(SEL) s data:(void*) d
 {
-	if( !(self=[super initWithTarget:t selector:s]) )
-		return nil;
-	data = d;
-	
-	NSMethodSignature * sig = [[t class] instanceMethodSignatureForSelector:s];
-	invocation = [NSInvocation invocationWithMethodSignature:sig];
-	[invocation setTarget:t];
-	[invocation setSelector:s];
-	[invocation retain];
+	if( (self=[super initWithTarget:t selector:s]) ) {
+		data = d;	
+		NSMethodSignature * sig = [[t class] instanceMethodSignatureForSelector:s];
+		invocation = [NSInvocation invocationWithMethodSignature:sig];
+		[invocation setTarget:t];
+		[invocation setSelector:s];
+		[invocation retain];
+	}
 	return self;
 }
 

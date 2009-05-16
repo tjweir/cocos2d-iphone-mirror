@@ -1,4 +1,3 @@
-#import <UIKit/UIKit.h>
 #import "cocos2d.h"
 
 @class Menu;
@@ -23,10 +22,12 @@
 
 @interface Layer2 : Layer
 {
+	CGPoint	centeredMenu;
+	BOOL alignedH;
 }
 -(void) menuCallbackBack: (id) sender;
--(void) menuCallbackH: (id) sender;
--(void) menuCallbackV: (id) sender;
+-(void) menuCallbackOpacity: (id) sender;
+-(void) menuCallbackAlign: (id) sender;
 @end
 
 @interface Layer3 : Layer

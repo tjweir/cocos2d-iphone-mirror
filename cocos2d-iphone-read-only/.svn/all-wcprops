@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 23
-/svn/!svn/ver/688/trunk
+/svn/!svn/ver/950/trunk
 END
 LICENSE.chipmunk
 K 25
@@ -13,7 +13,7 @@ doxygen.config
 K 25
 svn:wc:ra_dav:version-url
 V 38
-/svn/!svn/ver/512/trunk/doxygen.config
+/svn/!svn/ver/783/trunk/doxygen.config
 END
 LICENSE
 K 25
@@ -25,19 +25,19 @@ DONORS
 K 25
 svn:wc:ra_dav:version-url
 V 30
-/svn/!svn/ver/605/trunk/DONORS
+/svn/!svn/ver/894/trunk/DONORS
 END
 AUTHORS
 K 25
 svn:wc:ra_dav:version-url
 V 31
-/svn/!svn/ver/676/trunk/AUTHORS
+/svn/!svn/ver/909/trunk/AUTHORS
 END
 CHANGELOG
 K 25
 svn:wc:ra_dav:version-url
 V 33
-/svn/!svn/ver/680/trunk/CHANGELOG
+/svn/!svn/ver/949/trunk/CHANGELOG
 END
 LICENSE.artwork
 K 25
@@ -55,5 +55,5 @@ README
 K 25
 svn:wc:ra_dav:version-url
 V 30
-/svn/!svn/ver/561/trunk/README
+/svn/!svn/ver/908/trunk/README
 END

@@ -15,48 +15,92 @@
 #import "Texture2D.h"
 #import "ccTypes.h"
 
-/** A class that implements a basic Texture Atlas */
+/** A class that implements a Texture Atlas.
+ Supported features:
+   * The atlas file can be a PVRTC, PNG or any other fomrat supported by Texture2D
+   * Quads can be udpated in runtime
+   * Quads can be added in runtime
+   * Quads can be removed in runtime
+   * Quads can be re-ordered in runtime
+   * The TextureAtlas capacity can be increased or decreased in runtime
+   * OpenGL component: V3F, C4B, T2F.
+ The quads are rendered using an OpenGL ES an interleaved vertex array list
+ */
 @interface TextureAtlas : NSObject {
-	NSUInteger			totalQuads;
-	ccQuad2		*texCoordinates;
-	ccQuad3		*vertices;
-	GLushort	*indices;
-	Texture2D	*texture;
+	NSUInteger			totalQuads_;
+	NSUInteger			capacity_;
+	ccV3F_C4B_T2F_Quad	*quads;	// quads to be rendered
+	GLushort			*indices;
+	Texture2D			*texture_;	
 }
 
+/** quantity of quads that are going to be drawn */
 @property (readonly) NSUInteger totalQuads;
+/** quantity of quads that can be stored with the current texture atlas size */
+@property (readonly) NSUInteger capacity;
+/** Texture of the texture atlas */
 @property (nonatomic,retain) Texture2D *texture;
 
-/** creates a TextureAtlas with an iname filename and with a capacity for n Quads
- * n is the number of Quads that will be rendered at once from this Atlas
- * n is the maximun number of Quads it will be able to render, but not the minimun
+/** creates a TextureAtlas with an filename and with an initial capacity for Quads.
+ * The TextureAtlas capacity can be increased in runtime.
  */
-+(id) textureAtlasWithFile:(NSString*)file capacity: (NSUInteger) n;
++(id) textureAtlasWithFile:(NSString*)file capacity:(NSUInteger)capacity;
 
-/** initializes a TextureAtlas with an iname filename and with a capacity for n Quads
- * n is the number of Quads that will be rendered at once from this Atlas
- * n is the maximun number of Quads it will be able to render, but not the minimun
+/** initializes a TextureAtlas with a filename and with a certain capacity for Quads.
+ * The TextureAtlas capacity can be increased in runtime.
  */
--(id) initWithFile: (NSString*) file capacity:(NSUInteger)n;
+-(id) initWithFile: (NSString*) file capacity:(NSUInteger)capacity;
 
 /** creates a TextureAtlas with a previously initialized Texture2D object, and
- * with an initial capacity for n Quads.  n is the number of Quads that can be rendered
- * at once with this Atlas.
+ * with an initial capacity for n Quads. 
+ * The TextureAtlas capacity can be increased in runtime.
  */
-+(id) textureAtlasWithTexture:(Texture2D *)tex capacity:(NSUInteger)n;
++(id) textureAtlasWithTexture:(Texture2D *)tex capacity:(NSUInteger)capacity;
 
 /** initializes a TextureAtlas with a previously initialized Texture2D object, and
- * with an initial capacity for n Quads.  n is the number of Quads that can be rendered
- * at once with this Atlas.
+ * with an initial capacity for Quads. 
+ * The TextureAtlas capacity can be increased in runtime.
  */
--(id) initWithTexture:(Texture2D *)tex capacity:(NSUInteger)n;
+-(id) initWithTexture:(Texture2D *)tex capacity:(NSUInteger)capacity;
 
-/** updates a certain texture coordinate & vertex with new Quads.
- * n must be between 0 and the atlas capacity - 1
- * The default value of all of the Quads is 0,0,0,0,0,0,0,0, so this selector
- * must be called to initializes every Quad
+/** updates a Quad (texture, vertex and color) at a certain index
+ * index must be between 0 and the atlas capacity - 1
+ @since v0.8
  */
--(void) updateQuadWithTexture: (ccQuad2*) quadT vertexQuad:(ccQuad3*) quadV atIndex:(NSUInteger) n;
+-(void) updateQuad:(ccV3F_C4B_T2F_Quad*)quad atIndex:(NSUInteger)index;
+
+/** Inserts a Quad (texture, vertex and color) at a certain index
+ index must be between 0 and the atlas capacity - 1
+ @since v0.8
+ */
+-(void) insertQuad:(ccV3F_C4B_T2F_Quad*)quad atIndex:(NSUInteger)index;
+
+/** Removes the quad that is located at a certain index and inserts it at a new index
+ This operation is faster than remove and insert in 2 different steps.
+ @since v0.7.2
+*/
+-(void) insertQuadFromIndex:(NSUInteger)fromIndex atIndex:(NSUInteger)newIndex;
+
+/** removes a quad at a given index number.
+ The capacity remains the same, but the total number of quads to be drawn is reduced in 1
+ @since v0.7.2
+ */
+-(void) removeQuadAtIndex:(NSUInteger) index;
+
+/** removes all Quads.
+ The TextureAtlas capacity remains untouched. No memory is freed.
+ The total number of quads to be drawn will be 0
+ @since v0.7.2
+ */
+-(void) removeAllQuads;
+ 
+
+/** resize the capacity of the Texture Atlas.
+ * The new capacity can be lower or higher than the current one
+ * It returns YES if the resize was successful.
+ * If it fails to resize the capacity it will return NO with a new capacity of 0.
+ */
+-(BOOL) resizeCapacity: (NSUInteger) n;
 
 
 /** draws n quads
@@ -67,11 +111,5 @@
 /** draws all the Atlas's Quads
  */
 -(void) drawQuads;
-
-
-/** resize the capacity of the Texture Atlas.
- * The new capacity can be lower or higher
- */
--(void) resizeCapacity: (NSUInteger) n;
 
 @end

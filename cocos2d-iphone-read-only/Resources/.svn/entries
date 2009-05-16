@@ -1,14 +1,14 @@
 8
 
 dir
-688
+951
 http://cocos2d-iphone.googlecode.com/svn/trunk/Resources
 http://cocos2d-iphone.googlecode.com/svn
 
 
 
-2009-03-09T17:58:48.553510Z
-629
+2009-05-15T10:35:20.908628Z
+946
 ricardoquesada
 
 
@@ -90,6 +90,19 @@ file
 89f6f57b83cb4770b455c72a487c5e73
 2008-10-03T13:28:35.405321Z
 245
+ricardoquesada
+has-props
+
+InfoWithStatusBar.plist
+file
+
+
+
+
+2009-05-16T12:56:24.000000Z
+2fff568e748b1c03bd90727b109fb487
+2009-04-12T20:50:20.591209Z
+786
 ricardoquesada
 has-props
 

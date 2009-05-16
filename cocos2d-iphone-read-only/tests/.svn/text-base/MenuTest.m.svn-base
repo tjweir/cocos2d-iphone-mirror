@@ -9,6 +9,8 @@
 
 enum {
 	kTagMenu = 1,
+	kTagMenu0 = 0,
+	kTagMenu1 = 1,
 };
 
 @implementation Layer1
@@ -24,11 +26,15 @@ enum {
 	MenuItem *item2 = [MenuItemImage itemFromNormalImage:@"SendScoreButton.png" selectedImage:@"SendScoreButtonPressed.png" target:self selector:@selector(menuCallback2:)];
 	MenuItem *item3 = [MenuItemFont itemFromString: @"Disabled Item" target: self selector:@selector(menuCallbackDisabled:)];
 	MenuItem *item4 = [MenuItemFont itemFromString: @"I toggle enable items" target: self selector:@selector(menuCallbackEnable:)];
-	MenuItem *item5 = [MenuItemFont itemFromString: @"Configuration" target: self selector:@selector(menuCallbackConfig:)];
+	BitmapFontAtlas *label = [BitmapFontAtlas bitmapFontAtlasWithString:@"configuration" fntFile:@"bitmapFontTest3.fnt"];
+	MenuItemLabel *item5 = [MenuItemLabel itemWithLabel:label target:self selector:@selector(menuCallbackConfig:)];
 	
 	MenuItemFont *item6 = [MenuItemFont itemFromString: @"Quit" target:self selector:@selector(onQuit:)];
 	
-	[[item6 label] setRGB:255:0:32];
+	id color_action = [TintBy actionWithDuration:0.5f red:0 green:-255 blue:-255];
+	id color_back = [color_action reverse];
+	id seq = [Sequence actions:color_action, color_back, nil];
+	[item6 runAction:[RepeatForever actionWithAction:seq]];
 
 	Menu *menu = [Menu menuWithItems: item1, item2, item3, item4, item5, item6, nil];
 	[menu alignItemsVertically];
@@ -72,30 +78,81 @@ enum {
 -(void) onQuit: (id) sender
 {
 	[[Director sharedDirector] end];
+	
+	// HA HA... no more terminate on sdk v3.0
+	// http://developer.apple.com/iphone/library/qa/qa2008/qa1561.html
 	if( [[UIApplication sharedApplication] respondsToSelector:@selector(terminate)] )
 		[[UIApplication sharedApplication] performSelector:@selector(terminate)];
 }
 @end
 
 @implementation Layer2
+
+-(void) alignMenusH
+{
+	for(int i=0;i<2;i++) {
+		Menu *menu = (Menu*)[self getChildByTag:100+i];
+		menu.position = centeredMenu;
+		if(i==0) {
+			// TIP: if no padding, padding = 5
+			[menu alignItemsHorizontally];			
+			CGPoint p = menu.position;
+			menu.position = ccpAdd(p, ccp(0,30));
+			
+		} else {
+			// TIP: but padding is configurable
+			[menu alignItemsHorizontallyWithPadding:40];
+			CGPoint p = menu.position;
+			menu.position = ccpSub(p, ccp(0,30));
+		}		
+	}
+}
+
+-(void) alignMenusV
+{
+	for(int i=0;i<2;i++) {
+		Menu *menu = (Menu*)[self getChildByTag:100+i];
+		menu.position = centeredMenu;
+		if(i==0) {
+			// TIP: if no padding, padding = 5
+			[menu alignItemsVertically];			
+			CGPoint p = menu.position;
+			menu.position = ccpAdd(p, ccp(100,0));			
+		} else {
+			// TIP: but padding is configurable
+			[menu alignItemsVerticallyWithPadding:40];	
+			CGPoint p = menu.position;
+			menu.position = ccpSub(p, ccp(100,0));
+		}		
+	}
+}
+
 -(id) init
 {
-	[super init];
+	if( (self=[super init]) ) {
 	
-	isTouchEnabled = YES;
-	
-	MenuItemImage *item1 = [MenuItemImage itemFromNormalImage:@"btn-play-normal.png" selectedImage:@"btn-play-selected.png" target:self selector:@selector(menuCallbackBack:)];
-	MenuItemImage *item2 = [MenuItemImage itemFromNormalImage:@"btn-highscores-normal.png" selectedImage:@"btn-highscores-selected.png" target:self selector:@selector(menuCallbackH:)];
-	MenuItemImage *item3 = [MenuItemImage itemFromNormalImage:@"btn-about-normal.png" selectedImage:@"btn-about-selected.png" target:self selector:@selector(menuCallbackV:)];
-	
-	Menu *menu = [Menu menuWithItems:item1, item2, item3, nil];
-	
-	menu.tag = kTagMenu;
-	[menu alignItemsHorizontally];
+		isTouchEnabled = YES;
+		
+		for( int i=0;i < 2;i++ ) {
+			MenuItemImage *item1 = [MenuItemImage itemFromNormalImage:@"btn-play-normal.png" selectedImage:@"btn-play-selected.png" target:self selector:@selector(menuCallbackBack:)];
+			MenuItemImage *item2 = [MenuItemImage itemFromNormalImage:@"btn-highscores-normal.png" selectedImage:@"btn-highscores-selected.png" target:self selector:@selector(menuCallbackOpacity:)];
+			MenuItemImage *item3 = [MenuItemImage itemFromNormalImage:@"btn-about-normal.png" selectedImage:@"btn-about-selected.png" target:self selector:@selector(menuCallbackAlign:)];
+			
+			item1.scaleX = 1.5f;
+			item2.scaleY = 0.5f;
+			item3.scaleX = 0.5f;
+			
+			Menu *menu = [Menu menuWithItems:item1, item2, item3, nil];
+			
+			menu.tag = kTagMenu;
+			
+			[self addChild:menu z:0 tag:100+i];
+			centeredMenu = menu.position;
+		}
 
-	menu.opacity = 128;
-
-	[self addChild: menu];
+		alignedH = YES;
+		[self alignMenusH];
+	}
 
 	return self;
 }
@@ -107,36 +164,26 @@ enum {
 
 -(void) menuCallbackBack: (id) sender
 {
-// One way to obtain the menu is:
-//	[self  getChildByTag:xxx]
-	id menu = [self getChildByTag:kTagMenu];
-	[menu setOpacity: 128];
-
 	[(MultiplexLayer*)parent switchTo:0];
 }
 
--(void) menuCallbackH: (id) sender
+-(void) menuCallbackOpacity: (id) sender
 {
-	// Another way to obtain the menu
-	// in this particular case is:
-	// self.parent
-
 	id menu = [sender parent];
-	[menu setOpacity: 255];
-	[menu alignItemsHorizontally];
+	GLubyte opacity = [menu opacity];
+	if( opacity == 128 )
+		[menu setOpacity: 255];
+	else
+		[menu setOpacity: 128];	
 }
--(void) menuCallbackV: (id) sender
+-(void) menuCallbackAlign: (id) sender
 {
-	id menu = [self getChildByTag:kTagMenu];
-	[menu alignItemsVertically];
-}
-
--(BOOL) ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-	// you will only receive this message if Menu doesn't handle the touchesBegan event
-	// new in v0.6
-	NSLog(@"touches received");
-	return kEventHandled;
+	alignedH = ! alignedH;
+	
+	if( alignedH )
+		[self alignMenusH];
+	else
+		[self alignMenusV];
 }
 
 @end
@@ -148,22 +195,26 @@ enum {
 	[MenuItemFont setFontName: @"Marker Felt"];
 	[MenuItemFont setFontSize:28];
 
-	MenuItemFont *item1 = [MenuItemFont itemFromString: @"Option 1" target:self selector:@selector(menuCallback2:)];
-	MenuItemFont *item2 = [MenuItemFont itemFromString: @"Go Back" target:self selector:@selector(menuCallback:)];
+	BitmapFontAtlas *label = [BitmapFontAtlas bitmapFontAtlasWithString:@"another option" fntFile:@"bitmapFontTest3.fnt"];
+	MenuItemLabel *item1 = [MenuItemLabel itemWithLabel:label target:self selector:@selector(menuCallback2:)];
+	MenuItemFont *item2 = [MenuItemFont itemFromString: @"--- Go Back ---" target:self selector:@selector(menuCallback:)];
 	
 	Menu *menu = [Menu menuWithItems: item1, item2, nil];	
-	menu.position = cpv(0,0);
+	menu.position = ccp(0,0);
 	
-	item1.position = cpv(100,100);
-	item2.position = cpv(100,200);
+	item1.position = ccp(100,100);
+	item2.position = ccp(100,200);
 	
-	id jump = [JumpBy actionWithDuration:3 position:cpv(400,0) height:50 jumps:4];
+	id jump = [JumpBy actionWithDuration:3 position:ccp(400,0) height:50 jumps:4];
 	[item2 runAction: [RepeatForever actionWithAction:
 				 [Sequence actions: jump, [jump reverse], nil]
 								   ]
 	 ];
-	id spin = [RotateBy actionWithDuration:3 angle:360];
-	[item2 runAction: [RepeatForever actionWithAction:spin]];
+	id spin1 = [RotateBy actionWithDuration:3 angle:360];
+	id spin2 = [[spin1 copy] autorelease];
+	
+	[item1 runAction: [RepeatForever actionWithAction:spin1]];
+	[item2 runAction: [RepeatForever actionWithAction:spin2]];
 	
 	[self addChild: menu];
 	
@@ -228,23 +279,29 @@ enum {
     
 	[MenuItemFont setFontName: @"American Typewriter"];
 	[MenuItemFont setFontSize:18];
-	MenuItemFont *title4 = [MenuItemFont itemFromString: @"Volume"];
+	MenuItemFont *title4 = [MenuItemFont itemFromString: @"Orientation"];
     [title4 setIsEnabled:NO];
 	[MenuItemFont setFontName: @"Marker Felt"];
 	[MenuItemFont setFontSize:34];
     MenuItemToggle *item4 = [MenuItemToggle itemWithTarget:self selector:@selector(menuCallback:) items:
-                             [MenuItemFont itemFromString: @"Off"],
+                             [MenuItemFont itemFromString: @"Off"], nil];
+	
+	NSArray *more_items = [NSArray arrayWithObjects:
                              [MenuItemFont itemFromString: @"33%"],
                              [MenuItemFont itemFromString: @"66%"],
                              [MenuItemFont itemFromString: @"100%"],
                              nil];
+	// TIP: you can manipulate the items like any other NSMutableArray
+	[item4.subItems addObjectsFromArray: more_items];
+	
     // you can change the one of the items by doing this
     item4.selectedIndex = 2;
     
     [MenuItemFont setFontName: @"Marker Felt"];
 	[MenuItemFont setFontSize:34];
-	MenuItemFont *back = [MenuItemFont itemFromString: @"Go Back" target:self selector:@selector(backCallback:)];
-
+	
+	BitmapFontAtlas *label = [BitmapFontAtlas bitmapFontAtlasWithString:@"go back" fntFile:@"bitmapFontTest3.fnt"];
+	MenuItemLabel *back = [MenuItemLabel itemWithLabel:label target:self selector:@selector(backCallback:)];
     
 	Menu *menu = [Menu menuWithItems:
                   title1, title2,
@@ -297,7 +354,7 @@ enum {
 //	[Director useFastDirector];
 	
 	// before creating any layer, set the landscape mode
-	[[Director sharedDirector] setLandscape: YES];
+	[[Director sharedDirector] setDeviceOrientation: CCDeviceOrientationLandscapeRight];
 
 	// show FPS
 	[[Director sharedDirector] setDisplayFPS:YES];

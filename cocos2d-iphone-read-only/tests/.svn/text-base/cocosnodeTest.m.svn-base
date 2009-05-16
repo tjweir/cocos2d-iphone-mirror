@@ -1,5 +1,5 @@
 //
-// Test Demo
+// cocos node tests
 // a cocos2d example
 // http://code.google.com/p/cocos2d-iphone
 //
@@ -25,6 +25,7 @@ static NSString *transitions[] = {
 			@"Test4",
 			@"Test5",
 			@"Test6",
+			@"Test7",
 };
 
 Class nextAction()
@@ -66,7 +67,7 @@ Class restartAction()
 	
 		Label* label = [Label labelWithString:[self title] fontName:@"Arial" fontSize:32];
 		[self addChild: label];
-		[label setPosition: cpv(s.width/2, s.height-50)];
+		[label setPosition: ccp(s.width/2, s.height-50)];
 		
 		MenuItemImage *item1 = [MenuItemImage itemFromNormalImage:@"b1.png" selectedImage:@"b2.png" target:self selector:@selector(backCallback:)];
 		MenuItemImage *item2 = [MenuItemImage itemFromNormalImage:@"r1.png" selectedImage:@"r2.png" target:self selector:@selector(restartCallback:)];
@@ -74,10 +75,10 @@ Class restartAction()
 		
 		Menu *menu = [Menu menuWithItems:item1, item2, item3, nil];
 		
-		menu.position = cpvzero;
-		item1.position = cpv( s.width/2 - 100,30);
-		item2.position = cpv( s.width/2, 30);
-		item3.position = cpv( s.width/2 + 100,30);
+		menu.position = CGPointZero;
+		item1.position = ccp( s.width/2 - 100,30);
+		item2.position = ccp( s.width/2, 30);
+		item3.position = ccp( s.width/2 + 100,30);
 		[self addChild: menu z:-1];	
 	}
 
@@ -122,15 +123,36 @@ Class restartAction()
 	[super onEnter];
 	
 	CGSize s = [[Director sharedDirector] winSize];
-	
+
+	Sprite *sp0 = [Sprite spriteWithFile:@"grossini.png"];
 	Sprite *sp1 = [Sprite spriteWithFile:@"grossinis_sister1.png"];
 	Sprite *sp2 = [Sprite spriteWithFile:@"grossinis_sister2.png"];
+	Sprite *point0 = [Sprite spriteWithFile:@"r1.png"];
+	Sprite *point1 = [Sprite spriteWithFile:@"r1.png"];
+	Sprite *point2 = [Sprite spriteWithFile:@"r1.png"];
+
+	point0.scale = 0.25f;
+	point1.scale = 0.25f;
+	point2.scale = 0.25f;
+
+	sp0.position = ccp(s.width/2, s.height/2 );
+	point0.position = sp0.position;
+	sp0.anchorPoint = ccp(0.5f, 0.5f);
 	
-	sp1.position = cpv(100, s.height /2 );
-	sp2.position = cpv(380, s.height /2 );
+	sp1.position = ccp(s.width/2-100, s.height/2 );
+	point1.position = sp1.position;
+	sp1.anchorPoint = ccp(0,0);
 	
+	sp2.position = ccp(s.width/2+100, s.height/2 );
+	point2.position = sp2.position;	
+	sp2.anchorPoint = ccp(1,1);
+
+	[self addChild: sp0];
 	[self addChild: sp1];
 	[self addChild: sp2];
+	[self addChild: point0 z:1];
+	[self addChild: point1 z:1];
+	[self addChild: point2 z:1];
 	
 
 	id a1 = [RotateBy actionWithDuration:2 angle:360];
@@ -139,18 +161,16 @@ Class restartAction()
 	id action1 = [RepeatForever actionWithAction:
 				  [Sequence actions: a1, a2, [a2 reverse], nil]
 									];
-	id action2 = [RepeatForever actionWithAction:
-				  [Sequence actions: [[a1 copy] autorelease], [[a2 copy] autorelease], [a2 reverse], nil]
-									];
-	
-	sp2.transformAnchor = cpvzero;
-	
+	id action2 = [[action1 copy] autorelease];
+	id action0 = [[action1 copy] autorelease];
+
+	[sp0 runAction: action0];
 	[sp1 runAction: action1];
-	[sp2 runAction:action2];
+	[sp2 runAction: action2];
 }
 -(NSString *) title
 {
-	return @"transformAnchor";
+	return @"anchorPoint";
 }
 @end
 
@@ -166,8 +186,8 @@ Class restartAction()
 	Sprite *sp3 = [Sprite spriteWithFile:@"grossinis_sister1.png"];
 	Sprite *sp4 = [Sprite spriteWithFile:@"grossinis_sister2.png"];
 	
-	sp1.position = cpv(100, s.height /2 );
-	sp2.position = cpv(380, s.height /2 );
+	sp1.position = ccp(100, s.height /2 );
+	sp2.position = ccp(380, s.height /2 );
 	[self addChild: sp1];
 	[self addChild: sp2];
 	
@@ -187,14 +207,14 @@ Class restartAction()
 				  [Sequence actions: [[a1 copy] autorelease], [[a2 copy] autorelease], [a2 reverse], nil]
 									];
 	
-	sp2.transformAnchor = cpvzero;
+	sp2.anchorPoint = ccp(0,0);
 	
 	[sp1 runAction:action1];
 	[sp2 runAction:action2];	
 }
 -(NSString *) title
 {
-	return @"transformAnchor and children";
+	return @"anchorPoint and children";
 }
 @end
 
@@ -210,9 +230,9 @@ Class restartAction()
 	Sprite *sp2 = [Sprite spriteWithFile:@"grossinis_sister2.png"];
 	Sprite *sp3 = [Sprite spriteWithFile:@"grossini.png"];
 	
-	sp1.position = cpv(20,80);
-	sp2.position = cpv(70,50);
-	sp3.position = cpv(s.width/2, s.height/2);
+	sp1.position = ccp(20,80);
+	sp2.position = ccp(70,50);
+	sp3.position = ccp(s.width/2, s.height/2);
 	
 	// these tags belong to sp3 (kTagSprite1, kTagSprite2)
 	[sp3 addChild:sp1 z:-1 tag:kTagSprite1];
@@ -255,8 +275,8 @@ Class restartAction()
 	Sprite *sp1 = [Sprite spriteWithFile:@"grossinis_sister1.png"];
 	Sprite *sp2 = [Sprite spriteWithFile:@"grossinis_sister2.png"];
 	
-	sp1.position = cpv(100,160);
-	sp2.position = cpv(380,160);
+	sp1.position = ccp(100,160);
+	sp2.position = ccp(380,160);
 	
 	[self addChild:sp1 z:0 tag:2];
 	[self addChild:sp2 z:0 tag:3];
@@ -295,8 +315,8 @@ Class restartAction()
 		Sprite *sp1 = [Sprite spriteWithFile:@"grossinis_sister1.png"];
 		Sprite *sp2 = [Sprite spriteWithFile:@"grossinis_sister2.png"];
 		
-		sp1.position = cpv(100,160);
-		sp2.position = cpv(380,160);
+		sp1.position = ccp(100,160);
+		sp2.position = ccp(380,160);
 
 		id rot = [RotateBy actionWithDuration:2 angle:360];
 		id rot_back = [rot reverse];
@@ -353,8 +373,8 @@ Class restartAction()
 		Sprite *sp2 = [Sprite spriteWithFile:@"grossinis_sister2.png"];
 		Sprite *sp21 = [Sprite spriteWithFile:@"grossinis_sister2.png"];
 		
-		sp1.position = cpv(100,160);
-		sp2.position = cpv(380,160);
+		sp1.position = ccp(100,160);
+		sp2.position = ccp(380,160);
 		
 		
 		id rot = [RotateBy actionWithDuration:2 angle:360];
@@ -408,6 +428,62 @@ Class restartAction()
 @end
 
 
+@implementation Test7
+-(id) init
+{
+	if( ( self=[super init]) ) {
+
+		CGSize s = [[Director sharedDirector] winSize];
+
+		Sprite *sp1 = [Sprite spriteWithFile:@"grossinis_sister1.png"];
+		[self addChild:sp1 z:0 tag:kTagSprite1];
+		
+		sp1.position = ccp(s.width/2, s.height/2);		
+
+		[self schedule:@selector(shouldNotCrash:) interval:1.0f];
+	}
+	
+	return self;
+}
+
+- (void) shouldNotCrash:(ccTime) delta
+{	
+	[self unschedule:_cmd];
+
+	CGSize s = [[Director sharedDirector] winSize];
+
+	// if the node has timers, it crashes
+	CocosNode *explosion = [ParticleSun node];
+	
+	// if it doesn't, it works Ok.
+//	CocosNode *explosion = [Sprite spriteWithFile:@"grossinis_sister2.png"];
+
+	explosion.position = ccp(s.width/2, s.height/2);
+	
+	[self runAction:[Sequence actions:
+						[RotateBy actionWithDuration:2 angle:360],
+						[CallFuncN actionWithTarget:self selector:@selector(removeMe:)],
+						nil]];
+	
+	[self addChild:explosion];
+}
+
+// remove
+- (void) removeMe: (id)node
+{	
+    [parent removeChild:node cleanup:YES];
+	[self nextCallback:self];
+}
+
+
+-(NSString *) title
+{
+	return @"stress test #1";
+}
+@end
+
+
+
 #pragma mark AppController
 
 // CLASS IMPLEMENTATIONS
@@ -426,7 +502,7 @@ Class restartAction()
 //	[Director useFastDirector];
 	
 	// before creating any layer, set the landscape mode
-	[[Director sharedDirector] setLandscape: YES];
+	[[Director sharedDirector] setDeviceOrientation: CCDeviceOrientationLandscapeLeft];
 	[[Director sharedDirector] setAnimationInterval:1.0/60];
 	[[Director sharedDirector] setDisplayFPS:YES];
 

@@ -16,7 +16,16 @@
 #import "AtlasNode.h"
 #import "Support/TGAlib.h"
 
-/** A TileMap that laods the font from a Texture Atlas */
+/** TileMapAtlas is a subclass of AtlasNode.
+ 
+ It knows how to render a map based of tiles.
+ The tiles must be in a .PNG format while the map must be a .TGA file.
+ 
+ For more information regarding the format, please see this post:
+ http://blog.sapusmedia.com/2008/12/how-to-use-tilemap-editor-for-cocos2d.html
+ 
+ All features from AtlasNode are valid in TileMapAtlas
+ */
 @interface TileMapAtlas : AtlasNode {
 	
 	/// info about the map file
@@ -25,15 +34,9 @@
 	/// x,y to altas dicctionary
 	NSMutableDictionary	*posToAtlasIndex;
 	
-	/// size of the map in pixels
-	CGSize			contentSize;
-	
 	/// numbers of tiles to render
 	int				itemsToRender;
 }
-
-/** content size of the TileMap */
-@property (readonly) CGSize contentSize;
 
 /** TileMap info */
 @property (readonly) tImageTGA *tgaInfo;
@@ -47,12 +50,12 @@
 /** returns a tile from position x,y.
  For the moment only channel R is used
  */
--(ccRGBB) tileAt: (ccGridSize) position;
+-(ccColor3B) tileAt: (ccGridSize) position;
 
 /** sets a tile at position x,y.
  For the moment only channel R is used
  */
--(void) setTile:(ccRGBB)tile at:(ccGridSize)position;
+-(void) setTile:(ccColor3B)tile at:(ccGridSize)position;
 /** dealloc the map from memory */
 -(void) releaseMap;
 @end

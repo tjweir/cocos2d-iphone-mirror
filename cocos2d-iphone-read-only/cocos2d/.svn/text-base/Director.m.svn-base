@@ -17,6 +17,7 @@
  
 // cocos2d imports
 #import "Director.h"
+#import "TouchDispatcher.h"
 #import "Camera.h"
 #import "Scheduler.h"
 #import "LabelAtlas.h"
@@ -27,6 +28,7 @@
 #import "Support/glu.h"
 #import "Support/OpenGL_Internal.h"
 #import "Support/Texture2D.h"
+#import "Support/CGPointExtension.h"
 
 #import "Layer.h"
 
@@ -54,11 +56,12 @@
 @implementation Director
 
 @synthesize animationInterval;
-@synthesize runningScene;
+@synthesize runningScene = runningScene_;
 @synthesize displayFPS, eventsEnabled;
-@synthesize openGLView=_openGLView;
-@synthesize pixelFormat=_pixelFormat;
-@synthesize nextDeltaTimeZero=_nextDeltaTimeZero;
+@synthesize openGLView=openGLView_;
+@synthesize pixelFormat=pixelFormat_;
+@synthesize nextDeltaTimeZero=nextDeltaTimeZero_;
+@synthesize deviceOrientation=deviceOrientation_;
 
 //
 // singleton stuff
@@ -104,21 +107,20 @@ static Director *_sharedDirector = nil;
 	//Create a full-screen window
 
 	// default values
-	_pixelFormat = kRGB565;
-	_depthBufferFormat = 0;
+	pixelFormat_ = kRGB565;
+	depthBufferFormat_ = 0;
 
 	// scenes
-	runningScene = nil;
+	runningScene_ = nil;
 	nextScene = nil;
-	scenes = [[NSMutableArray arrayWithCapacity:10] retain];
 	
 	oldAnimationInterval = animationInterval = 1.0 / kDefaultFPS;
 	eventHandlers = [[NSMutableArray arrayWithCapacity:8] retain];
-	
+	scenesStack_ = [[NSMutableArray arrayWithCapacity:10] retain];
 	
 	// landscape
-	landscape = NO;
-	
+	deviceOrientation_ = CCDeviceOrientationPortrait;
+
 	// FPS
 	displayFPS = NO;
 	frames = 0;
@@ -140,16 +142,16 @@ static Director *_sharedDirector = nil;
 	[FPSLabel release];
 #endif
 	[eventHandlers release];
-	[runningScene release];
-	[scenes release];
+	[runningScene_ release];
+	[scenesStack_ release];
 	
 	[super dealloc];
 }
 
 -(void) initGLDefaultValues
 {
-	// This method SHOULD be called only after _openGLview was initialized
-	NSAssert( _openGLView, @"_openGLView must be initialized");
+	// This method SHOULD be called only after openGLView_ was initialized
+	NSAssert( openGLView_, @"openGLView_ must be initialized");
 
 	[self setAlphaBlending: YES];
 	[self setDepthTest: YES];
@@ -167,10 +169,7 @@ static Director *_sharedDirector = nil;
 // main loop
 //
 - (void) mainLoop
-{
-	// dispatch missing events
-//    while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, YES) == kCFRunLoopRunHandledSource) {};
-    
+{    
 	/* clear window */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
@@ -189,14 +188,14 @@ static Director *_sharedDirector = nil;
 	[self applyLandscape];
 	
 	/* draw the scene */
-	[runningScene visit];
+	[runningScene_ visit];
 	if( displayFPS )
 		[self showFPS];
 	
-		glPopMatrix();
+	glPopMatrix();
 	
 	/* swap buffers */
-	[_openGLView swapBuffers];	
+	[openGLView_ swapBuffers];	
 }
 
 -(void) calculateDeltaTime
@@ -212,9 +211,9 @@ static Director *_sharedDirector = nil;
 	}
 	
 	// new delta time
-	if( _nextDeltaTimeZero ) {
+	if( nextDeltaTimeZero_ ) {
 		dt = 0;
-		_nextDeltaTimeZero = NO;
+		nextDeltaTimeZero_ = NO;
 	} else {
 		dt = (now.tv_sec - lastUpdate.tv_sec) + (now.tv_usec - lastUpdate.tv_usec) / 1000000.0f;
 		dt = MAX(0,dt);
@@ -235,7 +234,7 @@ static Director *_sharedDirector = nil;
 		@throw myException;		
 	}
 	
-	_pixelFormat = format;
+	pixelFormat_ = format;
 }
 
 -(void) setDepthBufferFormat: (tDepthBufferFormat) format
@@ -248,7 +247,7 @@ static Director *_sharedDirector = nil;
 		@throw myException;		
 	}
 
-   _depthBufferFormat = format;
+   depthBufferFormat_ = format;
 }
 
 #pragma mark Director Scene OpenGL Helper
@@ -263,7 +262,7 @@ static Director *_sharedDirector = nil;
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrthof(0, _openGLView.frame.size.width, 0, _openGLView.frame.size.height, -1, 1);
+	glOrthof(0, openGLView_.frame.size.width, 0, openGLView_.frame.size.height, -1, 1);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -271,15 +270,15 @@ static Director *_sharedDirector = nil;
 // set a 3d projection matrix
 -(void)set3Dprojection
 {
-	glViewport(0, 0, _openGLView.frame.size.width, _openGLView.frame.size.height);
+	glViewport(0, 0, openGLView_.frame.size.width, openGLView_.frame.size.height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60, (GLfloat)_openGLView.frame.size.width/_openGLView.frame.size.height, 0.5f, 1500.0f);
+	gluPerspective(60, (GLfloat)openGLView_.frame.size.width/openGLView_.frame.size.height, 0.5f, 1500.0f);
 	
 	glMatrixMode(GL_MODELVIEW);	
 	glLoadIdentity();
-	gluLookAt( _openGLView.frame.size.width/2, _openGLView.frame.size.height/2, [Camera getZEye],
-			  _openGLView.frame.size.width/2, _openGLView.frame.size.height/2, 0,
+	gluLookAt( openGLView_.frame.size.width/2, openGLView_.frame.size.height/2, [Camera getZEye],
+			  openGLView_.frame.size.width/2, openGLView_.frame.size.height/2, 0,
 			  0.0f, 1.0f, 0.0f);
 }
 
@@ -287,15 +286,7 @@ static Director *_sharedDirector = nil;
 {
 	if (on) {
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//		You might want to use this blend function instead
-//		XXX: Some things needs to be fixed
-//		XXX: Particles is setting the default blend function
-//		XXX: to GL_SRC_ALPHA. Modify the blend parameters
-//		XXX: there too
-//		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
+		glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
 	} else
 		glDisable(GL_BLEND);
 }
@@ -324,7 +315,7 @@ static Director *_sharedDirector = nil;
 // is the view currently attached
 -(BOOL)isOpenGLAttached
 {
-	return ([_openGLView superview]!=nil);
+	return ([openGLView_ superview]!=nil);
 }
 
 // detach or attach to a view or a window
@@ -344,7 +335,7 @@ static Director *_sharedDirector = nil;
 	}
 	
 	// remove from the superview
-	[_openGLView removeFromSuperview];
+	[openGLView_ removeFromSuperview];
 	
 	// check if the view is not attached anymore
 	if(![self isOpenGLAttached])
@@ -364,7 +355,7 @@ static Director *_sharedDirector = nil;
 
 -(BOOL)attachInWindow:(UIWindow *)window
 {
-	if([self initOpenGLViewWithView:window withFrame:[window frame]])
+	if([self initOpenGLViewWithView:window withFrame:[window bounds]])
 	{
 		return YES;
 	}
@@ -374,7 +365,7 @@ static Director *_sharedDirector = nil;
 
 -(BOOL)attachInView:(UIView *)view
 {
-	if([self initOpenGLViewWithView:view withFrame:[view frame]])
+	if([self initOpenGLViewWithView:view withFrame:[view bounds]])
 	{
 		return YES;
 	}
@@ -408,25 +399,25 @@ static Director *_sharedDirector = nil;
 	}
 	
 	// check if the view is not initialized
-	if(!_openGLView)
+	if(!openGLView_)
 	{
 		// define the pixel format
 		NSString	*pFormat = kEAGLColorFormatRGB565;
 	    GLuint		depthFormat = 0;
 		
-		if(_pixelFormat==kRGBA8)
+		if(pixelFormat_==kRGBA8)
 			pFormat = kEAGLColorFormatRGBA8;
 		
-		if(_depthBufferFormat == kDepthBuffer16)
+		if(depthBufferFormat_ == kDepthBuffer16)
 			depthFormat = GL_DEPTH_COMPONENT16_OES;
-		else if(_depthBufferFormat == kDepthBuffer24)
+		else if(depthBufferFormat_ == kDepthBuffer24)
 			depthFormat = GL_DEPTH_COMPONENT24_OES;
 		
 		// alloc and init the opengl view
-		_openGLView = [[EAGLView alloc] initWithFrame:rect pixelFormat:pFormat depthFormat:depthFormat preserveBackbuffer:NO];
+		openGLView_ = [[EAGLView alloc] initWithFrame:rect pixelFormat:pFormat depthFormat:depthFormat preserveBackbuffer:NO];
 		
 		// check if the view was alloced and initialized
-		if(!_openGLView)
+		if(!openGLView_)
 		{
 			// the view was not created
 			NSException* myException = [NSException
@@ -439,41 +430,41 @@ static Director *_sharedDirector = nil;
 		}
 		
 		// set autoresizing enabled when attaching the glview to another view
-		[_openGLView setAutoresizesEAGLSurface:YES];
+		[openGLView_ setAutoresizesEAGLSurface:YES];
 		
 		// set the touch delegate of the glview to self
-		[_openGLView setTouchDelegate:self];
+		[openGLView_ setTouchDelegate:self];
 	}
 	else
 	{
 		// set the (new) frame of the glview
-		[_openGLView setFrame:rect];
+		[openGLView_ setFrame:rect];
 	}
 	
 	// check if the superview has touchs enabled and enable it in our view
 	if([view isUserInteractionEnabled])
 	{
-		[_openGLView setUserInteractionEnabled:YES];
+		[openGLView_ setUserInteractionEnabled:YES];
 		[self setEventsEnabled:YES];
 	}
 	else
 	{
-		[_openGLView setUserInteractionEnabled:NO];
+		[openGLView_ setUserInteractionEnabled:NO];
 		[self setEventsEnabled:NO];
 	}
 	
 	// check if multi touches are enabled and set them
 	if([view isMultipleTouchEnabled])
 	{
-		[_openGLView setMultipleTouchEnabled:YES];
+		[openGLView_ setMultipleTouchEnabled:YES];
 	}
 	else
 	{
-		[_openGLView setMultipleTouchEnabled:NO];
+		[openGLView_ setMultipleTouchEnabled:NO];
 	}
 	
 	// add the glview to his (new) superview
-	[view addSubview:_openGLView];
+	[view addSubview:openGLView_];
 	
 	// set the background color of the glview
 	//	[backgroundColor setOpenGLClearColor];
@@ -500,35 +491,37 @@ static Director *_sharedDirector = nil;
 // convert a coordinate from uikit to opengl
 -(CGPoint)convertCoordinate:(CGPoint)p
 {
-	int newY = _openGLView.frame.size.height - p.y;
+	int newY = openGLView_.frame.size.height - p.y;
+	int newX = openGLView_.frame.size.width -p.x;
 	
-	CGPoint ret = CGPointMake( p.x, newY );
-	if( ! landscape )
-	{
-		ret = ret;
-	}
-	else 
-	{
-#ifdef LANDSCAPE_LEFT
-		ret.x = p.y;
-		ret.y = p.x;
-#else
-		ret.x = p.y;
-		ret.y = _openGLView.frame.size.width -p.x;
-#endif // LANDSCAPE_LEFT
-	}
-	
+	CGPoint ret;
+	switch ( deviceOrientation_) {
+		case CCDeviceOrientationPortrait:
+			 ret = ccp( p.x, newY );
+			break;
+		case CCDeviceOrientationPortraitUpsideDown:
+			ret = ccp(newX, p.y);
+			break;
+		case CCDeviceOrientationLandscapeLeft:
+			ret.x = p.y;
+			ret.y = p.x;
+			break;
+		case CCDeviceOrientationLandscapeRight:
+			ret.x = newY;
+			ret.y = newX;
+			break;
+		}
 	return ret;
 }
 
 // get the current size of the glview
 -(CGSize)winSize
 {
-	CGSize s = _openGLView.frame.size;
-	if( landscape ) {
+	CGSize s = openGLView_.frame.size;
+	if( deviceOrientation_ == CCDeviceOrientationLandscapeLeft || deviceOrientation_ == CCDeviceOrientationLandscapeRight ) {
 		// swap x,y in landscape mode
-		s.width = _openGLView.frame.size.height;
-		s.height = _openGLView.frame.size.width;
+		s.width = openGLView_.frame.size.height;
+		s.height = openGLView_.frame.size.width;
 	}
 	return s;
 }
@@ -536,44 +529,68 @@ static Director *_sharedDirector = nil;
 // return  the current frame size
 -(CGSize)displaySize
 {
-	return _openGLView.frame.size;
+	return openGLView_.frame.size;
 }
 
 - (BOOL) landscape
 {
-	return landscape;
+	return deviceOrientation_ == CCDeviceOrientationLandscapeLeft;
 }
 
 - (void) setLandscape: (BOOL) on
 {
-	if( on != landscape ) {
-		landscape = on;
-		if( landscape )
-#ifdef LANDSCAPE_LEFT
-			[[UIApplication sharedApplication] setStatusBarOrientation: UIInterfaceOrientationLandscapeRight animated:NO];
-#else
-			[[UIApplication sharedApplication] setStatusBarOrientation: UIInterfaceOrientationLandscapeLeft animated:NO];
-#endif
-		else
-			[[UIApplication sharedApplication] setStatusBarOrientation: UIInterfaceOrientationPortrait animated:NO];
+	if( on )
+		[self setDeviceOrientation:CCDeviceOrientationLandscapeLeft];
+	else
+		[self setDeviceOrientation:CCDeviceOrientationPortrait];
+}
 
+- (void) setDeviceOrientation:(ccDeviceOrientation) orientation
+{
+	if( deviceOrientation_ != orientation ) {
+		deviceOrientation_ = orientation;
+		switch( deviceOrientation_) {
+			case CCDeviceOrientationPortrait:
+				[[UIApplication sharedApplication] setStatusBarOrientation: UIInterfaceOrientationPortrait animated:NO];
+				break;
+			case CCDeviceOrientationPortraitUpsideDown:
+				[[UIApplication sharedApplication] setStatusBarOrientation: UIInterfaceOrientationPortrait animated:NO];
+				break;
+			case CCDeviceOrientationLandscapeLeft:
+				[[UIApplication sharedApplication] setStatusBarOrientation: UIInterfaceOrientationLandscapeRight animated:NO];
+				break;
+			case CCDeviceOrientationLandscapeRight:
+				[[UIApplication sharedApplication] setStatusBarOrientation: UIInterfaceOrientationLandscapeLeft animated:NO];
+				break;
+			default:
+				NSLog(@"Director: Unknown device orientation");
+				break;
+		}
 	}
-	return;
 }
 
 -(void) applyLandscape
 {
-	if( landscape ) {
-		glTranslatef(160,240,0);
-		
-#ifdef LANDSCAPE_LEFT
-		glRotatef(-90,0,0,1);
-		glTranslatef(-240,-160,0);
-#else		
-		// rotate left
-		glRotatef(90,0,0,1);
-		glTranslatef(-240,-160,0);
-#endif // LANDSCAPE_LEFT
+	switch ( deviceOrientation_ ) {
+		case CCDeviceOrientationPortrait:
+			// nothing
+			break;
+		case CCDeviceOrientationPortraitUpsideDown:
+			// upside down
+			glTranslatef(160,240,0);
+			glRotatef(180,0,0,1);
+			glTranslatef(-160,-240,0);
+			break;
+		case CCDeviceOrientationLandscapeRight:
+			glTranslatef(160,240,0);
+			glRotatef(90,0,0,1);
+			glTranslatef(-240,-160,0);
+			break;
+		case CCDeviceOrientationLandscapeLeft:
+			glTranslatef(160,240,0);
+			glRotatef(-90,0,0,1);
+			glTranslatef(-240,-160,0);
+			break;
 	}	
 }
 
@@ -582,10 +599,9 @@ static Director *_sharedDirector = nil;
 - (void)runWithScene:(Scene*) scene
 {
 	NSAssert( scene != nil, @"Argument must be non-nil");
-	NSAssert( runningScene == nil, @"You can't run an scene if another Scene is running. Use replaceScene or pushScene instead");
-		
-//	[self pushScene: scene];
-	[self replaceScene: scene];
+	NSAssert( runningScene_ == nil, @"You can't run an scene if another Scene is running. Use replaceScene or pushScene instead");
+	
+	[self pushScene:scene];
 	[self startAnimation];
 }
 
@@ -593,45 +609,48 @@ static Director *_sharedDirector = nil;
 {
 	NSAssert( scene != nil, @"Argument must be non-nil");
 
-	nextScene = [scene retain];
+	NSUInteger index = [scenesStack_ count];
+
+	[scenesStack_ replaceObjectAtIndex:index-1 withObject:scene];
+	nextScene = scene;	// nextScene is a weak ref
 }
 
 - (void) pushScene: (Scene*) scene
 {
 	NSAssert( scene != nil, @"Argument must be non-nil");
-	NSAssert( runningScene != nil, @"A running Scene is needed");
 
-	[scenes addObject: runningScene];
-	nextScene = [scene retain];		// retained twice
+	[scenesStack_ addObject: scene];
+	nextScene = scene;	// nextScene is a weak ref
 }
 
 -(void) popScene
 {	
-	NSAssert( runningScene != nil, @"A running Scene is needed");
+	NSAssert( runningScene_ != nil, @"A running Scene is needed");
 
-	int c = [scenes count];
+	[scenesStack_ removeLastObject];
+	NSUInteger c = [scenesStack_ count];
+	
 	if( c == 0 ) {
 		[self end];
 	} else {
-		nextScene = [[scenes objectAtIndex:c-1] retain];
-		[scenes removeLastObject];
+		nextScene = [scenesStack_ objectAtIndex:c-1];
 	}
 }
 
 -(void) end
 {
-	[scenes release];
-	scenes = nil;
+	// remove all objects, but don't release it.
+	// runWithScene might be executed after 'end'.
+	[scenesStack_ removeAllObjects];
 
-	[runningScene onExit];
-	[runningScene release];
-	runningScene = nil;
-	[self stopAnimation];
+	[runningScene_ onExit];
+	[runningScene_ release];
+	runningScene_ = nil;
+	nextScene = nil;
 
 	// don't release the event handlers
 	// They are needed in case the director is run again
-//	[eventHandlers release];
-//	eventHandlers = nil;
+	[eventHandlers removeAllObjects];
 
 	[self stopAnimation];
 	[self detach];
@@ -646,13 +665,13 @@ static Director *_sharedDirector = nil;
 
 -(void) setNextScene
 {
-	[runningScene onExit];
-	[runningScene release];
+	[runningScene_ onExit];
+	[runningScene_ release];
 	
-	[nextScene onEnter];
-	runningScene = nextScene;
-	
+	runningScene_ = [nextScene retain];
 	nextScene = nil;
+
+	[runningScene_ onEnter];
 }
 
 -(void) pause
@@ -688,6 +707,8 @@ static Director *_sharedDirector = nil;
 
 - (void)startAnimation
 {
+	[eventHandlers insertObject:[TouchDispatcher sharedDispatcher] atIndex:0];
+	
 	NSAssert( animationTimer == nil, @"animationTimer must be nil. Calling startAnimation twice?");
 
 	if( gettimeofday( &lastUpdate, NULL) != 0 ) {
@@ -698,8 +719,6 @@ static Director *_sharedDirector = nil;
 		@throw myException;
 	}
 	
-	
-
 	animationTimer = [NSTimer scheduledTimerWithTimeInterval:animationInterval target:self selector:@selector(mainLoop) userInfo:nil repeats:YES];
 
 //
@@ -713,6 +732,8 @@ static Director *_sharedDirector = nil;
 
 - (void)stopAnimation
 {
+	[eventHandlers removeObject:[TouchDispatcher sharedDispatcher]];
+	
 	[animationTimer invalidate];
 	animationTimer = nil;
 }
@@ -732,7 +753,7 @@ static Director *_sharedDirector = nil;
 -(void) addEventHandler:(id<TouchEventsDelegate>) delegate
 {
 	NSAssert( delegate != nil, @"Director.addEventHandler: delegate must be non nil");	
-	[eventHandlers insertObject:delegate atIndex:0];
+	[eventHandlers insertObject:delegate atIndex:1];
 }
 
 -(void) removeEventHandler:(id<TouchEventsDelegate>) delegate
@@ -843,7 +864,7 @@ static Director *_sharedDirector = nil;
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	
 	glColor4ub(224,224,244,200);
-	[texture drawAtPoint: CGPointMake(5,2)];
+	[texture drawAtPoint: ccp(5,2)];
 	[texture release];
 	
 	glDisable(GL_TEXTURE_2D);
@@ -878,6 +899,8 @@ static Director *_sharedDirector = nil;
 
 - (void) startAnimation
 {
+	[eventHandlers insertObject:[TouchDispatcher sharedDispatcher] atIndex:0];
+	
 	// XXX:
 	// XXX: release autorelease objects created
 	// XXX: between "use fast director" and "runWithScene"
@@ -895,6 +918,20 @@ static Director *_sharedDirector = nil;
 	
 
 	isRunning = YES;
+
+	SEL selector = @selector(preMainLoop);
+	NSMethodSignature* sig = [[[Director sharedDirector] class]
+							  instanceMethodSignatureForSelector:selector];
+	NSInvocation* invocation = [NSInvocation
+								invocationWithMethodSignature:sig];
+	[invocation setTarget:[Director sharedDirector]];
+	[invocation setSelector:selector];
+	[invocation performSelectorOnMainThread:@selector(invokeWithTarget:)
+								 withObject:[Director sharedDirector] waitUntilDone:NO];	
+}
+
+-(void) preMainLoop
+{
 	while (isRunning) {
 	
 		NSAutoreleasePool *loopPool = [NSAutoreleasePool new];
@@ -910,11 +947,12 @@ static Director *_sharedDirector = nil;
 		while(CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, TRUE) == kCFRunLoopRunHandledSource);
 
 		[loopPool release];
-	}
+	}	
 }
-
 - (void) stopAnimation
 {
+	[eventHandlers removeObject:[TouchDispatcher sharedDispatcher]];
+	
 	isRunning = NO;
 }
 

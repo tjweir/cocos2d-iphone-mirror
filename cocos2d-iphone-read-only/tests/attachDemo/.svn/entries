@@ -1,15 +1,15 @@
 8
 
 dir
-688
+951
 http://cocos2d-iphone.googlecode.com/svn/trunk/tests/attachDemo
 http://cocos2d-iphone.googlecode.com/svn
 
 
 
-2009-03-10T23:12:43.743994Z
-638
-ricardoquesada
+2009-05-15T12:28:29.306128Z
+948
+valentin.milea
 
 
 svn:special svn:externals svn:needs-lock
@@ -32,10 +32,10 @@ file
 
 
 
-2009-03-15T04:08:41.000000Z
+2009-05-16T12:56:20.000000Z
 449992be22527e5beb1d3e8cba8c8524
-2009-02-13T16:48:57.142827Z
-561
+2009-04-11T21:24:01.277612Z
+779
 ricardoquesada
 
 attachDemo.m
@@ -44,11 +44,11 @@ file
 
 
 
-2009-03-15T04:08:41.000000Z
-1d62cc0842f48c1487805161801598eb
-2009-03-10T23:12:43.743994Z
-638
-ricardoquesada
+2009-05-16T12:56:20.000000Z
+8cfba99345dd2c03163e3525b3487674
+2009-05-15T12:28:29.306128Z
+948
+valentin.milea
 
 attachDemo.xib
 file

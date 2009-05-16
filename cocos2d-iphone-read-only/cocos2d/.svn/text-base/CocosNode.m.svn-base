@@ -3,6 +3,7 @@
  * http://code.google.com/p/cocos2d-iphone
  *
  * Copyright (C) 2008,2009 Ricardo Quesada
+ * Copyright (C) 2009 Valentin Milea
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the 'cocos2d for iPhone' license.
@@ -18,7 +19,10 @@
 #import "Grid.h"
 #import "Scheduler.h"
 #import "ccMacros.h"
-
+#import "Director.h"
+#import "Support/CGPointExtension.h"
+#import "Support/ccArray.h"
+#import "Support/TransformUtils.h"
 
 @interface CocosNode (Private)
 -(void) step_: (ccTime) dt;
@@ -39,13 +43,96 @@
 
 @implementation CocosNode
 
-@synthesize rotation, scaleX, scaleY, position, parallaxRatioX, parallaxRatioY;
 @synthesize visible;
-@synthesize transformAnchor, relativeTransformAnchor;
 @synthesize parent, children;
 @synthesize grid;
 @synthesize zOrder;
 @synthesize tag;
+@synthesize vertexZ = vertexZ_;
+
+#pragma mark CocosNode - Transform related properties
+
+@synthesize rotation=rotation_, scaleX=scaleX_, scaleY=scaleY_, position=position_;
+@synthesize transformAnchor=transformAnchor_, relativeTransformAnchor=relativeTransformAnchor_;
+
+// getters synthesized, setters explicit
+-(void) setRotation: (float)newRotation
+{
+	rotation_ = newRotation;
+	isTransformDirty_ = isInverseDirty_ = YES;
+}
+
+-(void) setScaleX: (float)newScaleX
+{
+	scaleX_ = newScaleX;
+	isTransformDirty_ = isInverseDirty_ = YES;
+}
+
+-(void) setScaleY: (float)newScaleY
+{
+	scaleY_ = newScaleY;
+	isTransformDirty_ = isInverseDirty_ = YES;
+}
+
+-(void) setPosition: (CGPoint)newPosition
+{
+	position_ = newPosition;
+	isTransformDirty_ = isInverseDirty_ = YES;
+}
+
+-(void) setTransformAnchor: (CGPoint)newTransformAnchor
+{
+	transformAnchor_ = newTransformAnchor;
+	isTransformDirty_ = isInverseDirty_ = YES;
+}
+
+-(void) setRelativeTransformAnchor: (BOOL)newValue
+{
+	relativeTransformAnchor_ = newValue;
+	isTransformDirty_ = isInverseDirty_ = YES;
+}
+
+-(void) setAnchorPoint:(CGPoint)point
+{
+	if( ! CGPointEqualToPoint(point, anchorPoint_) ) {
+		anchorPoint_ = point;
+		self.transformAnchor = ccp( contentSize_.width * anchorPoint_.x, contentSize_.height * anchorPoint_.y );
+	}
+}
+-(CGPoint) anchorPoint
+{
+	return anchorPoint_;
+}
+-(void) setContentSize:(CGSize)size
+{
+	if( ! CGSizeEqualToSize(size, contentSize_) ) {
+		contentSize_ = size;
+		self.transformAnchor = ccp( contentSize_.width * anchorPoint_.x, contentSize_.height * anchorPoint_.y );
+	}
+}
+-(CGSize) contentSize
+{
+	return contentSize_;
+}
+
+-(float) scale
+{
+	if( scaleX_ == scaleY_)
+		return scaleX_;
+	else
+		[NSException raise:@"CocosNode scale:" format:@"scaleX is different from scaleY"];
+	
+	return 0;
+}
+
+-(void) setScale:(float) s
+{
+	scaleX_ = scaleY_ = s;
+	isTransformDirty_ = isInverseDirty_ = YES;
+}
+
+
+#pragma mark CocosNode - Init & cleanup
 
 +(id) node
 {
@@ -59,20 +146,26 @@
 	
 	isRunning = NO;
 	
-	position = cpvzero;
+
+	rotation_ = 0.0f;
+	scaleX_ = scaleY_ = 1.0f;
+	position_ = CGPointZero;
+	transformAnchor_ = CGPointZero;
+	anchorPoint_ = CGPointZero;
+	contentSize_ = CGSizeZero;
+
+	// "whole screen" objects. like Scenes and Layers, should set relativeTransformAnchor to NO
+	relativeTransformAnchor_ = YES; 
 	
-	rotation = 0.0f;		// 0 degrees	
-	scaleX = 1.0f;			// scale factor
-	scaleY = 1.0f;
-	parallaxRatioX = 1.0f;
-	parallaxRatioY = 1.0f;
+	isTransformDirty_ = isInverseDirty_ = YES;
+	
+	
+	vertexZ_ = 0;
 
 	grid = nil;
 	
 	visible = YES;
 
-	transformAnchor = cpvzero;
-	
 	tag = kCocosNodeTagInvalid;
 	
 	zOrder = 0;
@@ -85,30 +178,17 @@
 
 	// actions (lazy allocs)
 	actions = nil;
-	actionsToRemove = nil;
-	actionsToAdd = nil;
 	
 	// scheduled selectors (lazy allocs)
 	scheduledSelectors = nil;
 	
-	// default.
-	// "whole screen" objects should set it to NO, like Scenes and Layers
-	relativeTransformAnchor = YES;
-
 	return self;
 }
 
 - (void)cleanup
 {
 	// actions
-	[actions release];
-	actions = nil;
-	
-	[actionsToRemove release];
-	actionsToRemove = nil;
-	
-	[actionsToAdd release];
-	actionsToAdd = nil;
+	[self stopAllActions];
 	
 	// timers
 	[scheduledSelectors release];
@@ -132,16 +212,20 @@
 	[grid release];
 	
 	// children
-	[children makeObjectsPerformSelector:@selector(cleanup)];
+	
+	for (CocosNode *child in children) {
+		child.parent = nil;
+		[child cleanup];
+	}
+	
 	[children release];
 	
 	// timers
 	[scheduledSelectors release];
 	
 	// actions
-	[actions release];
-	[actionsToRemove release];
-	[actionsToAdd release];
+	[self stopAllActions];
+	ccArrayFree(actions);
 	
 	[super dealloc];
 }
@@ -162,12 +246,7 @@
 	return camera;
 }
 
--(id) add: (CocosNode*) child z:(int)z tag:(int) aTag
-{
-	CCLOG(@"add:z:tag: is deprecated. Use addChild:z:tag:");
-	return [self addChild:child z:z tag:aTag];
-}
-/* Add logic MUST only be on this selector
+/* "add" logic MUST only be on this selector
  * If a class want's to extend the 'addChild' behaviour it only needs
  * to override this selector
  */
@@ -190,94 +269,44 @@
 	return self;
 }
 
--(id) add: (CocosNode*) child z:(int)z parallaxRatio:(cpVect)c
-{
-	CCLOG(@"add:z:tag:parallaxRatio: is deprecated. Use addChild:z:parallaxRatio:");
-	return [self addChild:child z:z parallaxRatio:c];
-}
--(id) addChild: (CocosNode*) child z:(int)z parallaxRatio:(cpVect)c
-{
-	NSAssert( child != nil, @"Argument must be non-nil");
-	child.parallaxRatioX = c.x;
-	child.parallaxRatioY = c.y;
-	return [self addChild: child z:z tag:child.tag];
-}
-
-// add a node to the array
--(id) add: (CocosNode*) child z:(int)z
-{
-	CCLOG(@"add:z: is deprecated. Use addChild:z:");
-	return [self addChild:child z:z];
-}
 -(id) addChild: (CocosNode*) child z:(int)z
 {
 	NSAssert( child != nil, @"Argument must be non-nil");
 	return [self addChild:child z:z tag:child.tag];
 }
 
--(id) add: (CocosNode*) child
-{
-	CCLOG(@"add: is deprecated. Use addChild:");
-	return [self addChild:child];
-}
 -(id) addChild: (CocosNode*) child
 {
 	NSAssert( child != nil, @"Argument must be non-nil");
 	return [self addChild:child z:child.zOrder tag:child.tag];
 }
 
-
--(void) remove: (CocosNode*)child
-{
-	CCLOG(@"remove: is deprecated. Use removeChild:cleanup:");
-	return [self removeChild:child cleanup:NO];
-}
--(void) removeAndStop: (CocosNode*)child
-{
-	CCLOG(@"removeAndStop: is deprecated. Use removeChild:cleanup:");
-	return [self removeChild:child cleanup:YES];
-}
-/* Remove logic MUST only be on this selector
- * If a class want's to extend the 'removeChild' behaviour it only needs
- * to override this selector
+/* "remove" logic MUST only be on this method
+ * If a class want's to extend the 'removeChild' behavior it only needs
+ * to override this method
  */
 -(void) removeChild: (CocosNode*)child cleanup:(BOOL)cleanup
 {
-	NSAssert( child != nil, @"Argument must be non-nil");
+	// explicit nil handling
+	if (child == nil)
+		return;
 	
 	if ( [children containsObject:child] )
 		[self detachChild:child cleanup:cleanup];
 }
 
--(void) removeByTag:(int) aTag
-{
-	CCLOG(@"removeByTag: is deprecated. Use removeChildByTag:cleanup:");
-	return [self removeChildByTag:aTag cleanup:NO];
-}
--(void) removeAndStopByTag:(int) aTag
-{
-	CCLOG(@"removeAndStopByTag: is deprecated. Use removeChildByTag:cleanup:");
-	return [self removeChildByTag:aTag cleanup:YES];
-}
 -(void) removeChildByTag:(int)aTag cleanup:(BOOL)cleanup
 {
 	NSAssert( aTag != kCocosNodeTagInvalid, @"Invalid tag");
 
 	CocosNode *child = [self getChildByTag:aTag];
-	[self removeChild:child cleanup:cleanup];
+	
+	if (child == nil)
+		CCLOG(@"removeChildByTag: child not found!");
+	else
+		[self removeChild:child cleanup:cleanup];
 }
 
--(void) removeAll
-
-{
-	CCLOG(@"removeAll is deprecated. Use removeAllChildrenWithCleanup:");
-	return [self removeAllChildrenWithCleanup:NO];
-}
--(void) removeAndStopAll
-{
-	CCLOG(@"removeAndStopAll is deprecated. Use removeAllChildrenCleanup:");
-	return [self removeAllChildrenWithCleanup:YES];
-}
 -(void) removeAllChildrenWithCleanup:(BOOL)cleanup
 {
 	// not using detachChild improves speed here
@@ -293,11 +322,6 @@
 	[children removeAllObjects];
 }
 
--(CocosNode*) getByTag:(int) aTag
-{
-	CCLOG(@"getByTag: is deprecated. Use getChildByTag:");
-	return [self getChildByTag:aTag];
-}
 -(CocosNode*) getChildByTag:(int) aTag
 {
 	NSAssert( aTag != kCocosNodeTagInvalid, @"Invalid tag");
@@ -308,20 +332,6 @@
 	}
 	// not found
 	return nil;
-}
-
--(cpVect) absolutePosition
-{
-	cpVect ret = position;
-	
-	CocosNode *cn = self;
-	
-	while (cn.parent != nil) {
-		cn = cn.parent;
-		ret = cpvadd( ret,  cn.position );
-	}
-	
-	return ret;
 }
 
 -(void) detachChild:(CocosNode *) child cleanup:(BOOL) doCleanup
@@ -383,6 +393,8 @@
 -(void) draw
 {
 	// override me
+	// Only use this function to draw your staff.
+	// DON'T draw your stuff outside this method
 }
 
 -(void) visit
@@ -392,8 +404,10 @@
 	
 	glPushMatrix();
 	
-	if ( grid && grid.active)
+	if ( grid && grid.active) {
 		[grid beforeDraw];
+		[self transformAncestors];
+	}
 	
 	[self transform];
 	
@@ -419,144 +433,105 @@
 
 #pragma mark CocosNode - Transformations
 
+-(void) transformAncestors
+{
+	if( self.parent ) {
+		[self.parent transformAncestors];
+		[self.parent transform];
+	}
+}
+
 -(void) transform
 {
 	if ( !(grid && grid.active) )
 		[camera locate];
 	
-	float parallaxOffsetX = 0;
-	float parallaxOffsetY = 0;
-	
-	// XXX: Parallax code should be moved to a ParallaxNode node
-	if( (parallaxRatioX != 1.0f || parallaxRatioY != 1.0) && parent ) {
-		parallaxOffsetX = -parent.position.x + parent.position.x * parallaxRatioX;
-		parallaxOffsetY = -parent.position.y + parent.position.y * parallaxRatioY;		
-	}
-	
 	// transformations
 	
-	// transalte
-	if ( relativeTransformAnchor && (transformAnchor.x != 0 || transformAnchor.y != 0 ) )
-		glTranslatef( -transformAnchor.x + parallaxOffsetX, -transformAnchor.y + parallaxOffsetY, 0);
+	// BEGIN original implementation
+	// 
+	// translate
+	if ( relativeTransformAnchor_ && (transformAnchor_.x != 0 || transformAnchor_.y != 0 ) )
+		glTranslatef( (int)(-transformAnchor_.x), (int)(-transformAnchor_.y), vertexZ_);
 	
-	if (transformAnchor.x != 0 || transformAnchor.y != 0 )
-		glTranslatef( position.x + transformAnchor.x + parallaxOffsetX, position.y + transformAnchor.y + parallaxOffsetY, 0);
-	else if ( position.x !=0 || position.y !=0 || parallaxOffsetX != 0 || parallaxOffsetY != 0)
-		glTranslatef( position.x + parallaxOffsetX, position.y + parallaxOffsetY, 0 );
+	if (transformAnchor_.x != 0 || transformAnchor_.y != 0 )
+		glTranslatef( (int)(position_.x + transformAnchor_.x), (int)(position_.y + transformAnchor_.y), vertexZ_);
+	else if ( position_.x !=0 || position_.y !=0)
+		glTranslatef( (int)(position_.x), (int)(position_.y), vertexZ_ );
 	
 	// rotate
-	if (rotation != 0.0f )
-		glRotatef( -rotation, 0.0f, 0.0f, 1.0f );
+	if (rotation_ != 0.0f )
+		glRotatef( -rotation_, 0.0f, 0.0f, 1.0f );
 	
 	// scale
-	if (scaleX != 1.0f || scaleY != 1.0f)
-		glScalef( scaleX, scaleY, 1.0f );
+	if (scaleX_ != 1.0f || scaleY_ != 1.0f)
+		glScalef( scaleX_, scaleY_, 1.0f );
 	
 	// restore and re-position point
-	if (transformAnchor.x != 0.0f || transformAnchor.y != 0.0f)
-		glTranslatef(-transformAnchor.x + parallaxOffsetX, -transformAnchor.y + parallaxOffsetY, 0);
-}
-
--(float) scale
-{
-	if( scaleX == scaleY)
-		return scaleX;
-	else
-		[NSException raise:@"CocosNode scale:" format:@"scaleX is different from scaleY"];
+	if (transformAnchor_.x != 0.0f || transformAnchor_.y != 0.0f)
+		glTranslatef((int)(-transformAnchor_.x), (int)(-transformAnchor_.y), vertexZ_);
+	//
+	// END original implementation
 	
-	return 0;
+	/*
+	// BEGIN alternative -- using cached transform
+	//
+	static GLfloat m[16];
+	CGAffineTransform t = [self nodeToParentTransform];
+	CGAffineToGL(&t, m);
+	glMultMatrixf(m);
+	glTranslatef(0, 0, vertexZ_);
+	//
+	// END alternative
+	*/
 }
-
--(void) setScale:(float) s
-{
-	scaleX = scaleY = s;
-}
-
--(float) parallaxRatio
-{
-	if( parallaxRatioX == parallaxRatioY)
-		return parallaxRatioX;
-	else
-		[NSException raise:@"CocosNode parallaxRatio:" format:@"parallaxRatioX is different from parallaxRatioY"];
-	
-	return 0;
-}
-
--(void) setParallaxRatio:(float) p
-{
-	parallaxRatioX = parallaxRatioY = p;
-}
-
 
 #pragma mark CocosNode SceneManagement
 
 -(void) onEnter
 {
-	isRunning = YES;
-	
-	
 	for( id child in children )
 		[child onEnter];
 	
 	[self activateTimers];
+
+	isRunning = YES;
 }
 
 -(void) onExit
 {
-	isRunning = NO;
-	
 	[self deactivateTimers];
+
+	isRunning = NO;	
 	
 	for( id child in children )
 		[child onExit];
-	
 }
 
 #pragma mark CocosNode Actions
 
 -(void) actionAlloc
 {
-	// Reason for having actionsToAdd & actionsToRemove:
-	// While iterating through the actions array it's possible that one of the
-	// actions will call do or stopAction on current node. If these methods were
-	// to alter the array directly (remember you're still inside the loop), you'd
-	// get undefined behaviour. So instead these 2 arrays are used as buffers.
-	//
-	// Another solution would be to make a copy of actions on each step_ and
-	// iterate over the copy, but that leads to other complications (you need to
-	// manage a fast buffer in which to save the copy, and you need to accomodate
-	// the possibility of actions accidentally releasing themselves, which leads
-	// to retain/release hell and, ultimately, a slow loop).
-	
-	// actions
-	actions = [[NSMutableArray arrayWithCapacity:4] retain];
-	actionsToRemove = [[NSMutableArray arrayWithCapacity:4] retain];
-	actionsToAdd = [[NSMutableArray arrayWithCapacity:4] retain];
+	if( actions == nil )
+		actions = ccArrayNew(4);
+	else if( actions->num == actions->max )
+		ccArrayDoubleCapacity(actions);
 }
 
--(Action*) do: (Action*) action
-{
-	CCLOG(@"do: is deprecated. Use runAction: instead");
-	return [self runAction:action];
-}
 -(Action*) runAction:(Action*) action
 {
 	NSAssert( action != nil, @"Argument must be non-nil");
 	
-#ifdef DEBUG
-	if ( [actions containsObject:action] || [actionsToAdd containsObject:action] ) {
-		CCLOG(@"WARNING: action already scheduled.");
-	}
-#endif
+	// lazy alloc
+	[self actionAlloc];
+	
+	NSAssert( !ccArrayContainsObject(actions, action), @"Action already running");
+	
+	ccArrayAppendObject(actions, action);
 	
 	action.target = self;
 	[action start];
 	
-	// lazy alloc
-	if( !actionsToAdd )
-		[self actionAlloc];
-	
-	[actionsToAdd addObject: action];
 	[self schedule: @selector(step_:)];
 	
 	return action;
@@ -564,136 +539,139 @@
 
 -(void) stopAllActions
 {
-	[actionsToAdd removeAllObjects];
-
-	[actionsToRemove removeAllObjects];
-	[actionsToRemove addObjectsFromArray:actions];
+	if( actions == nil )
+		return;
+	
+	if( ccArrayContainsObject(actions, currentAction) && !currentActionSalvaged ) {
+		[currentAction retain];
+		currentActionSalvaged = YES;
+	}
+	
+	ccArrayRemoveAllObjects(actions);
 }
 
 -(void) stopAction: (Action*) action
 {
-	if( [actionsToRemove containsObject:action] )
-		CCLOG(@"stopAction: action already scheduled for removal!");
-
-	else if( [actions containsObject:action] )
-		[actionsToRemove addObject:action];
+	// explicit nil handling
+	if (action == nil)
+		return;
 	
-	else if( [actionsToAdd containsObject:action] )
-		[actionsToAdd removeObject:action];
-	else
-		CCLOG(@"stopAction: action not found!");
+	if( actions != nil ) {
+		NSUInteger i = ccArrayGetIndexOfObject(actions, action);
+	
+		if( i != NSNotFound ) {
+			if( action == currentAction && !currentActionSalvaged ) {
+				[currentAction retain];
+				currentActionSalvaged = YES;
+			}
+			ccArrayRemoveObjectAtIndex(actions, i);
+	
+			// update actionIndex in case we are in step_, looping over the actions
+			if( actionIndex >= (int) i )
+				actionIndex--;
+		}
+	} else
+		CCLOG(@"stopAction: Action not found!");
 }
 
 -(void) stopActionByTag:(int) aTag
 {
 	NSAssert( aTag != kActionTagInvalid, @"Invalid tag");
 	
-	for( Action *a in actionsToRemove ) {
-		if( a.tag == aTag ) {
-			CCLOG(@"stopActionByTag: action already scheduled for removal!");
-			return; 
+	if( actions != nil ) {
+		NSUInteger limit = actions->num;
+		for( NSUInteger i = 0; i < limit; i++) {
+			Action *a = actions->arr[i];
+			
+			if( a.tag == aTag ) {
+				if( a == currentAction && !currentActionSalvaged ) {
+					[currentAction retain];
+					currentActionSalvaged = YES;
+				}
+				ccArrayRemoveObjectAtIndex(actions, i);
+				
+				// update actionIndex in case we are in step_, looping over the actions
+				if (actionIndex >= (int) i)
+					actionIndex--;
+				return; 
+			}
 		}
 	}
-	// is running ?
-	for( Action *a in actions ) {
-		if( a.tag == aTag ) {
-			[actionsToRemove addObject:a];
-			return; 
-		}
-	}
-	// is going to be added ?
-	for( Action *a in actionsToAdd ) {
-		if( a.tag == aTag ) {
-			[actionsToAdd removeObject:a];
-			return;
-		}
-	}
-	CCLOG(@"stopActionByTag: action not found!");
+	
+	CCLOG(@"stopActionByTag: Action not found!");
 }
 
 -(Action*) getActionByTag:(int) aTag
 {
 	NSAssert( aTag != kActionTagInvalid, @"Invalid tag");
 	
-	for( Action *a in actionsToRemove ) {
-		if( a.tag == aTag ) {
-			CCLOG(@"getActionByTag: action unavailable, scheduled for removal!");
-			return nil; 
+	if( actions != nil ) {
+		NSUInteger limit = actions->num;
+		for( NSUInteger i = 0; i < limit; i++) {
+			Action *a = actions->arr[i];
+		
+			if( a.tag == aTag )
+				return a; 
 		}
 	}
-	// is running ?
-	for( Action *a in actions ) {
-		if( a.tag == aTag )
-			return a;
-	}
 
-	// is going to be added ?
-	for( Action *a in actionsToAdd ) {
-		if( a.tag == aTag )
-			return a;
-	}
-
-	CCLOG(@"getActionByTag: action not found");
+	CCLOG(@"getActionByTag: Action not found");
 	return nil;
 }
 
 -(int) numberOfRunningActions
 {
-	return [actionsToAdd count]+[actions count];
+	return actions ? actions->num : 0;
 }
 
 -(void) step_: (ccTime) dt
 {
-	// remove 'removed' actions
-	for( Action* action in actionsToRemove )
-		[actions removeObject: action];
-	[actionsToRemove removeAllObjects];
+	// !Running the actions may indirectly release the CocosNode, so we're
+	// !retaining self to prevent deallocation.
+	// ![self retain];
 	
-	// add actions that needs to be added
-	for( Action* action in actionsToAdd )
-		[actions addObject: action];
-	[actionsToAdd removeAllObjects];
-	
-	// Unschedule if it is no longer necessary. Note that if step_ is still
-	// scheduled onExit (this happens if the node has actions when it's
-	// removed/removedAndStopped from its parent), it will get descheduled there.
-	if ( [actions count] == 0 ) {
-		[self unschedule: @selector(step_:)];
-		return;
-	}
- 	
-	// Assume the instructions inside [action step: dt] end up calling cleanup on
-	// the current node. This could happen, for example, if the action is a CallFunc
-	// which tells the current node's parent to removeAndStop our node.
-	//
-	// Cleanup releases and nullifies the actions array. As a result all the actions
-	// inside the array get released, including the currently executing one. If
-	// the action had a retain count of 1, it has now deallocated itself!
-	// 
-	// To prevent such accidental deallocs, we could:
-	// a. Retain each action inside the loop before calling step, release it after step.
-	// b. Retain actions array before loop, release it after loop. Only 1 retain,
-	//    slightly better performance when there are many actions. Need to keep original
-	//    value because actions might get nullified and you don't want [nil release].
-	
-	id actionsBackup = [actions retain];
-	
+	// (!) UPDATE: Retaining isn't currently necessary because the Timer which runs 
+	// step_ retains the node, keeping it alive. Even if an action indirectly calls
+	// Scheduler#unscheduleTimer (i.e. CallFunc calls [parent removeChild:self] which
+	// calls [self onExit] which calls [self deactivateTimers]), the Timer won't be
+	// deallocated until the next Scheduler#tick.
+	// Bottom line: Node doesn't run the risk of deallocating itself in step_ as
+	// long as the implementation of Scheduler stays the same. We can ommit the
+	// expensive retain/release.
+		
 	// call all actions
-	for( Action *action in actions ) {
-		[action step: dt];
+	
+	// The 'actions' ccArray may change while inside this loop.
+	for( actionIndex = 0; actionIndex < (int) actions->num; actionIndex++) {
+		currentAction = actions->arr[actionIndex];
+		currentActionSalvaged = NO;
 		
-		// Note: There's no danger of our node being deallocated inside the loop (because
-		// the current action has retained it) so it's safe to access the actions ivar.
-		if (actions == nil)
-			break;
+		[currentAction step: dt];
 		
-		if( [action isDone] ) {
-			[action stop];
-			[actionsToRemove addObject: action];
+		if( currentActionSalvaged ) {
+			// The currentAction told the node to stop it. To prevent the action from
+			// accidentally deallocating itself before finishing its step, we retained
+			// it. Now that step is done, it's safe to release it.
+			[currentAction release];
+		}
+		else if( [currentAction isDone] ) {
+			[currentAction stop];
+			
+			Action *a = currentAction;
+			// Make currentAction nil to prevent stopAction from salvaging it.
+			currentAction = nil;
+			[self stopAction:a];
 		}
 	}
+	currentAction = nil;
 	
-	[actionsBackup release];
+	if( actions->num == 0 )
+		[self unschedule: @selector(step_:)];
+	
+	// !And releasing self when done.
+	// ![self release];
+	// !If the node had a retain count of 1 before getting released, it's now
+	// !deallocated. However, since we don't access any ivar, we're fine.
 }
 
 #pragma mark CocosNode Timers 
@@ -717,7 +695,6 @@
 		[self timerAlloc];
 	
 	if( [scheduledSelectors objectForKey: NSStringFromSelector(selector) ] ) {
-		CCLOG(@"CocosNode.schedule: Selector already scheduled: %@",NSStringFromSelector(selector) );
 		return;
 	}
 	
@@ -731,7 +708,9 @@
 
 -(void) unschedule: (SEL) selector
 {
-	NSAssert( selector != nil, @"Argument must be non-nil");
+	// explicit nil handling
+	if (selector == nil)
+		return;
 	
 	Timer *timer = nil;
 	
@@ -757,4 +736,93 @@
 	for( id key in scheduledSelectors )
 		[[Scheduler sharedScheduler] unscheduleTimer: [scheduledSelectors objectForKey:key]];
 }
+
+
+#pragma mark CocosNode Transform
+
+- (CGAffineTransform)nodeToParentTransform
+{
+	if ( isTransformDirty_ ) {
+		
+		transform_ = CGAffineTransformIdentity;
+		
+		if ( !relativeTransformAnchor_ ) {
+			transform_ = CGAffineTransformTranslate(transform_, (int)transformAnchor_.x, (int)transformAnchor_.y);
+		}
+		
+		transform_ = CGAffineTransformTranslate(transform_, (int)position_.x, (int)position_.y);
+		transform_ = CGAffineTransformRotate(transform_, -CC_DEGREES_TO_RADIANS(rotation_));
+		transform_ = CGAffineTransformScale(transform_, scaleX_, scaleY_);
+		
+		transform_ = CGAffineTransformTranslate(transform_, -(int)transformAnchor_.x, -(int)transformAnchor_.y);
+		
+		isTransformDirty_ = NO;
+	}
+	
+	return transform_;
+}
+
+- (CGAffineTransform)parentToNodeTransform
+{
+	if ( isInverseDirty_ ) {
+		inverse_ = CGAffineTransformInvert([self nodeToParentTransform]);
+		isInverseDirty_ = NO;
+	}
+	
+	return inverse_;
+}
+
+- (CGAffineTransform)nodeToWorldTransform
+{
+	CGAffineTransform t = [self nodeToParentTransform];
+	
+	for (CocosNode *p = parent; p != nil; p = p.parent)
+		t = CGAffineTransformConcat(t, [p nodeToParentTransform]);
+	
+	return t;
+}
+
+- (CGAffineTransform)worldToNodeTransform
+{
+	return CGAffineTransformInvert([self nodeToWorldTransform]);
+}
+
+- (CGPoint)convertToNodeSpace:(CGPoint)worldPoint
+{
+	return CGPointApplyAffineTransform(worldPoint, [self worldToNodeTransform]);
+}
+
+- (CGPoint)convertToWorldSpace:(CGPoint)nodePoint
+{
+	return CGPointApplyAffineTransform(nodePoint, [self nodeToWorldTransform]);
+}
+
+- (CGPoint)convertToNodeSpaceAR:(CGPoint)worldPoint
+{
+	CGPoint nodePoint = [self convertToNodeSpace:worldPoint];
+	return ccpSub(nodePoint, transformAnchor_);
+}
+
+- (CGPoint)convertToWorldSpaceAR:(CGPoint)nodePoint
+{
+	nodePoint = ccpAdd(nodePoint, transformAnchor_);
+	return [self convertToWorldSpace:nodePoint];
+}
+
+// convenience methods which take a UITouch instead of CGPoint
+
+- (CGPoint)convertTouchToNodeSpace:(UITouch *)touch
+{
+	CGPoint point = [touch locationInView: [touch view]];
+	point = [[Director sharedDirector] convertCoordinate: point];
+	return [self convertToNodeSpace:point];
+}
+
+- (CGPoint)convertTouchToNodeSpaceAR:(UITouch *)touch
+{
+	CGPoint point = [touch locationInView: [touch view]];
+	point = [[Director sharedDirector] convertCoordinate: point];
+	return [self convertToNodeSpaceAR:point];
+}
+
 @end

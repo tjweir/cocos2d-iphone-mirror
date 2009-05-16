@@ -16,13 +16,16 @@
 #import "IntervalAction.h"
 #import "Sprite.h"
 #import "CocosNode.h"
+#import "Support/CGPointExtension.h"
 
 //
 // IntervalAction
 //
+#pragma mark -
+#pragma mark IntervalAction
 @implementation IntervalAction
 
-@synthesize elapsed, duration;
+@synthesize elapsed;
 
 -(id) init
 {
@@ -93,22 +96,24 @@
 //
 // Sequence
 //
+#pragma mark -
+#pragma mark Sequence
 @implementation Sequence
-+(id) actionOne: (IntervalAction*) one two: (IntervalAction*) two
++(id) actionOne: (FiniteTimeAction*) one two: (FiniteTimeAction*) two
 {	
 	return [[[self alloc] initOne:one two:two ] autorelease];
 }
 
-+(id) actions: (IntervalAction*) action1, ...
++(id) actions: (FiniteTimeAction*) action1, ...
 {
 	va_list params;
 	va_start(params,action1);
 	
-	IntervalAction *now;
-	IntervalAction *prev = action1;
+	FiniteTimeAction *now;
+	FiniteTimeAction *prev = action1;
 	
 	while( action1 ) {
-		now = va_arg(params,IntervalAction*);
+		now = va_arg(params,FiniteTimeAction*);
 		if ( now )
 			prev = [Sequence actionOne: prev two: now];
 		else
@@ -118,13 +123,13 @@
 	return prev;
 }
 
--(id) initOne: (IntervalAction*) one_ two: (IntervalAction*) two_
+-(id) initOne: (FiniteTimeAction*) one_ two: (FiniteTimeAction*) two_
 {
 	NSAssert( one_!=nil, @"Sequence: argument one must be non-nil");
 	NSAssert( two_!=nil, @"Sequence: argument two must be non-nil");
 
-	IntervalAction *one = one_;
-	IntervalAction *two = two_;
+	FiniteTimeAction *one = one_;
+	FiniteTimeAction *two = two_;
 		
 	ccTime d = [one duration] + [two duration];
 	[super initWithDuration: d];
@@ -201,13 +206,15 @@
 //
 // Repeat
 //
+#pragma mark -
+#pragma mark Repeat
 @implementation Repeat
-+(id) actionWithAction: (IntervalAction*) action times: (unsigned int) t
++(id) actionWithAction: (FiniteTimeAction*) action times: (unsigned int) t
 {
 	return [[[self alloc] initWithAction: action times: t] autorelease];
 }
 
--(id) initWithAction: (IntervalAction*) action times: (unsigned int) t
+-(id) initWithAction: (FiniteTimeAction*) action times: (unsigned int) t
 {
 	int d = [action duration] * t;
 
@@ -285,17 +292,20 @@
 //
 // Spawn
 //
+#pragma mark -
+#pragma mark Spawn
+
 @implementation Spawn
-+(id) actions: (IntervalAction*) action1, ...
++(id) actions: (FiniteTimeAction*) action1, ...
 {
 	va_list params;
 	va_start(params,action1);
 	
-	IntervalAction *now;
-	IntervalAction *prev = action1;
+	FiniteTimeAction *now;
+	FiniteTimeAction *prev = action1;
 	
 	while( action1 ) {
-		now = va_arg(params,IntervalAction*);
+		now = va_arg(params,FiniteTimeAction*);
 		if ( now )
 			prev = [Spawn actionOne: prev two: now];
 		else
@@ -305,12 +315,12 @@
 	return prev;
 }
 
-+(id) actionOne: (IntervalAction*) one two: (IntervalAction*) two
++(id) actionOne: (FiniteTimeAction*) one two: (FiniteTimeAction*) two
 {	
 	return [[[self alloc] initOne:one two:two ] autorelease];
 }
 
--(id) initOne: (IntervalAction*) one_ two: (IntervalAction*) two_
+-(id) initOne: (FiniteTimeAction*) one_ two: (FiniteTimeAction*) two_
 {
 	NSAssert( one_!=nil, @"Spawn: argument one must be non-nil");
 	NSAssert( two_!=nil, @"Spawn: argument two must be non-nil");
@@ -370,6 +380,9 @@
 //
 // RotateTo
 //
+#pragma mark -
+#pragma mark RotateTo
+
 @implementation RotateTo
 +(id) actionWithDuration: (ccTime) t angle:(float) a
 {	
@@ -411,6 +424,9 @@
 //
 // RotateBy
 //
+#pragma mark -
+#pragma mark RotateBy
+
 @implementation RotateBy
 +(id) actionWithDuration: (ccTime) t angle:(float) a
 {	
@@ -454,13 +470,16 @@
 //
 // MoveTo
 //
+#pragma mark -
+#pragma mark MoveTo
+
 @implementation MoveTo
-+(id) actionWithDuration: (ccTime) t position: (cpVect) p
++(id) actionWithDuration: (ccTime) t position: (CGPoint) p
 {	
 	return [[[self alloc] initWithDuration:t position:p ] autorelease];
 }
 
--(id) initWithDuration: (ccTime) t position: (cpVect) p
+-(id) initWithDuration: (ccTime) t position: (CGPoint) p
 {
 	if( !(self=[super initWithDuration: t]) )
 		return nil;
@@ -479,25 +498,28 @@
 {
 	[super start];
 	startPosition = [target position];
-	delta = cpvsub( endPosition, startPosition );
+	delta = ccpSub( endPosition, startPosition );
 }
 
 -(void) update: (ccTime) t
 {	
-	target.position = cpv( (startPosition.x + delta.x * t ), (startPosition.y + delta.y * t ) );
+	target.position = ccp( (startPosition.x + delta.x * t ), (startPosition.y + delta.y * t ) );
 }
 @end
 
 //
 // MoveBy
 //
+#pragma mark -
+#pragma mark MoveBy
+
 @implementation MoveBy
-+(id) actionWithDuration: (ccTime) t position: (cpVect) p
++(id) actionWithDuration: (ccTime) t position: (CGPoint) p
 {	
 	return [[[self alloc] initWithDuration:t position:p ] autorelease];
 }
 
--(id) initWithDuration: (ccTime) t position: (cpVect) p
+-(id) initWithDuration: (ccTime) t position: (CGPoint) p
 {
 	if( !(self=[super initWithDuration: t]) )
 		return nil;
@@ -514,27 +536,30 @@
 
 -(void) start
 {
-	cpVect dTmp = delta;
+	CGPoint dTmp = delta;
 	[super start];
 	delta = dTmp;
 }
 
 -(IntervalAction*) reverse
 {
-	return [MoveBy actionWithDuration: duration position: cpv( -delta.x, -delta.y)];
+	return [MoveBy actionWithDuration: duration position: ccp( -delta.x, -delta.y)];
 }
 @end
 
 //
 // JumpBy
 //
+#pragma mark -
+#pragma mark JumpBy
+
 @implementation JumpBy
-+(id) actionWithDuration: (ccTime) t position: (cpVect) pos height: (ccTime) h jumps:(int)j
++(id) actionWithDuration: (ccTime) t position: (CGPoint) pos height: (ccTime) h jumps:(int)j
 {
 	return [[[self alloc] initWithDuration: t position: pos height: h jumps:j] autorelease];
 }
 
--(id) initWithDuration: (ccTime) t position: (cpVect) pos height: (ccTime) h jumps:(int)j
+-(id) initWithDuration: (ccTime) t position: (CGPoint) pos height: (ccTime) h jumps:(int)j
 {
 	if( !(self=[super initWithDuration:t]) )
 		return nil;
@@ -559,32 +584,113 @@
 
 -(void) update: (ccTime) t
 {
-	ccTime y = height * fabsf( sinf(t * (cpFloat)M_PI * jumps ) );
+	ccTime y = height * fabsf( sinf(t * (CGFloat)M_PI * jumps ) );
 	y += delta.y * t;
 	ccTime x = delta.x * t;
-	target.position = cpv( startPosition.x + x, startPosition.y + y );
+	target.position = ccp( startPosition.x + x, startPosition.y + y );
 }
 
 -(IntervalAction*) reverse
 {
-	return [JumpBy actionWithDuration: duration position: cpv(-delta.x,-delta.y) height: height jumps:jumps];
+	return [JumpBy actionWithDuration: duration position: ccp(-delta.x,-delta.y) height: height jumps:jumps];
 }
 @end
 
 //
 // JumpTo
 //
+#pragma mark -
+#pragma mark JumpTo
+
 @implementation JumpTo
 -(void) start
 {
 	[super start];
-	delta = cpv( delta.x - startPosition.x, delta.y - startPosition.y );
+	delta = ccp( delta.x - startPosition.x, delta.y - startPosition.y );
+}
+@end
+
+
+#pragma mark -
+#pragma mark BezierBy
+
+// Bezier cubic formula:
+//	((1 - t) + t)3 = 1 
+// Expands to… 
+//   (1 - t)3 + 3t(1-t)2 + 3t2(1 - t) + t3 = 1 
+static inline float bezierat( float a, float b, float c, float d, ccTime t )
+{
+	return (powf(1-t,3) * a + 
+			3*t*(powf(1-t,2))*b + 
+			3*powf(t,2)*(1-t)*c +
+			powf(t,3)*d );
+}
+
+//
+// BezierBy
+//
+@implementation BezierBy
++(id) actionWithDuration: (ccTime) t bezier:(ccBezierConfig) c
+{	
+	return [[[self alloc] initWithDuration:t bezier:c ] autorelease];
+}
+
+-(id) initWithDuration: (ccTime) t bezier:(ccBezierConfig) c
+{
+	if( (self=[super initWithDuration: t]) ) {
+		config = c;
+	}
+	return self;
+}
+
+-(id) copyWithZone: (NSZone*) zone
+{
+	Action *copy = [[[self class] allocWithZone: zone] initWithDuration: [self duration] bezier: config];
+    return copy;
+}
+
+-(void) start
+{
+	[super start];
+	startPosition = target.position;
+}
+
+-(void) update: (ccTime) t
+{
+	float xa = config.startPosition.x;
+	float xb = config.controlPoint_1.x;
+	float xc = config.controlPoint_2.x;
+	float xd = config.endPosition.x;
+	
+	float ya = config.startPosition.y;
+	float yb = config.controlPoint_1.y;
+	float yc = config.controlPoint_2.y;
+	float yd = config.endPosition.y;
+	
+	float x = bezierat(xa, xb, xc, xd, t);
+	float y = bezierat(ya, yb, yc, yd, t);
+	target.position = ccpAdd( startPosition, ccp(x,y));
+}
+
+- (IntervalAction*) reverse
+{
+	// XXX: reverse it's not working as expected
+	ccBezierConfig r;
+	r.startPosition = ccpNeg( config.startPosition);
+	r.endPosition = ccpNeg(config.endPosition);
+	r.controlPoint_1 = ccpNeg(config.controlPoint_1);
+	r.controlPoint_2 = ccpNeg(config.controlPoint_2);
+	
+	BezierBy *action = [BezierBy actionWithDuration:[self duration] bezier:r];
+	return action;
 }
 @end
 
 //
 // ScaleTo
 //
+#pragma mark -
+#pragma mark ScaleTo
 @implementation ScaleTo
 +(id) actionWithDuration: (ccTime) t scale:(float) s
 {
@@ -618,7 +724,7 @@
 
 -(id) copyWithZone: (NSZone*) zone
 {
-	Action *copy = [[[self class] allocWithZone: zone] initWithDuration: [self duration] scaleX: endScaleX scaleY:endScaleY];
+	Action *copy = [[[self class] allocWithZone: zone] initWithDuration: [self duration] scaleX:endScaleX scaleY:endScaleY];
 	return copy;
 }
 
@@ -641,6 +747,8 @@
 //
 // ScaleBy
 //
+#pragma mark -
+#pragma mark ScaleBy
 @implementation ScaleBy
 -(void) start
 {
@@ -658,13 +766,15 @@
 //
 // Blink
 //
+#pragma mark -
+#pragma mark Blink
 @implementation Blink
-+(id) actionWithDuration: (ccTime) t blinks: (int) b
++(id) actionWithDuration: (ccTime) t blinks: (unsigned int) b
 {
 	return [[[ self alloc] initWithDuration: t blinks: b] autorelease];
 }
 
--(id) initWithDuration: (ccTime) t blinks: (int) b
+-(id) initWithDuration: (ccTime) t blinks: (unsigned int) b
 {
 	if( ! (self=[super initWithDuration: t] ) )
 		return nil;
@@ -695,10 +805,12 @@
 //
 // FadeIn
 //
+#pragma mark -
+#pragma mark FadeIn
 @implementation FadeIn
 -(void) update: (ccTime) t
 {
-	[(id<CocosNodeOpacity>) target setOpacity: 255 *t];
+	[(id<CocosNodeRGBA>) target setOpacity: 255 *t];
 }
 -(IntervalAction*) reverse
 {
@@ -709,10 +821,12 @@
 //
 // FadeOut
 //
+#pragma mark -
+#pragma mark FadeOut
 @implementation FadeOut
 -(void) update: (ccTime) t
 {
-	[(id<CocosNodeOpacity>) target setOpacity: 255 *(1-t)];
+	[(id<CocosNodeRGBA>) target setOpacity: 255 *(1-t)];
 }
 -(IntervalAction*) reverse
 {
@@ -723,6 +837,8 @@
 //
 // FadeTo
 //
+#pragma mark -
+#pragma mark FadeTo
 @implementation FadeTo
 +(id) actionWithDuration: (ccTime) t opacity: (GLubyte) o
 {
@@ -731,9 +847,8 @@
 
 -(id) initWithDuration: (ccTime) t opacity: (GLubyte) o
 {
-	if( ! (self=[super initWithDuration: t] ) )
-		return nil;
-	toOpacity = o;
+	if( (self=[super initWithDuration: t] ) )
+		toOpacity = o;
 	return self;
 }
 
@@ -746,125 +861,112 @@
 -(void) start
 {
 	[super start];
-	fromOpacity = [(id<CocosNodeOpacity>)target opacity];
+	fromOpacity = [(id<CocosNodeRGBA>)target opacity];
 }
 
 -(void) update: (ccTime) t
 {
-	[(id<CocosNodeOpacity>)target setOpacity: fromOpacity + ( toOpacity - fromOpacity ) * t];
+	[(id<CocosNodeRGBA>)target setOpacity: fromOpacity + ( toOpacity - fromOpacity ) * t];
 }
 @end
 
 //
-// Accelerate
+// TintTo
 //
-@implementation Accelerate
-@synthesize rate;
-+ (id) actionWithAction: (IntervalAction*) action rate: (float) r
+#pragma mark -
+#pragma mark TintTo
+@implementation TintTo
++(id) actionWithDuration:(ccTime)t red:(GLubyte)r green:(GLubyte)g blue:(GLubyte)b
 {
-	return [[[self alloc] initWithAction:action rate:r ] autorelease];
+	return [[(TintTo*)[ self alloc] initWithDuration:t red:r green:g blue:b] autorelease];
 }
 
-- (id) initWithAction: (IntervalAction*) action rate: (float) r
-{	
-	NSAssert( action!=nil, @"Accelerate: argument action must be non-nil");
-
-	if( ! (self=[super initWithDuration: [action duration]]) )
-		return nil;
-
-	other = [action retain];
-	
-	rate = r;
+-(id) initWithDuration: (ccTime) t red:(GLubyte)r green:(GLubyte)g blue:(GLubyte)b
+{
+	if( (self=[super initWithDuration: t] ) ) {
+		toR = r;
+		toG = g;
+		toB = b;
+	}
 	return self;
 }
 
 -(id) copyWithZone: (NSZone*) zone
 {
-	Action *copy = [[[self class] allocWithZone: zone] initWithAction: [[other copy] autorelease] rate: rate];
+	Action *copy = [(TintTo*)[[self class] allocWithZone: zone] initWithDuration: [self duration] red:toR green:toG blue:toB];
 	return copy;
-}
-
-- (void) dealloc
-{
-	[other release];
-	[super dealloc];
-}
-
-- (void) start
-{
-	[super start];
-	other.target = target;
-	[other start];
-}
-
-- (void) update: (ccTime) t
-{
-	[other update: powf(t,rate) ];
-}
-
-- (IntervalAction*) reverse
-{
-	return [Accelerate actionWithAction: [other reverse] rate: 1/rate];
-}
-@end
-
-//
-// AccelDeccel
-//
-@implementation AccelDeccel
-+(id) actionWithAction: (IntervalAction*) action
-{
-	return [[[self alloc] initWithAction: action ] autorelease ];
-}
-
--(id) initWithAction: (IntervalAction*) action
-{
-	NSAssert( action!=nil, @"AccelDeccel: argument action must be non-nil");
-
-	if( !(self=[super initWithDuration: action.duration ]) )
-		return nil;
-
-	other = [action retain];
-	
-	return self;
-}
-
--(id) copyWithZone: (NSZone*) zone
-{
-	Action *copy = [[[self class] allocWithZone: zone] initWithAction: [[other copy] autorelease] ];
-	return copy;
-}
-
--(void) dealloc
-{
-	[other release];
-	[super dealloc];
 }
 
 -(void) start
 {
 	[super start];
-	other.target = target;
-	[other start];
+	
+	id<CocosNodeRGBA> tn = (id<CocosNodeRGBA>) target;
+	
+	fromR = [tn r];
+	fromG = [tn g];
+	fromB = [tn b];
 }
 
 -(void) update: (ccTime) t
 {
-	ccTime ft = (t-0.5f) * 12;
-	ccTime nt = 1.0f/( 1.0f + expf(-ft) );
-	[other update: nt];	
-}
-
--(IntervalAction*) reverse
-{
-	return [AccelDeccel actionWithAction: [other reverse]];
+	id<CocosNodeRGBA> tn = (id<CocosNodeRGBA>) target;
+	[tn setRGB:fromR + (toR - fromR) * t :fromG + (toG - fromG) * t :fromB + (toB - fromB) * t];
 }
 @end
 
+//
+// TintBy
+//
+#pragma mark -
+#pragma mark TintBy
+@implementation TintBy
++(id) actionWithDuration:(ccTime)t red:(GLshort)r green:(GLshort)g blue:(GLshort)b
+{
+	return [[(TintBy*)[ self alloc] initWithDuration:t red:r green:g blue:b] autorelease];
+}
+
+-(id) initWithDuration:(ccTime)t red:(GLshort)r green:(GLshort)g blue:(GLshort)b
+{
+	if( (self=[super initWithDuration: t] ) ) {
+		deltaR = r;
+		deltaG = g;
+		deltaB = b;
+	}
+	return self;
+}
+
+-(id) copyWithZone: (NSZone*) zone
+{
+	return[(TintBy*)[[self class] allocWithZone: zone] initWithDuration: [self duration] red:deltaR green:deltaG blue:deltaB];
+}
+
+-(void) start
+{
+	[super start];
+	
+	id<CocosNodeRGBA> tn = (id<CocosNodeRGBA>) target;
+	fromR = [tn r];
+	fromG = [tn g];
+	fromB = [tn b];
+}
+
+-(void) update: (ccTime) t
+{
+	id<CocosNodeRGBA> tn = (id<CocosNodeRGBA>) target;
+	[tn setRGB:fromR + deltaR * t :fromG + deltaG * t :fromB + deltaB * t];
+}
+- (IntervalAction*) reverse
+{
+	return [TintBy actionWithDuration:duration red:-deltaR green:-deltaG blue:-deltaB];
+}
+@end
 
 //
 // DelayTime
 //
+#pragma mark -
+#pragma mark DelayTime
 @implementation DelayTime
 -(void) update: (ccTime) t
 {
@@ -880,14 +982,17 @@
 //
 // ReverseTime
 //
-
+#pragma mark -
+#pragma mark ReverseTime
 @implementation ReverseTime
-+(id) actionWithAction: (IntervalAction*) action
++(id) actionWithAction: (FiniteTimeAction*) action
 {
-	return [[[super alloc] initWithAction:action] autorelease];
+	// casting to prevent warnings
+	ReverseTime *a = [super alloc];
+	return [[a initWithAction:action] autorelease];
 }
 
--(id) initWithAction: (IntervalAction*) action
+-(id) initWithAction: (FiniteTimeAction*) action
 {
 	if( !(self=[super initWithDuration: [action duration]]) )
 		return nil;
@@ -934,34 +1039,36 @@
 //
 // Animate
 //
+#pragma mark -
+#pragma mark Animate
 @implementation Animate
 
-+(id) actionWithAnimation: (id<CocosAnimation>) a
++(id) actionWithAnimation: (id<CocosAnimation>)anim
 {
-	return [[[self alloc] initWithAnimation: a restoreOriginalFrame:YES] autorelease];
+	return [[[self alloc] initWithAnimation:anim restoreOriginalFrame:YES] autorelease];
 }
 
-+(id) actionWithAnimation: (id<CocosAnimation>) a restoreOriginalFrame:(BOOL)b
++(id) actionWithAnimation: (id<CocosAnimation>)anim restoreOriginalFrame:(BOOL)b
 {
-	return [[[self alloc] initWithAnimation: a restoreOriginalFrame:b] autorelease];
+	return [[[self alloc] initWithAnimation:anim restoreOriginalFrame:b] autorelease];
 }
 
--(id) initWithAnimation: (id<CocosAnimation>) a
+-(id) initWithAnimation: (id<CocosAnimation>)anim
 {
-	NSAssert( a!=nil, @"Animate: argument Animation must be non-nil");
-	return [self initWithAnimation:a restoreOriginalFrame:YES];
+	NSAssert( anim!=nil, @"Animate: argument Animation must be non-nil");
+	return [self initWithAnimation:anim restoreOriginalFrame:YES];
 }
 
--(id) initWithAnimation: (id<CocosAnimation>) a restoreOriginalFrame:(BOOL) b
+-(id) initWithAnimation: (id<CocosAnimation>)anim restoreOriginalFrame:(BOOL) b
 {
-	NSAssert( a!=nil, @"Animate: argument Animation must be non-nil");
+	NSAssert( anim!=nil, @"Animate: argument Animation must be non-nil");
 
-	if( !(self=[super initWithDuration: [[a frames] count] * [a delay]]) )
-		return nil;
+	if( (self=[super initWithDuration: [[anim frames] count] * [anim delay]]) ) {
 
-	restoreOriginalFrame = b;
-	animation = [(NSObject*)a retain];
-	origFrame = nil;
+		restoreOriginalFrame = b;
+		animation = [anim retain];
+		origFrame = nil;
+	}
 	return self;
 }
 
@@ -1015,4 +1122,3 @@
 	}
 }
 @end
-

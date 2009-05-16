@@ -15,11 +15,12 @@
 #import "TiledGridAction.h"
 #import "Director.h"
 #import "ccMacros.h"
+#import "Support/CGPointExtension.h"
 
 typedef struct
 {
-	cpVect	position;
-	cpVect	startPosition;
+	CGPoint	position;
+	CGPoint	startPosition;
 	ccGridSize	delta;
 } Tile;
 
@@ -53,22 +54,22 @@ typedef struct
 			ccQuad3 coords = [self originalTile:ccg(i,j)];
 
 			// X
-			coords.bl_x += ( rand() % (randrange*2) ) - randrange;
-			coords.br_x += ( rand() % (randrange*2) ) - randrange;
-			coords.tl_x += ( rand() % (randrange*2) ) - randrange;
-			coords.tr_x += ( rand() % (randrange*2) ) - randrange;
+			coords.bl.x += ( rand() % (randrange*2) ) - randrange;
+			coords.br.x += ( rand() % (randrange*2) ) - randrange;
+			coords.tl.x += ( rand() % (randrange*2) ) - randrange;
+			coords.tr.x += ( rand() % (randrange*2) ) - randrange;
 
 			// Y
-			coords.bl_y += ( rand() % (randrange*2) ) - randrange;
-			coords.br_y += ( rand() % (randrange*2) ) - randrange;
-			coords.tl_y += ( rand() % (randrange*2) ) - randrange;
-			coords.tr_y += ( rand() % (randrange*2) ) - randrange;
+			coords.bl.y += ( rand() % (randrange*2) ) - randrange;
+			coords.br.y += ( rand() % (randrange*2) ) - randrange;
+			coords.tl.y += ( rand() % (randrange*2) ) - randrange;
+			coords.tr.y += ( rand() % (randrange*2) ) - randrange;
 
 			if( shakeZ ) {
-				coords.bl_z += ( rand() % (randrange*2) ) - randrange;
-				coords.br_z += ( rand() % (randrange*2) ) - randrange;
-				coords.tl_z += ( rand() % (randrange*2) ) - randrange;
-				coords.tr_z += ( rand() % (randrange*2) ) - randrange;
+				coords.bl.z += ( rand() % (randrange*2) ) - randrange;
+				coords.br.z += ( rand() % (randrange*2) ) - randrange;
+				coords.tl.z += ( rand() % (randrange*2) ) - randrange;
+				coords.tr.z += ( rand() % (randrange*2) ) - randrange;
 			}
 						
 			[self setTile:ccg(i,j) coords:coords];
@@ -112,22 +113,22 @@ typedef struct
 				ccQuad3 coords = [self originalTile:ccg(i,j)];
 				
 				// X
-				coords.bl_x += ( rand() % (randrange*2) ) - randrange;
-				coords.br_x += ( rand() % (randrange*2) ) - randrange;
-				coords.tl_x += ( rand() % (randrange*2) ) - randrange;
-				coords.tr_x += ( rand() % (randrange*2) ) - randrange;
+				coords.bl.x += ( rand() % (randrange*2) ) - randrange;
+				coords.br.x += ( rand() % (randrange*2) ) - randrange;
+				coords.tl.x += ( rand() % (randrange*2) ) - randrange;
+				coords.tr.x += ( rand() % (randrange*2) ) - randrange;
 				
 				// Y
-				coords.bl_y += ( rand() % (randrange*2) ) - randrange;
-				coords.br_y += ( rand() % (randrange*2) ) - randrange;
-				coords.tl_y += ( rand() % (randrange*2) ) - randrange;
-				coords.tr_y += ( rand() % (randrange*2) ) - randrange;
+				coords.bl.y += ( rand() % (randrange*2) ) - randrange;
+				coords.br.y += ( rand() % (randrange*2) ) - randrange;
+				coords.tl.y += ( rand() % (randrange*2) ) - randrange;
+				coords.tr.y += ( rand() % (randrange*2) ) - randrange;
 
 				if( shatterZ ) {
-					coords.bl_z += ( rand() % (randrange*2) ) - randrange;
-					coords.br_z += ( rand() % (randrange*2) ) - randrange;				
-					coords.tl_z += ( rand() % (randrange*2) ) - randrange;
-					coords.tr_z += ( rand() % (randrange*2) ) - randrange;
+					coords.bl.z += ( rand() % (randrange*2) ) - randrange;
+					coords.br.z += ( rand() % (randrange*2) ) - randrange;				
+					coords.tl.z += ( rand() % (randrange*2) ) - randrange;
+					coords.tr.z += ( rand() % (randrange*2) ) - randrange;
 				}
 				
 				[self setTile:ccg(i,j) coords:coords];
@@ -182,7 +183,7 @@ typedef struct
 
 -(ccGridSize)getDelta:(ccGridSize)pos
 {
-	cpVect	pos2;
+	CGPoint	pos2;
 	
 	int idx = pos.x * gridSize.y + pos.y;
 	
@@ -196,17 +197,17 @@ typedef struct
 {
 	ccQuad3	coords = [self originalTile:pos];
 	
-	coords.bl_x += (int)(t.position.x * target.grid.step.x);
-	coords.bl_y += (int)(t.position.y * target.grid.step.y);
+	coords.bl.x += (int)(t.position.x * target.grid.step.x);
+	coords.bl.y += (int)(t.position.y * target.grid.step.y);
 
-	coords.br_x += (int)(t.position.x * target.grid.step.x);
-	coords.br_y += (int)(t.position.y * target.grid.step.y);
+	coords.br.x += (int)(t.position.x * target.grid.step.x);
+	coords.br.y += (int)(t.position.y * target.grid.step.y);
 
-	coords.tl_x += (int)(t.position.x * target.grid.step.x);
-	coords.tl_y += (int)(t.position.y * target.grid.step.y);
+	coords.tl.x += (int)(t.position.x * target.grid.step.x);
+	coords.tl.y += (int)(t.position.y * target.grid.step.y);
 
-	coords.tr_x += (int)(t.position.x * target.grid.step.x);
-	coords.tr_y += (int)(t.position.y * target.grid.step.y);
+	coords.tr.x += (int)(t.position.x * target.grid.step.x);
+	coords.tr.y += (int)(t.position.y * target.grid.step.y);
 
 	[self setTile:pos coords:coords];
 }
@@ -234,8 +235,8 @@ typedef struct
 	{
 		for( j = 0; j < gridSize.y; j++ )
 		{
-			tileArray->position = cpv(i,j);
-			tileArray->startPosition = cpv(i,j);
+			tileArray->position = ccp(i,j);
+			tileArray->startPosition = ccp(i,j);
 			tileArray->delta = [self getDelta:ccg(i,j)];
 			tileArray++;
 		}
@@ -252,7 +253,7 @@ typedef struct
 	{
 		for( j = 0; j < gridSize.y; j++ )
 		{
-			tileArray->position = cpvmult( cpv(tileArray->delta.x, tileArray->delta.y), time);
+			tileArray->position = ccpMult( ccp(tileArray->delta.x, tileArray->delta.y), time);
 			[self placeTile:ccg(i,j) tile:*tileArray];
 			tileArray++;
 		}
@@ -267,7 +268,7 @@ typedef struct
 
 -(float)testFunc:(ccGridSize)pos time:(ccTime)time
 {
-	cpVect	n = cpvmult( cpv(gridSize.x,gridSize.y), time);
+	CGPoint	n = ccpMult( ccp(gridSize.x,gridSize.y), time);
 	if ( (n.x+n.y) == 0.0f )
 		return 1.0f;
 	return powf( (pos.x+pos.y) / (n.x+n.y), 6 );
@@ -289,17 +290,17 @@ typedef struct
 {
 	ccQuad3	coords = [self originalTile:pos];
 	
-	coords.bl_x += (target.grid.step.x / 2) * (1.0f - distance);
-	coords.bl_y += (target.grid.step.y / 2) * (1.0f - distance);
+	coords.bl.x += (target.grid.step.x / 2) * (1.0f - distance);
+	coords.bl.y += (target.grid.step.y / 2) * (1.0f - distance);
 
-	coords.br_x -= (target.grid.step.x / 2) * (1.0f - distance);
-	coords.br_y += (target.grid.step.y / 2) * (1.0f - distance);
+	coords.br.x -= (target.grid.step.x / 2) * (1.0f - distance);
+	coords.br.y += (target.grid.step.y / 2) * (1.0f - distance);
 
-	coords.tl_x += (target.grid.step.x / 2) * (1.0f - distance);
-	coords.tl_y -= (target.grid.step.y / 2) * (1.0f - distance);
+	coords.tl.x += (target.grid.step.x / 2) * (1.0f - distance);
+	coords.tl.y -= (target.grid.step.y / 2) * (1.0f - distance);
 
-	coords.tr_x -= (target.grid.step.x / 2) * (1.0f - distance);
-	coords.tr_y -= (target.grid.step.y / 2) * (1.0f - distance);
+	coords.tr.x -= (target.grid.step.x / 2) * (1.0f - distance);
+	coords.tr.y -= (target.grid.step.y / 2) * (1.0f - distance);
 
 	[self setTile:pos coords:coords];
 }
@@ -331,7 +332,7 @@ typedef struct
 
 -(float)testFunc:(ccGridSize)pos time:(ccTime)time
 {
-	cpVect	n = cpvmult(cpv(gridSize.x, gridSize.y), (1.0f-time));
+	CGPoint	n = ccpMult(ccp(gridSize.x, gridSize.y), (1.0f-time));
 	
 	if ( (pos.x+pos.y) == 0 )
 		return 1.0f;
@@ -346,7 +347,7 @@ typedef struct
 
 -(float)testFunc:(ccGridSize)pos time:(ccTime)time
 {
-	cpVect	n = cpvmult(cpv(gridSize.x, gridSize.y), time);
+	CGPoint	n = ccpMult(ccp(gridSize.x, gridSize.y), time);
 	if ( n.y == 0 )
 		return 1.0f;
 	return powf( pos.y / n.y, 6 );
@@ -356,10 +357,10 @@ typedef struct
 {
 	ccQuad3	coords = [self originalTile:pos];
 	
-	coords.bl_y += (target.grid.step.y / 2) * (1.0f - distance);
-	coords.br_y += (target.grid.step.y / 2) * (1.0f - distance);
-	coords.tl_y -= (target.grid.step.y / 2) * (1.0f - distance);
-	coords.tr_y -= (target.grid.step.y / 2) * (1.0f - distance);
+	coords.bl.y += (target.grid.step.y / 2) * (1.0f - distance);
+	coords.br.y += (target.grid.step.y / 2) * (1.0f - distance);
+	coords.tl.y -= (target.grid.step.y / 2) * (1.0f - distance);
+	coords.tr.y -= (target.grid.step.y / 2) * (1.0f - distance);
 	
 	[self setTile:pos coords:coords];
 }
@@ -372,7 +373,7 @@ typedef struct
 
 -(float)testFunc:(ccGridSize)pos time:(ccTime)time
 {
-	cpVect	n = cpvmult(cpv(gridSize.x,gridSize.y), (1.0f - time));
+	CGPoint	n = ccpMult(ccp(gridSize.x,gridSize.y), (1.0f - time));
 	if ( pos.y == 0 )
 		return 1.0f;
 	return powf( n.y / pos.y, 6 );
@@ -503,10 +504,10 @@ typedef struct
 		{
 			ccQuad3 coords = [self originalTile:ccg(i,j)];
 			
-			coords.bl_z = (sinf(time*(cpFloat)M_PI*waves*2 + (coords.bl_y+coords.bl_x) * .01f) * amplitude * amplitudeRate );
-			coords.br_z	= coords.bl_z;
-			coords.tl_z = coords.bl_z;
-			coords.tr_z = coords.bl_z;
+			coords.bl.z = (sinf(time*(CGFloat)M_PI*waves*2 + (coords.bl.y+coords.bl.x) * .01f) * amplitude * amplitudeRate );
+			coords.br.z	= coords.bl.z;
+			coords.tl.z = coords.bl.z;
+			coords.tr.z = coords.bl.z;
 			
 			[self setTile:ccg(i,j) coords:coords];
 		}
@@ -542,8 +543,8 @@ typedef struct
 {
 	int i, j;
 	
-	float sinz =  (sinf((cpFloat)M_PI*time*jumps*2) * amplitude * amplitudeRate );
-	float sinz2 = (sinf((cpFloat)M_PI*(time*jumps*2 + 1)) * amplitude * amplitudeRate );
+	float sinz =  (sinf((CGFloat)M_PI*time*jumps*2) * amplitude * amplitudeRate );
+	float sinz2 = (sinf((CGFloat)M_PI*(time*jumps*2 + 1)) * amplitude * amplitudeRate );
 	
 	for( i = 0; i < gridSize.x; i++ )
 	{
@@ -553,17 +554,17 @@ typedef struct
 			
 			if ( ((i+j) % 2) == 0 )
 			{
-				coords.bl_z += sinz;
-				coords.br_z += sinz;
-				coords.tl_z += sinz;
-				coords.tr_z += sinz;
+				coords.bl.z += sinz;
+				coords.br.z += sinz;
+				coords.tl.z += sinz;
+				coords.tr.z += sinz;
 			}
 			else
 			{
-				coords.bl_z += sinz2;
-				coords.br_z += sinz2;
-				coords.tl_z += sinz2;
-				coords.tr_z += sinz2;
+				coords.bl.z += sinz2;
+				coords.br.z += sinz2;
+				coords.tl.z += sinz2;
+				coords.tr.z += sinz2;
 			}
 			
 			[self setTile:ccg(i,j) coords:coords];
@@ -604,10 +605,10 @@ typedef struct
 		if ( (j % 2 ) == 0 )
 			direction = -1;
 		
-		coords.bl_x += direction * winSize.width * time;
-		coords.br_x += direction * winSize.width * time;
-		coords.tl_x += direction * winSize.width * time;
-		coords.tr_x += direction * winSize.width * time;
+		coords.bl.x += direction * winSize.width * time;
+		coords.br.x += direction * winSize.width * time;
+		coords.tl.x += direction * winSize.width * time;
+		coords.tr.x += direction * winSize.width * time;
 		
 		[self setTile:ccg(0,j) coords:coords];
 	}
@@ -647,10 +648,10 @@ typedef struct
 		if ( (i % 2 ) == 0 )
 			direction = -1;
 		
-		coords.bl_y += direction * winSize.height * time;
-		coords.br_y += direction * winSize.height * time;
-		coords.tl_y += direction * winSize.height * time;
-		coords.tr_y += direction * winSize.height * time;
+		coords.bl.y += direction * winSize.height * time;
+		coords.br.y += direction * winSize.height * time;
+		coords.tl.y += direction * winSize.height * time;
+		coords.tr.y += direction * winSize.height * time;
 		
 		[self setTile:ccg(i,0) coords:coords];
 	}

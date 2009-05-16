@@ -1,0 +1,251 @@
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/776/trunk/external/Tremor
+END
+config_types.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/725/trunk/external/Tremor/config_types.h
+END
+block.h
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/725/trunk/external/Tremor/block.h
+END
+misc.h
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/725/trunk/external/Tremor/misc.h
+END
+floor0.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/725/trunk/external/Tremor/floor0.c
+END
+floor1.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/725/trunk/external/Tremor/floor1.c
+END
+CHANGELOG
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/725/trunk/external/Tremor/CHANGELOG
+END
+registry.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/725/trunk/external/Tremor/registry.c
+END
+os_types.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/725/trunk/external/Tremor/os_types.h
+END
+mapping0.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/725/trunk/external/Tremor/mapping0.c
+END
+registry.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/725/trunk/external/Tremor/registry.h
+END
+codec_internal.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/725/trunk/external/Tremor/codec_internal.h
+END
+backends.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/725/trunk/external/Tremor/backends.h
+END
+ivorbisfile.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/725/trunk/external/Tremor/ivorbisfile.h
+END
+framing.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/725/trunk/external/Tremor/framing.c
+END
+codebook.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/725/trunk/external/Tremor/codebook.c
+END
+os.h
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/725/trunk/external/Tremor/os.h
+END
+COPYING
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/725/trunk/external/Tremor/COPYING
+END
+ivorbisfile_example.c
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/725/trunk/external/Tremor/ivorbisfile_example.c
+END
+synthesis.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/725/trunk/external/Tremor/synthesis.c
+END
+codebook.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/725/trunk/external/Tremor/codebook.h
+END
+autogen.sh
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/725/trunk/external/Tremor/autogen.sh
+END
+info.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/725/trunk/external/Tremor/info.c
+END
+lsp_lookup.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/725/trunk/external/Tremor/lsp_lookup.h
+END
+vorbisfile.c
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/725/trunk/external/Tremor/vorbisfile.c
+END
+window_lookup.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/725/trunk/external/Tremor/window_lookup.h
+END
+configure.in
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/725/trunk/external/Tremor/configure.in
+END
+bitwise.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/725/trunk/external/Tremor/bitwise.c
+END
+window.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/725/trunk/external/Tremor/window.c
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/725/trunk/external/Tremor/README
+END
+res012.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/725/trunk/external/Tremor/res012.c
+END
+window.h
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/725/trunk/external/Tremor/window.h
+END
+ivorbiscodec.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/725/trunk/external/Tremor/ivorbiscodec.h
+END
+ogg.h
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/!svn/ver/725/trunk/external/Tremor/ogg.h
+END
+sharedbook.c
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/725/trunk/external/Tremor/sharedbook.c
+END
+asm_arm.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/725/trunk/external/Tremor/asm_arm.h
+END
+mdct_lookup.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/725/trunk/external/Tremor/mdct_lookup.h
+END
+mdct.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/725/trunk/external/Tremor/mdct.c
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/725/trunk/external/Tremor/Makefile.am
+END
+block.c
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/725/trunk/external/Tremor/block.c
+END
+mdct.h
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/725/trunk/external/Tremor/mdct.h
+END
+Version_script.in
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/725/trunk/external/Tremor/Version_script.in
+END

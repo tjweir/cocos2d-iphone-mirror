@@ -51,8 +51,7 @@
 {
 	int n = [string length];
 	
-	ccQuad2 texCoord;
-	ccQuad3 vertex;
+	ccV3F_C4B_T2F_Quad quad;
 
 	const char *s = [string UTF8String];
 
@@ -61,72 +60,46 @@
 		float row = (a % itemsPerRow) * texStepX;
 		float col = (a / itemsPerRow) * texStepY;
 		
-		texCoord.bl_x = row;						// A - x
-		texCoord.bl_y = col;						// A - y
-		texCoord.br_x = row + texStepX;				// B - x
-		texCoord.br_y = col;						// B - y
-		texCoord.tl_x = row;						// C - x
-		texCoord.tl_y = col + texStepY;				// C - y
-		texCoord.tr_x = row + texStepX;				// D - x
-		texCoord.tr_y = col + texStepY;				// D - y
+		quad.tl.texCoords.u = row;
+		quad.tl.texCoords.v = col;
+		quad.tr.texCoords.u = row + texStepX;
+		quad.tr.texCoords.v = col;
+		quad.bl.texCoords.u = row;
+		quad.bl.texCoords.v = col + texStepY;
+		quad.br.texCoords.u = row + texStepX;
+		quad.br.texCoords.v = col + texStepY;
 		
-		vertex.bl_x = i * itemWidth;				// A - x
-		vertex.bl_y = 0;							// A - y
-		vertex.bl_z = 0;							// A - z
-		vertex.br_x = i * itemWidth + itemWidth;	// B - x
-		vertex.br_y = 0;							// B - y
-		vertex.br_z = 0;							// B - z
-		vertex.tl_x = i * itemWidth;				// C - x
-		vertex.tl_y = itemHeight;					// C - y
-		vertex.tl_z = 0;							// C - z
-		vertex.tr_x = i * itemWidth + itemWidth;	// D - x
-		vertex.tr_y = itemHeight;					// D - y
-		vertex.tr_z = 0;							// D - z
+		quad.bl.vertices.x = (int) (i * itemWidth);
+		quad.bl.vertices.y = 0;
+		quad.bl.vertices.z = 0.0f;
+		quad.br.vertices.x = (int)(i * itemWidth + itemWidth);
+		quad.br.vertices.y = 0;
+		quad.br.vertices.z = 0.0f;
+		quad.tl.vertices.x = (int)(i * itemWidth);
+		quad.tl.vertices.y = (int)(itemHeight);
+		quad.tl.vertices.z = 0.0f;
+		quad.tr.vertices.x = (int)(i * itemWidth + itemWidth);
+		quad.tr.vertices.y = (int)(itemHeight);
+		quad.tr.vertices.z = 0.0f;
 		
-		[textureAtlas updateQuadWithTexture:&texCoord vertexQuad:&vertex atIndex:i];
+		[textureAtlas_ updateQuad:&quad atIndex:i];
 	}
 }
 
 - (void) setString:(NSString*) newString
 {
-	if( newString.length > textureAtlas.totalQuads )
-		[textureAtlas resizeCapacity: newString.length];
+	if( newString.length > textureAtlas_.totalQuads )
+		[textureAtlas_ resizeCapacity: newString.length];
 
 	[string release];
 	string = [newString retain];
 	[self updateAtlasValues];
-}
 
-
-#pragma mark LabelAtlas - draw
-- (void) draw
-{
-	glEnableClientState( GL_VERTEX_ARRAY);
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	
-	glEnable( GL_TEXTURE_2D);
-	
-	glColor4ub( r, g, b, opacity);
-	
-	[textureAtlas drawNumberOfQuads: string.length];
-	
-	// is this chepear than saving/restoring color state ?
-	glColor4ub( 255, 255, 255, 255);
-	
-	glDisable( GL_TEXTURE_2D);
-	
-	glDisableClientState(GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-}
-
-
-#pragma mark LabelAtlas - protocol related
-
--(CGSize) contentSize
-{
 	CGSize s;
 	s.width = [string length] * itemWidth;
 	s.height = itemHeight;
-	return s;
+	[self setContentSize:s];
 }
+
+
 @end

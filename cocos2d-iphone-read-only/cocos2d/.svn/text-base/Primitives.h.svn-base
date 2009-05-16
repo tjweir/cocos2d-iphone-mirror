@@ -12,23 +12,37 @@
  *
  */
 
-
-/** draws a point given x and y coordinate
- * @warning This function needs optimizations. Try not to use it.
+/**
+ @file
+ Drawing OpenGL ES primitives.
+  - drawPoint
+  - drawLine
+  - drawPoly
+  - drawCircle
+ 
+ You can change the color, width and other property by calling the
+ glColor4ub(), glLineWitdh(), glPointSize().
+ 
+ @warning These functions draws the Line, Point, Polygon, immediately. They aren't batched. If you are going to make a game that depends on these primitives, I suggest creating a batch.
  */
-void drawPoint( float x, float y );
 
-/** draws a line given x1,y1 and x2,y2 coordinates
- * @warning This function needs optimizations. Try not to use it.
- */
-void drawLine(float x1, float y1, float x2, float y2);
+#import <CoreGraphics/CGGeometry.h>	// for CGPoint
+#import <objc/objc.h>				// for BOOL
 
-/** draws a poligon given a pointer to float coordiantes and the number of vertices
- * @warning This function needs optimizations. Try not to use it.
- */
-void drawPoly( float *poli, int points );
+/** draws a point given x and y coordinate */
+void drawPoint( CGPoint point );
 
-/** draws a circle given the center, radius and number of segments
- * @warning This function needs optimizations. Try not to use it.
+/** draws an array of points.
+ @since v0.7.2
  */
-void drawCircle( float x, float y, float radius, float angle, int segs);
+void drawPoints( CGPoint *points, unsigned int numberOfPoints );
+
+/** draws a line given the origin and destination point */
+void drawLine( CGPoint origin, CGPoint destination );
+
+/** draws a poligon given a pointer to CGPoint coordiantes and the number of vertices. The polygon can be closed or open
+ */
+void drawPoly( CGPoint *vertices, int numOfVertices, BOOL closePolygon );
+
+/** draws a circle given the center, radius and number of segments. */
+void drawCircle( CGPoint center, float radius, float angle, int segments, BOOL drawLineToCenter);

@@ -15,13 +15,23 @@
 #import "AtlasNode.h"
 #import "TextureAtlas.h"
 
-/** A Label that laods the font from a Texture Atlas */
-@interface LabelAtlas : AtlasNode {
+/** LabelAtlas is a subclass of AtlasNode.
+ 
+ It can be as a replacement of Label since it is MUCH faster.
+ 
+ LabelAtlas versus Label:
+ - LabelAtlas is MUCH faster than Label
+ - LabelAtlas "characters" have a fixed height and width
+ - LabelAtlas "characters" can be anything you want since they are taken from an image file
+ 
+ A more flexible class is BitmapFontAtlas. It supports variable width characters and it also has a nice editor.
+ */
+@interface LabelAtlas : AtlasNode  <CocosNodeLabel> {
 		
-	/// string to render
+	// string to render
 	NSString		*string;
 	
-	/// the first char in the charmap
+	// the first char in the charmap
 	char			mapStartChar;
 }
 
@@ -30,8 +40,4 @@
 
 /** initializes the LabelAtlas with a string, a char map file(the atlas), the width and height of each element and the starting char of the atlas */
 -(id) initWithString:(NSString*) string charMapFile: (NSString*) charmapfile itemWidth:(int)w itemHeight:(int)h startCharMap:(char)c;
-
-/** changes the string to render. */
-- (void) setString:(NSString*)string;
-
 @end

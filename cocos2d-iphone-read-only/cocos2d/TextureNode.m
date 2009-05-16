@@ -12,42 +12,61 @@
  *
  */
 
-#import <QuartzCore/QuartzCore.h>
-#import <OpenGLES/EAGLDrawable.h>
-#import <UIKit/UIKit.h>
 #import <OpenGLES/EAGL.h>
 #import <OpenGLES/ES1/gl.h>
 #import <OpenGLES/ES1/glext.h>
 
 #import "TextureMgr.h"
 #import "TextureNode.h"
+#import "ccMacros.h"
+#import "Support/CGPointExtension.h"
 
 @implementation TextureNode
 
-@synthesize texture, opacity, r, g, b;
+@synthesize opacity=opacity_, r=r_, g=g_, b=b_;
 
 - (id) init
 {
-	if( ! (self=[super init]) )
-		return nil;
-	
-	opacity = 255;
-	r = g = b = 255;
+	if( (self=[super init]) ) {
+		opacity_ = r_ = g_ = b_ = 255;
+		anchorPoint_ = ccp(0.5f, 0.5f);
+	}
 	
 	return self;
 }
 
 -(void) dealloc
 {
-	// texture is retained and release by super
+	[texture_ release];
 	[super dealloc];
 }
 
+-(void) setTexture:(Texture2D*) texture
+{
+	[texture_ release];
+	texture_ = [texture retain];
+	[self setContentSize: texture.contentSize];
+}
+
+-(Texture2D*) texture
+{
+	return texture_;
+}
+
+#pragma mark TextureNode - RGBA protocol
 -(void) setRGB: (GLubyte) rr :(GLubyte) gg :(GLubyte)bb
 {
-	r=rr;
-	g=gg;
-	b=bb;
+	r_=rr;
+	g_=gg;
+	b_=bb;
+}
+
+-(void) setOpacity:(GLubyte)opacity
+{
+	// special opacity for premultiplied textures
+	opacity_ = opacity;
+	if( [texture_ hasPremultipliedAlpha] )
+		r_ = g_ = b_ = opacity_;	
 }
 
 - (void) draw
@@ -57,9 +76,16 @@
 
 	glEnable( GL_TEXTURE_2D);
 
-	glColor4ub( r, g, b, opacity);
+	glColor4ub( r_, g_, b_, opacity_);
 	
-	[texture drawAtPoint: CGPointZero];
+	BOOL preMulti = [texture_ hasPremultipliedAlpha];
+	if( !preMulti )
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
+	[texture_ drawAtPoint: CGPointZero];
+	
+	if( !preMulti )
+		glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
 
 	// is this chepear than saving/restoring color state ?
 	glColor4ub( 255, 255, 255, 255);
@@ -68,11 +94,5 @@
 
 	glDisableClientState(GL_VERTEX_ARRAY );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-}
-
--(CGSize) contentSize
-{
-	return [texture contentSize];
-}
-	
+}	
 @end

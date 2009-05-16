@@ -22,6 +22,8 @@
 //
 // Action Base Class
 //
+#pragma mark -
+#pragma mark Action
 @implementation Action
 
 @synthesize target;
@@ -45,10 +47,6 @@
 -(void) dealloc
 {
 	CCLOG(@"deallocing %@", self);
-	if( target ) {
-		[target release];
-		target = nil;
-	}
 	[super dealloc];
 }
 
@@ -87,8 +85,26 @@
 @end
 
 //
+// FiniteTimeAction
+//
+#pragma mark -
+#pragma mark FiniteTimeAction
+@implementation FiniteTimeAction
+@synthesize duration;
+
+- (FiniteTimeAction*) reverse
+{
+	CCLOG(@"FiniteTimeAction#reverse: Implement me");
+	return nil;
+}
+@end
+
+
+//
 // RepeatForever
 //
+#pragma mark -
+#pragma mark RepeatForever
 @implementation RepeatForever
 +(id) actionWithAction: (IntervalAction*) action
 {
@@ -147,6 +163,8 @@
 //
 // Speed
 //
+#pragma mark -
+#pragma mark Speed
 @implementation Speed
 @synthesize speed;
 

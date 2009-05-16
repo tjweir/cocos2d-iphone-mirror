@@ -11,10 +11,11 @@
 {
 	[super init];
 	
-	MenuItemFont *item1 = [MenuItemFont itemFromString: @"Options" target:self selector:@selector(onOptions:)];
-	MenuItemFont *item2 = [MenuItemFont itemFromString: @"Quit" target:self selector:@selector(onQuit:)];
+	MenuItemFont *item1 = [MenuItemFont itemFromString: @"Test pushScene" target:self selector:@selector(onPushScene:)];
+	MenuItemFont *item2 = [MenuItemFont itemFromString: @"Test pushScene w/transition" target:self selector:@selector(onPushSceneTran:)];
+	MenuItemFont *item3 = [MenuItemFont itemFromString: @"Quit" target:self selector:@selector(onQuit:)];
 	
-	Menu *menu = [Menu menuWithItems: item1, item2, nil];
+	Menu *menu = [Menu menuWithItems: item1, item2, item3, nil];
 	[menu alignItemsVertically];
 	
 	[self addChild: menu];
@@ -27,15 +28,25 @@
 	[super dealloc];
 }
 
--(void) onOptions: (id) sender
+-(void) onPushScene: (id) sender
 {
 	Scene * scene = [[Scene node] addChild: [Layer2 node] z:0];
 	[[Director sharedDirector] pushScene: scene];
 }
 
+-(void) onPushSceneTran: (id) sender
+{
+	Scene * scene = [[Scene node] addChild: [Layer2 node] z:0];
+	[[Director sharedDirector] pushScene: [SlideInTTransition transitionWithDuration:1 scene:scene]];
+}
+
+
 -(void) onQuit: (id) sender
 {
 	[[Director sharedDirector] popScene];
+
+	// HA HA... no more terminate on sdk v3.0
+	// http://developer.apple.com/iphone/library/qa/qa2008/qa1561.html
 	if( [[UIApplication sharedApplication] respondsToSelector:@selector(terminate)] )
 		[[UIApplication sharedApplication] performSelector:@selector(terminate)];
 }
@@ -50,10 +61,11 @@
 {
 	[super init];
 	
-	MenuItemFont *item1 = [MenuItemFont itemFromString: @"Fullscreen" target:self selector:@selector(onFullscreen:)];
-	MenuItemFont *item2 = [MenuItemFont itemFromString: @"Go Back" target:self selector:@selector(onGoBack:)];
+	MenuItemFont *item1 = [MenuItemFont itemFromString: @"replaceScene" target:self selector:@selector(onReplaceScene:)];
+	MenuItemFont *item2 = [MenuItemFont itemFromString: @"replaceScene w/transition" target:self selector:@selector(onReplaceSceneTran:)];
+	MenuItemFont *item3 = [MenuItemFont itemFromString: @"Go Back" target:self selector:@selector(onGoBack:)];
 	
-	Menu *menu = [Menu menuWithItems: item1, item2, nil];
+	Menu *menu = [Menu menuWithItems: item1, item2, item3, nil];
 	[menu alignItemsVertically];
 	
 	[self addChild: menu];
@@ -72,17 +84,27 @@
 	[[Director sharedDirector] popScene];
 }
 
--(void) onFullscreen:(id) sender
+-(void) onReplaceScene:(id) sender
 {
 	[[Director sharedDirector] replaceScene: [ [Scene node] addChild: [Layer3 node] z:0] ];
+}
+-(void) onReplaceSceneTran:(id) sender
+{
+	Scene *s = [[Scene node] addChild: [Layer3 node] z:0];
+	[[Director sharedDirector] replaceScene: [FlipXTransition transitionWithDuration:2 scene:s]];
 }
 @end
 
 @implementation Layer3
 -(id) init
 {
-	[super initWithColor: 0x0000ffff];
-	isTouchEnabled = YES;
+	if( (self=[super initWithColor: 0x0000ffff]) ) {
+		isTouchEnabled = YES;
+		id label = [Label labelWithString:@"Touch to popScene" fontName:@"Marker Felt" fontSize:32];
+		[self addChild:label];
+		CGSize s = [[Director sharedDirector] winSize];
+		[label setPosition:ccp(s.width/2, s.height/2)];
+	}
 	return self;
 }
 
@@ -110,6 +132,7 @@
 	
 	// before creating any layer, set the landscape mode
 //	[[Director sharedDirector] setLandscape: YES];
+	[[Director sharedDirector] setDeviceOrientation: CCDeviceOrientationLandscapeRight];
 
 	// attach the OpenGL view to a window
 	[[Director sharedDirector] attachInView:window];

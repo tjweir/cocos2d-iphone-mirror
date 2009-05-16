@@ -15,16 +15,21 @@
 
 #import "Menu.h"
 #import "Director.h"
-#import "CocosNodeExtras.h"
+#import "TouchDispatcher.h"
+#import "Support/CGPointExtension.h"
+
+enum {
+	kDefaultPadding =  5,
+};
 
 @interface Menu (Private)
 // returns touched menu item, if any
--(MenuItem *) itemForTouch: (UITouch *) touch idx: (int*) idx;
+-(MenuItem *) itemForTouch: (UITouch *) touch;
 @end
 
 @implementation Menu
 
-@synthesize opacity;
+@synthesize opacity=opacity_, r=r_, g=g_, b=b_;
 
 - (id) init
 {
@@ -54,28 +59,35 @@
 	// menu in the center of the screen
 	CGSize s = [[Director sharedDirector] winSize];
 	
+	self.relativeTransformAnchor = NO;
+	anchorPoint_ = ccp(0.5f, 0.5f);
+	[self setContentSize:s];
+	
 	// XXX: in v0.7, winSize should return the visible size
 	// XXX: so the bar calculation should be done there
 	CGRect r = [[UIApplication sharedApplication] statusBarFrame];
-	if([[Director sharedDirector] landscape])
+	ccDeviceOrientation orientation = [[Director sharedDirector] deviceOrientation];
+	if( orientation == CCDeviceOrientationLandscapeLeft || orientation == CCDeviceOrientationLandscapeRight )
 		s.height -= r.size.width;
 	else
 	    s.height -= r.size.height;
-	position = cpv(s.width/2, s.height/2);
+	self.position = ccp(s.width/2, s.height/2);
 
-	isTouchEnabled = YES;
-	selectedItem = -1;
-	
 	int z=0;
 	
-	[self addChild: item z:z];
-	MenuItem *i = va_arg(args, MenuItem*);
-	while(i) {
-		z++;
-		[self addChild: i z:z];
-		i = va_arg(args, MenuItem*);
+	if (item) {
+		[self addChild: item z:z];
+		MenuItem *i = va_arg(args, MenuItem*);
+		while(i) {
+			z++;
+			[self addChild: i z:z];
+			i = va_arg(args, MenuItem*);
+		}
 	}
 //	[self alignItemsVertically];
+	
+	selectedItem = nil;
+	state = kMenuStateWaiting;
 	
 	return self;
 }
@@ -85,97 +97,106 @@
 	[super dealloc];
 }
 
+/*
+ * override add:
+ */
+-(id) addChild:(MenuItem*)child z:(int)z tag:(int) aTag
+{
+	NSAssert( [child isKindOfClass:[MenuItem class]], @"Menu only supports MenuItem objects as children");
+	return [super addChild:child z:z tag:aTag];
+}
+	
 #pragma mark Menu - Events
-
-- (BOOL)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-	UITouch *touch = [touches anyObject];	
-	int idx;
-	MenuItem *item = [self itemForTouch:touch idx:&idx];
-
-	if( item ) {
-		[item selected];
-		selectedItem = idx;
-		return kEventHandled;
-	}
 	
-	return kEventIgnored;
+-(void) onEnter
+{
+	[[TouchDispatcher sharedDispatcher] addEventHandler:self priority:0 swallowTouches:NO];
+	[super onEnter];
+}
+	
+-(void) onExit
+{
+	[[TouchDispatcher sharedDispatcher] removeEventHandler:self];
+	[super onExit];
 }
 
-- (BOOL)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+-(BOOL) ccTouchBegan:(UITouch *)touch withEvent:(UIEvent *)event
 {
-	UITouch *touch = [touches anyObject];	
-	int idx;
-	MenuItem *item = [self itemForTouch:touch idx:&idx];
+	if( state != kMenuStateWaiting ) return NO;
 	
-	if( item ) {
-		[item unselected];
-		[item activate];
-		return kEventHandled;
-
-	} else if( selectedItem != -1 ) {
-		[[children objectAtIndex:selectedItem] unselected];
-		selectedItem = -1;
-		
-		// don't return kEventHandled here, since we are not handling it!
-	}
-	return kEventIgnored;
+	selectedItem = [self itemForTouch:touch];
+	[selectedItem selected];
+	
+	state = kMenuStateTrackingTouch;
+	return YES;
 }
 
-- (BOOL)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+-(void) ccTouchEnded:(UITouch *)touch withEvent:(UIEvent *)event
 {
-	UITouch *touch = [touches anyObject];	
-	int idx;
-	MenuItem *item = [self itemForTouch:touch idx:&idx];
+	NSAssert(state == kMenuStateTrackingTouch, @"[Menu ccTouchEnded] -- invalid state");
 	
-	// "mouse" draged inside a button
-	if( item ) {
-		if( idx != selectedItem ) {
-			if( selectedItem != -1 )
-				[[children objectAtIndex:selectedItem] unselected];
-			[item selected];
-			selectedItem = idx;
-			return kEventHandled;
-		}
+	[selectedItem unselected];
+	[selectedItem activate];
+	
+	state = kMenuStateWaiting;
+}
 
-	// "mouse" draged outside the selected button
-	} else {
-		if( selectedItem != -1 ) {
-			[[children objectAtIndex:selectedItem] unselected];
-			selectedItem = -1;
-			
-			// don't return kEventHandled here, since we are not handling it!
-		}
-	}
+-(void) ccTouchCancelled:(UITouch *)touch withEvent:(UIEvent *)event
+{
+	NSAssert(state == kMenuStateTrackingTouch, @"[Menu ccTouchCancelled] -- invalid state");
 	
-	return kEventIgnored;
+	[selectedItem unselected];
+	
+	state = kMenuStateWaiting;
+}
+
+-(void) ccTouchMoved:(UITouch *)touch withEvent:(UIEvent *)event
+{
+	NSAssert(state == kMenuStateTrackingTouch, @"[Menu ccTouchMoved] -- invalid state");
+	
+	MenuItem *currentItem = [self itemForTouch:touch];
+	
+	if (currentItem != selectedItem) {
+		[selectedItem unselected];
+		selectedItem = currentItem;
+		[selectedItem selected];
+	}
 }
 
 #pragma mark Menu - Alignment
 -(void) alignItemsVertically
 {
-	int height = -5;
+	return [self alignItemsVerticallyWithPadding:kDefaultPadding];
+}
+-(void) alignItemsVerticallyWithPadding:(float)padding
+{
+	float height = -padding;
 	for(MenuItem *item in children)
-	    height += [item contentSize].height + 5;
+	    height += [item contentSize].height * item.scaleY + padding;
 
-	float y = height / 2;
+	float y = height / 2.0f;
 	for(MenuItem *item in children) {
-	    [item setPosition:cpv(0, y - [item contentSize].height / 2)];
-	    y -= [item contentSize].height + 5;
+	    [item setPosition:ccp(0, y - [item contentSize].height * item.scaleY / 2.0f)];
+	    y -= [item contentSize].height * item.scaleY + padding;
 	}
 }
 
 -(void) alignItemsHorizontally
 {
-	
-	int width = -5;
-	for(MenuItem* item in children)
-	    width += [item contentSize].width + 5;
+	return [self alignItemsHorizontallyWithPadding:kDefaultPadding];
+}
 
-	int x = -width / 2;
+-(void) alignItemsHorizontallyWithPadding:(float)padding
+{
+	
+	float width = -padding;
+	for(MenuItem* item in children)
+	    width += [item contentSize].width * item.scaleX + padding;
+
+	float x = -width / 2.0f;
 	for(MenuItem* item in children) {
-		[item setPosition:cpv(x + [item contentSize].width / 2, 0)];
-		x += [item contentSize].width + 5;
+		[item setPosition:ccp(x + [item contentSize].width * item.scaleX / 2.0f, 0)];
+		x += [item contentSize].width * item.scaleX + padding;
 	}
 }
 
@@ -201,16 +222,10 @@
 	int height = -5;
     NSUInteger row = 0, rowHeight = 0, columnsOccupied = 0, rowColumns;
 	for(MenuItem *item in children) {
-        if(row >= [rows count])
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                           reason:@"Too many menu items for the amount of rows/columns."
-                                         userInfo:nil];
+		NSAssert( row < [rows count], @"Too many menu items for the amount of rows/columns.");
         
         rowColumns = [(NSNumber *) [rows objectAtIndex:row] unsignedIntegerValue];
-        if(rowColumns == 0)
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                           reason:[NSString stringWithFormat:@"Can't have zero columns on a row (row %d).", row]
-                                         userInfo:nil];
+		NSAssert( rowColumns, @"Can't have zero columns on a row");
         
         rowHeight = fmaxf(rowHeight, [item contentSize].height);
         ++columnsOccupied;
@@ -223,10 +238,7 @@
             ++row;
         }
     }
-    if(columnsOccupied != 0)
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"Too many rows/columns for available menu items."
-                                     userInfo:nil];
+	NSAssert( !columnsOccupied, @"Too many rows/columns for available menu items." );
 
     CGSize winSize = [[Director sharedDirector] winSize];
     
@@ -240,7 +252,7 @@
         }
 
         rowHeight = fmaxf(rowHeight, [item contentSize].height);
-        [item setPosition:cpv(x - winSize.width / 2,
+        [item setPosition:ccp(x - winSize.width / 2,
                               y - [item contentSize].height / 2)];
             
         x += w + 10;
@@ -284,16 +296,10 @@
 	int width = -10, columnHeight = -5;
     NSUInteger column = 0, columnWidth = 0, rowsOccupied = 0, columnRows;
 	for(MenuItem *item in children) {
-        if(column >= [columns count])
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                           reason:@"Too many menu items for the amount of rows/columns."
-                                         userInfo:nil];
+		NSAssert( column < [columns count], @"Too many menu items for the amount of rows/columns.");
         
         columnRows = [(NSNumber *) [columns objectAtIndex:column] unsignedIntegerValue];
-        if(columnRows == 0)
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                           reason:[NSString stringWithFormat:@"Can't have zero rows on a column (column %d).", column]
-                                         userInfo:nil];
+		NSAssert( columnRows, @"Can't have zero rows on a column");
         
         columnWidth = fmaxf(columnWidth, [item contentSize].width);
         columnHeight += [item contentSize].height + 5;
@@ -310,10 +316,7 @@
             ++column;
         }
     }
-    if(rowsOccupied != 0)
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:@"Too many rows/columns for available menu items."
-                                     userInfo:nil];
+	NSAssert( !rowsOccupied, @"Too many rows/columns for available menu items.");
     
     CGSize winSize = [[Director sharedDirector] winSize];
     
@@ -326,7 +329,7 @@
         }
         
         columnWidth = fmaxf(columnWidth, [item contentSize].width);
-        [item setPosition:cpv(x + [(NSNumber *) [columnWidths objectAtIndex:column] unsignedIntegerValue] / 2,
+        [item setPosition:ccp(x + [(NSNumber *) [columnWidths objectAtIndex:column] unsignedIntegerValue] / 2,
                               y - winSize.height / 2)];
         
         y -= [item contentSize].height + 10;
@@ -352,35 +355,37 @@
 /** Override synthesized setOpacity to recurse items */
 - (void) setOpacity:(GLubyte)newOpacity
 {
-	opacity = newOpacity;
-	for(id<CocosNodeOpacity> item in children)
-		[item setOpacity:opacity];
+	opacity_ = newOpacity;
+	for(id<CocosNodeRGBA> item in children)
+		[item setOpacity:opacity_];
+}
+
+- (void) setRGB:(GLubyte)r:(GLubyte)g:(GLubyte)b
+{
+	r_=r;
+	g_=g;
+	b_=b;
+	for(id<CocosNodeRGBA> item in children)
+		[item setRGB:r:g:b];
 }
 
 #pragma mark Menu - Private
 
--(MenuItem *) itemForTouch: (UITouch *) touch idx: (int*) idx;
+-(MenuItem *) itemForTouch: (UITouch *) touch;
 {
 	CGPoint touchLocation = [touch locationInView: [touch view]];
 	touchLocation = [[Director sharedDirector] convertCoordinate: touchLocation];
 	
-	int i=0;
 	for( MenuItem* item in children ) {
 		CGPoint local = [item convertToNodeSpace:touchLocation];
 
 		CGRect r = [item rect];
 		r.origin = CGPointZero;
 		
-		if( CGRectContainsPoint( r, local ) ) {
-			*idx = i;
+		if( CGRectContainsPoint( r, local ) )
 			return item;
-		}
-		
-		i++;
 	}
 	return nil;
 }
-
-
 
 @end

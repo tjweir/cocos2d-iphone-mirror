@@ -13,14 +13,8 @@
  */
 
 
-#import <QuartzCore/QuartzCore.h>
-#import <OpenGLES/EAGLDrawable.h>
-#import <UIKit/UIKit.h>
-#import <OpenGLES/EAGL.h>
-#import <OpenGLES/ES1/gl.h>
-#import <OpenGLES/ES1/glext.h>
-
 #import "Label.h"
+#import "Support/CGPointExtension.h"
 
 @implementation Label
 
@@ -46,48 +40,47 @@
 
 - (id) initWithString:(NSString*)string dimensions:(CGSize)dimensions alignment:(UITextAlignment)alignment fontName:(NSString*)name fontSize:(CGFloat)size;
 {
-	if( ! (self=[super init]) )
-		return nil;
+	if( (self=[super init]) ) {
 
-	_dimensions = dimensions;
-	_alignment = alignment;
-	_fontName = [name retain];
-	_fontSize = size;
-	
-	[self setString:string];
+		_dimensions = dimensions;
+		_alignment = alignment;
+		_fontName = [name retain];
+		_fontSize = size;
+		
+		[self setString:string];
+	}
 	return self;
 }
 
 - (id) initWithString:(NSString*)string fontName:(NSString*)name fontSize:(CGFloat)size;
 {
-	if( ! (self=[super init]) )
-		return nil;
-	
-	_dimensions = CGSizeZero;
-	_fontName = [name retain];
-	_fontSize = size;
-	
-	[self setString:string];
+	if( (self=[super init]) ) {
+		
+		_dimensions = CGSizeZero;
+		_fontName = [name retain];
+		_fontSize = size;
+		
+		[self setString:string];
+	}
 	return self;
 }
 
 - (void) setString:(NSString*)string
 {
-	if (texture)
-		[texture release];
-
 	if( CGSizeEqualToSize( _dimensions, CGSizeZero ) )
-		texture = [[Texture2D alloc] initWithString:string fontName:_fontName fontSize:_fontSize];
+		// WARNING: double retain
+		self.texture = [[Texture2D alloc] initWithString:string fontName:_fontName fontSize:_fontSize];
 	else
-		texture = [[Texture2D alloc] initWithString:string dimensions:_dimensions alignment:_alignment fontName:_fontName fontSize:_fontSize];
-	CGSize s = texture.contentSize;
-	transformAnchor = cpv( s.width/2, s.height/2);
+		// WARNING: double retain
+		self.texture = [[Texture2D alloc] initWithString:string dimensions:_dimensions alignment:_alignment fontName:_fontName fontSize:_fontSize];
+	
+	// end of warning. 1 retain only
+	[self.texture release];
 }
 
 - (void) dealloc
 {
 	[_fontName release];
-	[texture release];
 	[super dealloc];
 }
 @end

@@ -20,49 +20,73 @@
 
 #pragma mark AltasSprite
 
-/** AtlasSprite object is an sprite that is rendered using a TextureAtlas object.
- * In particular, the AtlasSpriteManger renders it. It supports all the basic CocosNode transformations like
- * scale, position, rotation, visibility, etc.
+/** AtlasSprite is a CocosNode object that implements the CocosNodeSize, CocosNodeFrames, CocosNodeOpacity and
+ * CocosNodeRGB protocols.
+ * 
+ * AtlasSprite can be used as a replacement of Sprite.
+ *
+ * AtlasSprite has all the features from CocosNode with the following additions and limitations:
+ *	- New features
+ *		- It is MUCH faster than Sprite
+ *      - supports flipX, flipY
+ *
+ *	- Limitations
+ *		- Their parent can only be an AtlasSpriteManager
+ *		- They can't have children
+ *		- Camera is not supported yet (eg: OrbitCamera action doesn't work)
+ *		- GridBase actions are supported (eg: Lens, Ripple, Twirl)
+ *		- They can't Aliased or AntiAliased (but AtlasSpriteManager can)
+ *		- Parallax scroller is not supported, but can be simulated with a "proxy" sprite.
+ *
+ * @since v0.7.1
  */
-@interface AtlasSprite : CocosNode <CocosNodeSize, CocosNodeFrames>
+@interface AtlasSprite : CocosNode <CocosNodeFrames, CocosNodeRGBA>
 {
 	// weak reference
-	TextureAtlas *mAtlas;
-	int mAtlasIndex;
+	TextureAtlas *textureAtlas_;
+	NSUInteger atlasIndex_;
 
 	// texture pixels
-	CGRect mRect;
+	CGRect rect_;
 
-	// texture coords
-	// stored as floats in the range [0..1]
-	ccQuad2 mTexCoords;
-
-	// screen pixels
-	// stored as pixel locations
-	ccQuad3 mVertices;
+	// texture, vertex and color info
+	ccV3F_C4B_T2F_Quad quad_;
 	
 	// whether or not this Sprite needs to be updated in the Atlas
 	BOOL	dirty;
 	
+	// opacity and RGB protocol
+	GLubyte opacity_;
+	GLubyte r_, g_, b_;
+	
 	// Animations that belong to the sprite
 	NSMutableDictionary *animations;
+	
+	// image is flipped
+	BOOL	flipX_;
+	BOOL	flipY_;
 }
 
 /** whether or not the Sprite needs to be updated in the Atlas */
 @property (readonly) BOOL dirty;
+/** the quad (tex coords, vertex coords and color) information */
+@property (readonly) ccV3F_C4B_T2F_Quad quad;
 /** returns the altas index of the AtlasSprite */
-@property (readonly) int atlasIndex;
+@property (readonly) NSUInteger atlasIndex;
 /** returns the rect of the AtlasSprite */
 @property (readonly) CGRect textureRect;
+/** whether or not the sprite is flipped horizontally */
+@property (readwrite) BOOL flipX;
+/** whether or not the sprite is flipped vertically */
+@property (readwrite) BOOL flipY;
+
 
 /** creates an AtlasSprite with an AtlasSpriteManager inidicating the Rect of the Atlas */
 +(id)spriteWithRect:(CGRect)rect spriteManager:(AtlasSpriteManager*)manager;
 /** initializes an AtlasSprite with an AtlasSpriteManager indicating the rect of the Atlas */
 -(id)initWithRect:(CGRect)rect spriteManager:(AtlasSpriteManager*)manager;
 
-/** updates the Quad in the TextureAtlas with it's new position, scale and rotation */
--(void)updateAtlas;
-
+-(void)insertInAtlasAtIndex:(NSUInteger)index;
 -(void)updatePosition;
 
 /** updates the texture rect of the AtlasSprite */
@@ -81,8 +105,9 @@
 
 @property (readwrite,assign) NSString *name;
 
-/* cocos animation */
+/** delay between frames in seconds */
 @property (readwrite,assign) float delay;
+/** array of frames */
 @property (readonly) NSMutableArray *frames;
 
 /** creates an AtlasAnimation with an AtlasSpriteManager, a name, delay between frames */

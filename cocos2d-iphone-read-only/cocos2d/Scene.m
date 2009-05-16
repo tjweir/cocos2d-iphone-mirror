@@ -15,18 +15,17 @@
 
 #import "Scene.h"
 #import "Director.h"
+#import "Support/CGPointExtension.h"
 
 @implementation Scene
 -(id) init
 {
-	if( ! (self=[super init]) )
-		return nil;
-	
-	CGSize s = [[Director sharedDirector] winSize];
-	relativeTransformAnchor = NO;
-
-	transformAnchor.x = s.width / 2;
-	transformAnchor.y = s.height / 2;
+	if( (self=[super init]) ) {
+		CGSize s = [[Director sharedDirector] winSize];
+		self.relativeTransformAnchor = NO;
+		anchorPoint_ = ccp(0.5f, 0.5f);
+		[self setContentSize:s];	
+	}
 	
 	return self;
 }

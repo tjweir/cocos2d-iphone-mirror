@@ -15,6 +15,7 @@
 #import "TextureMgr.h"
 #import "Sprite.h"
 #import "ccMacros.h"
+#import "Support/CGPointExtension.h"
 
 #pragma mark Sprite
 
@@ -35,24 +36,8 @@
 {
 	self = [super init];
 	if( self ) {
-		self.texture = [[[TextureMgr sharedTextureMgr] addImage: filename] retain];
-	}
-	
-	return self;
-}
-
-#pragma mark Sprite - PVRTC RAW
-
-+ (id) spriteWithPVRTCFile: (NSString*) fileimage bpp:(int)bpp hasAlpha:(BOOL)alpha width:(int)w
-{
-	return [[[self alloc] initWithPVRTCFile:fileimage bpp:bpp hasAlpha:alpha width:w] autorelease];
-}
-
-- (id) initWithPVRTCFile: (NSString*) fileimage bpp:(int)bpp hasAlpha:(BOOL)alpha width:(int)w
-{
-	self=[super init];
-	if( self ) {
-		self.texture = [[[TextureMgr sharedTextureMgr] addPVRTCImage:fileimage bpp:bpp hasAlpha:alpha width:w] retain];
+		// texture is retained
+		self.texture = [[TextureMgr sharedTextureMgr] addImage: filename];
 		
 		// lazy alloc
 		animations = nil;
@@ -72,8 +57,9 @@
 {
 	self = [super init];
 	if( self ) {
-		self.texture = [[[TextureMgr sharedTextureMgr] addCGImage: image] retain];
-		
+		// texture is retained
+		self.texture = [[TextureMgr sharedTextureMgr] addCGImage: image];
+
 		// lazy alloc
 		animations = nil;
 	}
@@ -90,30 +76,20 @@
 
 - (id) initWithTexture:(Texture2D*) tex
 {
-	self = [super init];
-	if( self ) {
-		self.texture = [tex retain];
-		
+	if( (self = [super init]) ) {
+		// texture is retained
+		self.texture = tex;
+
 		// lazy alloc
 		animations = nil;
 	}
 	return self;
 }	
 
-#pragma mark Sprite - TextureNode override
-
--(void) setTexture: (Texture2D *) aTexture
-{
-	super.texture = aTexture;
-	CGSize s = aTexture.contentSize;
-	self.transformAnchor = cpv(s.width/2, s.height/2);
-}
-
 #pragma mark Sprite
 
 -(void) dealloc
 {
-	[texture release];
 	[animations release];
 	[super dealloc];
 }
@@ -123,36 +99,31 @@
 	animations = [[NSMutableDictionary dictionaryWithCapacity:2] retain];
 }
 
--(void) setDisplayFrame: (NSString*) animationName index:(int) frameIndex
-{
-	if( ! animations )
-		[self initAnimationDictionary];
-
-	Animation *a = [animations objectForKey: animationName];
-	Texture2D *tex = [[a frames] objectAtIndex:frameIndex];
-	if( tex == texture )
-		return;
-	[texture release];
-	texture = [tex retain];
-}
-
 //
 // CocosNodeFrames protocol
 //
 -(void) setDisplayFrame:(id)frame
 {
-	if( frame == texture )
-		return;
-	[texture release];
-	texture = [frame retain];	
+	self.texture = frame;
 }
+
+-(void) setDisplayFrame: (NSString*) animationName index:(int) frameIndex
+{
+	if( ! animations )
+		[self initAnimationDictionary];
+	
+	Animation *a = [animations objectForKey: animationName];
+	Texture2D *frame = [[a frames] objectAtIndex:frameIndex];
+	self.texture = frame;	
+}
+
 -(BOOL) isFrameDisplayed:(id)frame
 {
-	return texture == frame;
+	return texture_ == frame;
 }
 -(id) displayFrame
 {
-	return texture;
+	return texture_;
 }
 -(void) addAnimation: (id<CocosAnimation>) anim
 {
@@ -230,10 +201,6 @@
 	return self;
 }
 
--(void) addFrame: (NSString*) filename
-{
-	return [self addFrameWithFilename:filename];
-}
 -(void) addFrameWithFilename: (NSString*) filename
 {
 	Texture2D *tex = [[TextureMgr sharedTextureMgr] addImage: filename];

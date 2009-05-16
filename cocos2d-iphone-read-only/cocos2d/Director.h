@@ -13,9 +13,6 @@
  */
 
 
-// cocoa related
-#import <UIKit/UIKit.h>
-
 // OpenGL related
 #import "Support/EAGLView.h"
 
@@ -29,8 +26,6 @@ enum {
 	kEventIgnored = NO,
 };
 
-// Landscape is right or left ?
-#define LANDSCAPE_LEFT 1
 
 // Fast FPS display. FPS are updated 10 times per second without consuming resources
 // uncomment this line to use the old method that updated
@@ -49,6 +44,18 @@ typedef enum {
    kDepthBuffer24,
 } tDepthBufferFormat;
 
+/** Possible device orientations */
+typedef enum {
+	/// Device oriented vertically, home button on the bottom
+	CCDeviceOrientationPortrait = UIDeviceOrientationPortrait,	
+	/// Device oriented vertically, home button on the top
+    CCDeviceOrientationPortraitUpsideDown = UIDeviceOrientationPortraitUpsideDown,
+	/// Device oriented horizontally, home button on the right
+    CCDeviceOrientationLandscapeLeft = UIDeviceOrientationLandscapeLeft,
+	/// Device oriented horizontally, home button on the left
+    CCDeviceOrientationLandscapeRight = UIDeviceOrientationLandscapeRight,
+} ccDeviceOrientation;
+
 @class LabelAtlas;
 
 /**Class that creates and handle the main Window and manages how
@@ -56,18 +63,21 @@ and when to execute the Scenes
 */
 @interface Director : NSObject <EAGLTouchDelegate>
 {
-	EAGLView	*_openGLView;
+	EAGLView	*openGLView_;
 
 	// internal timer
 	NSTimer *animationTimer;
 	NSTimeInterval animationInterval;
 	NSTimeInterval oldAnimationInterval;
 
-	tPixelFormat _pixelFormat;
-	tDepthBufferFormat _depthBufferFormat;
+	tPixelFormat pixelFormat_;
+	tDepthBufferFormat depthBufferFormat_;
 
 	/* landscape mode ? */
 	BOOL landscape;
+	
+	/* orientation */
+	ccDeviceOrientation	deviceOrientation_;
 	
 	/* display FPS ? */
 	BOOL displayFPS;
@@ -81,31 +91,32 @@ and when to execute the Scenes
 	/* is the running scene paused */
 	BOOL paused;
 	
-	/* running scene */
-	Scene *runningScene;
+	/* The running scene */
+	Scene *runningScene_;
 	
-	/* will be the next 'runningScene' in the next frame */
+	/* will be the next 'runningScene' in the next frame
+	 nextScene is a weak reference. */
 	Scene *nextScene;
 	
 	/* event handler */
 	NSMutableArray	*eventHandlers;
 
 	/* scheduled scenes */
-	NSMutableArray *scenes;
+	NSMutableArray *scenesStack_;
 	
 	/* last time the main loop was updated */
 	struct timeval lastUpdate;
 	/* delta time since last tick to main loop */
 	ccTime dt;
 	/* whether or not the next delta time will be zero */
-	BOOL _nextDeltaTimeZero;
+	BOOL nextDeltaTimeZero_;
 	
 	/* are touch events enabled. Default is YES */
 	BOOL eventsEnabled;
 }
 
 /** The current running Scene. Director can only run one Scene at the time */
-@property (readonly, assign) Scene* runningScene;
+@property (readonly) Scene* runningScene;
 /** The FPS value */
 @property (readwrite, assign) NSTimeInterval animationInterval;
 /** Whether or not to display the FPS on the bottom-left corner */
@@ -118,6 +129,8 @@ and when to execute the Scenes
 @property (readonly) tPixelFormat pixelFormat;
 /** whether or not the next delta time will be zero */
 @property (readwrite,assign) BOOL nextDeltaTimeZero;
+/** The device orientattion */
+@property (readwrite) ccDeviceOrientation deviceOrientation;
 
 /** returns a shared instance of the director */
 +(Director *)sharedDirector;
@@ -132,13 +145,13 @@ and when to execute the Scenes
 
 /** change default pixel format.
  Call this class method before attaching it to a UIWindow/UIView
- Default pixel format: RGB565. Supported pixel formats: RGBA8 and RGB565
+ Default pixel format: kRGB565. Supported pixel formats: kRGBA8 and kRGB565
  */
 -(void) setPixelFormat: (tPixelFormat) p;
 
 /** change depth buffer format.
  Call this class method before attaching it to a UIWindow/UIView
- Default depth buffer: 0 (none).  Supported: DepthBufferNone, DepthBuffer16, and DepthBuffer24
+ Default depth buffer: 0 (none).  Supported: kDepthBufferNone, kDepthBuffer16, and kDepthBuffer24
  */
 -(void) setDepthBufferFormat: (tDepthBufferFormat) db;
 
@@ -162,10 +175,15 @@ and when to execute the Scenes
 /** returns the display size of the OpenGL view */
 -(CGSize) displaySize;
 
-/** returns whether or not the screen is in landscape mode */
-- (BOOL) landscape;
-/** sets lanscape mode */
-- (void) setLandscape: (BOOL) on;
+/** returns whether or not the screen is in landscape mode
+ @deprecated Use deviceOrientation instead
+ */
+- (BOOL) landscape __attribute__((deprecated));
+/** sets lanscape mode
+ @deprecated Use setDeviceOrientation instead
+ */
+- (void) setLandscape: (BOOL) on __attribute__((deprecated));
+
 /** converts a UIKit coordinate to an OpenGL coordinate
  Useful to convert (multi) touchs coordinates to the current layout (portrait or landscape)
  */
@@ -250,7 +268,6 @@ and when to execute the Scenes
 
 /** FastDirector is a Director that triggers the main loop as fast as possible.
  * In some circumstances it is faster than the normal Director.
- @warning BUG: Don't use the FastDirector if you are going the detach and then re-attach the opengl view again.
  */
 @interface FastDirector : Director
 {

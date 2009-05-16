@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 33
-/svn/!svn/ver/629/trunk/Resources
+/svn/!svn/ver/946/trunk/Resources
 END
 Default.xcf
 K 25
@@ -32,6 +32,12 @@ K 25
 svn:wc:ra_dav:version-url
 V 45
 /svn/!svn/ver/245/trunk/Resources/Default.png
+END
+InfoWithStatusBar.plist
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/786/trunk/Resources/InfoWithStatusBar.plist
 END
 Icon.png
 K 25

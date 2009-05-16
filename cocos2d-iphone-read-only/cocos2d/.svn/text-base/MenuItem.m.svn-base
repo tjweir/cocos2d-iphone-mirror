@@ -17,6 +17,7 @@
 #import "LabelAtlas.h"
 #import "IntervalAction.h"
 #import "Sprite.h"
+#import "Support/CGPointExtension.h"
 
 static int _fontSize = kItemSize;
 static NSString *_fontName = @"Marker Felt";
@@ -37,8 +38,6 @@ enum {
 
 @implementation MenuItem
 
-@synthesize opacity;
-
 -(id) init
 {
 	NSException* myException = [NSException
@@ -55,24 +54,24 @@ enum {
 
 -(id) initWithTarget:(id) rec selector:(SEL) cb
 {
-	if(!(self=[super init]) )
-		return nil;
+	if((self=[super init]) ) {
 	
-	NSMethodSignature * sig = nil;
-	
-	if( rec && cb ) {
-		sig = [[rec class] instanceMethodSignatureForSelector:cb];
+		anchorPoint_ = ccp(0.5f, 0.5f);
+		NSMethodSignature * sig = nil;
 		
-		invocation = nil;
-		invocation = [NSInvocation invocationWithMethodSignature:sig];
-		[invocation setTarget:rec];
-		[invocation setSelector:cb];
-		[invocation setArgument:&self atIndex:2];
-		[invocation retain];
+		if( rec && cb ) {
+			sig = [[rec class] instanceMethodSignatureForSelector:cb];
+			
+			invocation = nil;
+			invocation = [NSInvocation invocationWithMethodSignature:sig];
+			[invocation setTarget:rec];
+			[invocation setSelector:cb];
+			[invocation setArgument:&self atIndex:2];
+			[invocation retain];
+		}
+		
+		isEnabled = YES;
 	}
-    
-	isEnabled = YES;
-	opacity = 255;
 	
 	return self;
 }
@@ -111,80 +110,51 @@ enum {
 
 -(CGRect) rect
 {
-	NSAssert(1,@"MenuItem.rect must be overriden");
-
-	return CGRectNull;
+	return CGRectMake( self.position.x - contentSize_.width/2, self.position.y-contentSize_.height/2,
+					  contentSize_.width, contentSize_.height);
 }
-
--(CGSize) contentSize
-{
-	NSAssert(1,@"MenuItem.contentSize must be overriden");
-	return CGSizeMake(0,0);
-}
-
 @end
 
 
-#pragma mark  -
-#pragma mark MenuItemAtlasFont
+#pragma mark -
+#pragma mark MenuItemLabel
 
+@implementation MenuItemLabel
 
-@implementation MenuItemAtlasFont
-
-@synthesize label;
-
-+(id) itemFromString: (NSString*) value charMapFile:(NSString*) charMapFile itemWidth:(int)itemWidth itemHeight:(int)itemHeight startCharMap:(char)startCharMap
++(id) itemWithLabel:(CocosNode<CocosNodeLabel,CocosNodeRGBA>*)label target:(id)target selector:(SEL)selector
 {
-	return [MenuItemAtlasFont itemFromString:value charMapFile:charMapFile itemWidth:itemWidth itemHeight:itemHeight startCharMap:startCharMap target:nil selector:nil];
+	return [[[self class] alloc] initWithLabel:label target:target selector:selector];
 }
 
-+(id) itemFromString: (NSString*) value charMapFile:(NSString*) charMapFile itemWidth:(int)itemWidth itemHeight:(int)itemHeight startCharMap:(char)startCharMap target:(id) rec selector:(SEL) cb
+-(id) initWithLabel:(CocosNode<CocosNodeLabel,CocosNodeRGBA>*)label target:(id)target selector:(SEL)selector
 {
-	return [[[self alloc] initFromString:value charMapFile:charMapFile itemWidth:itemWidth itemHeight:itemHeight startCharMap:startCharMap target:rec selector:cb] autorelease];
-}
-
--(id) initFromString: (NSString*) value charMapFile:(NSString*) charMapFile itemWidth:(int)itemWidth itemHeight:(int)itemHeight startCharMap:(char)startCharMap target:(id) rec selector:(SEL) cb
-{
-	if(!(self=[super initWithTarget:rec selector:cb]) )
-		return nil;
-	
-	if( [value length] == 0 ) {
-		NSException* myException = [NSException
-									exceptionWithName:@"MenuItemInvalid"
-									reason:@"Can't create a MenuItem without value"
-									userInfo:nil];
-		@throw myException;
+	if( (self=[super initWithTarget:target selector:selector]) ) {
+		self.label = label;		
 	}
-	
-	
-	label = [[LabelAtlas alloc] initWithString:value charMapFile:charMapFile itemWidth:itemWidth itemHeight:itemHeight startCharMap:startCharMap];
-	[label setOpacity:opacity];
-	
-	CGSize s = label.contentSize;
-	transformAnchor = cpv( s.width/2, s.height/2 );
-	
 	return self;
+}
+
+-(CocosNode<CocosNodeLabel, CocosNodeRGBA>*) label
+{
+	return label_;
+}
+-(void) setLabel:(CocosNode<CocosNodeLabel, CocosNodeRGBA>*) label
+{
+	[label_ release];
+	label_ = [label retain];
+	[self setContentSize:[label_ contentSize]];
+}
+
+- (void) dealloc
+{
+	[label_ release];
+	[super dealloc];
 }
 
 -(void) setString:(NSString *)string
 {
-    [label setString:string];
-	CGSize s = label.contentSize;
-    transformAnchor = cpv( s.width/2, s.height/2 );
-}
-
--(void) dealloc
-{
-	[label release];
-	[super dealloc];
-}
-
--(CGRect) rect
-{
-	CGSize s = label.contentSize;
-	
-	CGRect r = CGRectMake( position.x - s.width/2, position.y-s.height/2, s.width, s.height);
-	return r;
+	[label_ setString:string];
+	[self setContentSize: [label_ contentSize]];
 }
 
 -(void) activate {
@@ -222,29 +192,77 @@ enum {
 -(void) setIsEnabled: (BOOL)enabled
 {
 	if(enabled == NO)
-		[label setRGB:126 :126 :126];
+		[label_ setRGB:126 :126 :126];
 	else
-		[label setRGB:255 :255 :255];
+		[label_ setRGB:255 :255 :255];
     
 	[super setIsEnabled:enabled];
 }
 
--(CGSize) contentSize
-{
-	return [label contentSize];
-}
-
 -(void) draw
 {
-	[label draw];
+	[label_ draw];
 }
 
-- (void) setOpacity: (GLubyte)newOpacity
+- (void) setOpacity: (GLubyte)opacity
 {
-    opacity = newOpacity;
-    [label setOpacity:opacity];
+    [label_ setOpacity:opacity];
+}
+-(GLubyte) opacity
+{
+	return [label_ opacity];
+}
+- (void) setRGB:(GLubyte)r:(GLubyte)g:(GLubyte)b
+{
+	[label_ setRGB:r:g:b];
+}
+-(GLubyte)r
+{
+	return [label_ r];
+}
+-(GLubyte)g
+{
+	return [label_ g];
+}
+-(GLubyte)b
+{
+	return [label_ b];
+}
+@end
+
+#pragma mark  -
+#pragma mark MenuItemAtlasFont
+
+@implementation MenuItemAtlasFont
+
++(id) itemFromString: (NSString*) value charMapFile:(NSString*) charMapFile itemWidth:(int)itemWidth itemHeight:(int)itemHeight startCharMap:(char)startCharMap
+{
+	return [MenuItemAtlasFont itemFromString:value charMapFile:charMapFile itemWidth:itemWidth itemHeight:itemHeight startCharMap:startCharMap target:nil selector:nil];
 }
 
++(id) itemFromString: (NSString*) value charMapFile:(NSString*) charMapFile itemWidth:(int)itemWidth itemHeight:(int)itemHeight startCharMap:(char)startCharMap target:(id) rec selector:(SEL) cb
+{
+	return [[[self alloc] initFromString:value charMapFile:charMapFile itemWidth:itemWidth itemHeight:itemHeight startCharMap:startCharMap target:rec selector:cb] autorelease];
+}
+
+-(id) initFromString: (NSString*) value charMapFile:(NSString*) charMapFile itemWidth:(int)itemWidth itemHeight:(int)itemHeight startCharMap:(char)startCharMap target:(id) rec selector:(SEL) cb
+{
+	NSAssert( [value length] != 0, @"value lenght must be greater than 0");
+	
+	LabelAtlas *label = [[LabelAtlas alloc] initWithString:value charMapFile:charMapFile itemWidth:itemWidth itemHeight:itemHeight startCharMap:startCharMap];
+	[label autorelease];
+
+	if((self=[super initWithLabel:label target:rec selector:cb]) ) {
+		// do something ?
+	}
+	
+	return self;
+}
+
+-(void) dealloc
+{
+	[super dealloc];
+}
 @end
 
 
@@ -252,8 +270,6 @@ enum {
 #pragma mark MenuItemFont
 
 @implementation MenuItemFont
-
-@synthesize label;
 
 +(void) setFontSize: (int) s
 {
@@ -291,115 +307,28 @@ enum {
 
 -(id) initFromString: (NSString*) value target:(id) rec selector:(SEL) cb
 {
-	if(!(self=[super initWithTarget:rec selector:cb]) )
-		return nil;
+	NSAssert( [value length] != 0, @"Value lenght must be greater than 0");
 	
-	if( [value length] == 0 ) {
-		NSException* myException = [NSException
-									exceptionWithName:@"MenuItemInvalid"
-									reason:@"Can't create a MenuItem without value"
-									userInfo:nil];
-		@throw myException;
-	}
-	
-	
-	label = [Label labelWithString:value fontName:_fontName fontSize:_fontSize];
+	Label *label = [Label labelWithString:value fontName:_fontName fontSize:_fontSize];
 
-	[label retain];
-	[label setOpacity:opacity];
-	
-	CGSize s = label.contentSize;
-	transformAnchor = cpv( s.width/2, s.height/2 );
+	if((self=[super initWithLabel:label target:rec selector:cb]) ) {
+		// do something ?
+	}
 	
 	return self;
 }
 
--(void) setString:(NSString *)string
-{
-	[label setString:string];
-	CGSize s = label.contentSize;
-	transformAnchor = cpv( s.width/2, s.height/2 );
-}
-
 -(void) dealloc
 {
-	[label release];
 	[super dealloc];
 }
-
--(CGRect) rect
-{
-	CGSize s = label.contentSize;
-	
-	CGRect r = CGRectMake( position.x - s.width/2, position.y-s.height/2, s.width, s.height);
-	return r;
-}
-
--(void) activate {
-	if(isEnabled) {
-		[self stopAllActions];
-		self.scale = 1.0f;
-		[super activate];
-	}
-}
-
--(void) selected
-{
-	// subclass to change the default action
-	if(isEnabled) {
-		[self stopActionByTag:kZoomActionTag];
-		Action *zoomAction = [ScaleTo actionWithDuration:0.1f scale:1.2f];
-		zoomAction.tag = kZoomActionTag;
-		[self runAction:zoomAction];
-	}
-}
-
--(void) unselected
-{
-	// subclass to change the default action
-	if(isEnabled) {
-		[self stopActionByTag:kZoomActionTag];
-
-		Action *zoomAction = [ScaleTo actionWithDuration:0.1f scale:1.0f];
-		zoomAction.tag = kZoomActionTag;
-
-		[self runAction:zoomAction];
-	}
-}
-
--(void) setIsEnabled: (BOOL)enabled
-{
-	if(enabled == NO)
-		[label setRGB:126 :126 :126];
-	else
-		[label setRGB:255 :255 :255];
-
-	[super setIsEnabled:enabled];
-}
-
--(CGSize) contentSize
-{
-	return [label contentSize];
-}
-
--(void) draw
-{
-	[label draw];
-}
-
-- (void) setOpacity: (GLubyte)newOpacity
-{
-  opacity = newOpacity;
-  [label setOpacity:opacity];
-}
-
 @end
 
 #pragma mark MenuItemImage
 
 @implementation MenuItemImage
 
-@synthesize selectedImage, normalImage, disabledImage;
+@synthesize selectedImage=selectedImage_, normalImage=normalImage_, disabledImage=disabledImage_;
 
 +(id) itemFromNormalImage: (NSString*)value selectedImage:(NSString*) value2
 {
@@ -423,32 +352,33 @@ enum {
 
 -(id) initFromNormalImage: (NSString*) normalI selectedImage:(NSString*)selectedI disabledImage: (NSString*) disabledI target:(id) t selector:(SEL) sel
 {
-	if( !(self=[super initWithTarget:t selector:sel]) )
-		return nil;
+	if( (self=[super initWithTarget:t selector:sel]) ) {
 
-	normalImage = [[Sprite spriteWithFile:normalI] retain];
-	selectedImage = [[Sprite spriteWithFile:selectedI] retain];
-    
-	if(disabledI == nil)
-		disabledImage = nil;
-	else
-		disabledImage = [[Sprite spriteWithFile:disabledI] retain];
-  
-	[normalImage setOpacity:opacity];
-	[selectedImage setOpacity:opacity];
-	[disabledImage setOpacity:opacity];
-	
-	CGSize s = [normalImage contentSize];
-	transformAnchor = cpv( s.width/2, s.height/2 );
-
+		self.normalImage = [Sprite spriteWithFile:normalI];
+		self.selectedImage = [Sprite spriteWithFile:selectedI];
+		
+		if(disabledI == nil)
+			self.disabledImage = nil;
+		else
+			self.disabledImage = [Sprite spriteWithFile:disabledI];
+	  
+	//	[normalImage setOpacity:opacity_];
+	//	[normalImage setRGB:r_:g_:b_];
+	//	[selectedImage setOpacity:opacity_];
+	//	[selectedImage setRGB:r_:g_:b_];
+	//	[disabledImage setOpacity:opacity_];
+	//	[disabledImage setRGB:r_:g_:b_];
+		
+		[self setContentSize: [normalImage_ contentSize]];
+	}
 	return self;
 }
 
 -(void) dealloc
 {
-	[normalImage release];
-	[selectedImage release];
-	[disabledImage release];
+	[normalImage_ release];
+	[selectedImage_ release];
+	[disabledImage_ release];
 
 	[super dealloc];
 }
@@ -463,43 +393,52 @@ enum {
 	selected = NO;
 }
 
--(CGRect) rect
-{
-	CGSize s = [normalImage contentSize];
-	
-	CGRect r = CGRectMake( position.x - s.width/2, position.y-s.height/2, s.width, s.height);
-	return r;
-}
-
--(CGSize) contentSize
-{
-	return [normalImage contentSize];
-}
-
 -(void) draw
 {
 	if(isEnabled) {
 		if( selected )
-			[selectedImage draw];
+			[selectedImage_ draw];
 		else
-			[normalImage draw];
+			[normalImage_ draw];
 
 	} else {
-		if(disabledImage != nil)
-			[disabledImage draw];
+		if(disabledImage_ != nil)
+			[disabledImage_ draw];
 		
 		// disabled image was not provided
 		else
-			[normalImage draw];
+			[normalImage_ draw];
 	}
 }
 
-- (void) setOpacity: (GLubyte)newOpacity
+- (void) setOpacity: (GLubyte)opacity
 {
-	opacity = newOpacity;
-	[normalImage setOpacity:opacity];
-	[selectedImage setOpacity:opacity];
-	[disabledImage setOpacity:opacity];
+	[normalImage_ setOpacity:opacity];
+	[selectedImage_ setOpacity:opacity];
+	[disabledImage_ setOpacity:opacity];
+}
+
+- (void) setRGB:(GLubyte)r:(GLubyte)g:(GLubyte)b
+{
+	[normalImage_ setRGB:r:g:b];
+	[selectedImage_ setRGB:r:g:b];
+	[disabledImage_ setRGB:r:g:b];
+}
+-(GLubyte) opacity
+{
+	return [normalImage_ opacity];
+}
+-(GLubyte)r
+{
+	return [normalImage_ r];
+}
+-(GLubyte)g
+{
+	return [normalImage_ g];
+}
+-(GLubyte)b
+{
+	return [normalImage_ b];
 }
 
 @end
@@ -510,6 +449,9 @@ enum {
 // MenuItemToggle
 //
 @implementation MenuItemToggle
+
+@synthesize subItems = subItems_;
+@synthesize opacity=opacity_, r=r_, g=g_, b=b_;
 
 +(id) itemWithTarget: (id)t selector: (SEL)sel items: (MenuItem*) item, ...
 {
@@ -524,54 +466,60 @@ enum {
 
 -(id) initWithTarget: (id)t selector: (SEL)sel items:(MenuItem*) item vaList: (va_list) args
 {
-	if( !(self=[super initWithTarget:t selector:sel]) )
-		return nil;
+	if( (self=[super initWithTarget:t selector:sel]) ) {
 	
-	selectedIndex = 0;
-	subItems = [[NSMutableArray arrayWithCapacity:2] retain];
-	
-	int z = 0;
-	MenuItem *i = item;
-	while(i) {
-		z++;
-		[subItems addObject:i];
-		i = va_arg(args, MenuItem*);
-	}
+		self.subItems = [NSMutableArray arrayWithCapacity:2];
+		
+		int z = 0;
+		MenuItem *i = item;
+		while(i) {
+			z++;
+			[subItems_ addObject:i];
+			i = va_arg(args, MenuItem*);
+		}
 
-	[self addChild: [subItems objectAtIndex:selectedIndex] z:0 tag:kCurrentItem];
+		selectedIndex_ = NSUIntegerMax;
+		[self setSelectedIndex:0];
+	}
 	
 	return self;
 }
 
 -(void) dealloc
 {
-	[subItems release];
+	[subItems_ release];
 	[super dealloc];
 }
 
 -(void)setSelectedIndex:(NSUInteger)index
 {
-	if( index != selectedIndex ) {
-		selectedIndex=index;
+	if( index != selectedIndex_ ) {
+		selectedIndex_=index;
 		[self removeChildByTag:kCurrentItem cleanup:NO];
-		[self addChild: [subItems objectAtIndex:selectedIndex] z:0 tag:kCurrentItem];
+		
+		MenuItem *item = [subItems_ objectAtIndex:selectedIndex_];
+		[self addChild:item z:0 tag:kCurrentItem];
+		
+		CGSize s = [item contentSize];
+		[self setContentSize: s];
+		item.position = ccp( s.width/2, s.height/2 );
 	}
 }
 
 -(NSUInteger) selectedIndex
 {
-	return selectedIndex;
+	return selectedIndex_;
 }
 
 
 -(void) selected
 {
-	[[subItems objectAtIndex:selectedIndex] selected];
+	[[subItems_ objectAtIndex:selectedIndex_] selected];
 }
 
 -(void) unselected
 {
-	[[subItems objectAtIndex:selectedIndex] unselected];
+	[[subItems_ objectAtIndex:selectedIndex_] unselected];
 }
 
 -(void) activate
@@ -579,13 +527,8 @@ enum {
 	// update index
 	
 	if( isEnabled ) {
-		[self removeChildByTag:kCurrentItem cleanup:NO];
-
-		selectedIndex++;
-		if(selectedIndex >= [subItems count])
-			selectedIndex = 0;
-
-		[self addChild: [subItems objectAtIndex:selectedIndex] z:0 tag:kCurrentItem];
+		NSUInteger newIndex = (selectedIndex_ + 1) % [subItems_ count];
+		[self setSelectedIndex:newIndex];
 
 		[invocation invoke];
 	}
@@ -594,36 +537,28 @@ enum {
 -(void) setIsEnabled: (BOOL)enabled
 {
 	[super setIsEnabled:enabled];
-	for(MenuItem* item in subItems)
+	for(MenuItem* item in subItems_)
 		[item setIsEnabled:enabled];
 }
 
 -(MenuItem*) selectedItem
 {
-	return [subItems objectAtIndex:selectedIndex];
+	return [subItems_ objectAtIndex:selectedIndex_];
 }
 
--(CGRect) rect
+- (void) setOpacity: (GLubyte)opacity
 {
-	MenuItem* selectedItem = [self selectedItem];
-
-	CGRect r = [selectedItem rect];
-	r.origin.x = position.x - r.size.width / 2;
-	r.origin.y = position.y - r.size.height / 2;
-	
-	return r;
+	opacity_ = opacity;
+	for(MenuItem<CocosNodeRGBA>* item in subItems_)
+		[item setOpacity:opacity];
 }
 
--(CGSize) contentSize
+- (void) setRGB:(GLubyte)r:(GLubyte)g:(GLubyte)b
 {
-	MenuItem* selectedItem = [self selectedItem];
-	return [selectedItem contentSize];
-}
-
-- (void) setOpacity: (GLubyte)newOpacity
-{
-	[super setOpacity:newOpacity];
-	for(MenuItem* item in subItems)
-		[item setOpacity:newOpacity];
+	r_ = r;
+	g_ = g;
+	b_ = b;
+	for(MenuItem<CocosNodeRGBA>* item in subItems_)
+		[item setRGB:r:g:b];
 }
 @end

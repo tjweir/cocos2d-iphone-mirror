@@ -23,22 +23,20 @@
 #define kItemSize 32
 
 /** Menu Item base class
+ *
+ *  Subclass MenuItem (or any subclass) to create your custom MenuItem
  */
-@interface MenuItem : CocosNode <CocosNodeSize, CocosNodeOpacity>
+@interface MenuItem : CocosNode
 {
 	NSInvocation *invocation;
 	BOOL isEnabled;
-	GLubyte opacity;
 }
 
-/** Opacity property. Conforms to CocosNodeOpacity protocol */
-@property (readwrite,assign) GLubyte opacity;
-
 /** Creates a menu item with a target/selector */
-+(id) itemWithTarget:(id) r selector:(SEL) s;
++(id) itemWithTarget:(id)target selector:(SEL)selector;
 
 /** Initializes a menu item with a target/selector */
--(id) initWithTarget:(id) r selector:(SEL) s;
+-(id) initWithTarget:(id)target selector:(SEL)selector;
 
 /** Returns the outside box */
 -(CGRect) rect;
@@ -53,23 +51,47 @@
 -(void) unselected;
 
 /** Enable or disabled the MenuItem */
--(void) setIsEnabled: (BOOL)enabled;
+-(void) setIsEnabled:(BOOL)enabled;
 /** Returns whether or not the MenuItem is enabled */
 -(BOOL) isEnabled;
-
-/** Returns the size in pixels of the texture.
- * Conforms to the CocosNodeSize protocol
- */
--(CGSize) contentSize;
 @end
 
-/** A MenuItemAtlasFont */
-@interface MenuItemAtlasFont : MenuItem
+/** An abstract class for "label" MenuItems 
+ Any CocosNode that supports the CocosNodeLabel protocol can be added.
+ Supported nodes:
+   - BitmapFontAtlas
+   - LabelAtlas
+   - Label
+ */
+@interface MenuItemLabel : MenuItem  <CocosNodeRGBA>
 {
-	LabelAtlas *label;
+	CocosNode<CocosNodeLabel, CocosNodeRGBA> *label_;
 }
 
-@property (readwrite, retain) LabelAtlas* label;
+/** Label that is rendered. It can be any CocosNode that implements the CocosNodeLabel */
+@property (readwrite,retain) CocosNode<CocosNodeLabel, CocosNodeRGBA>* label;
+
+/** creates a MenuItemLabel with a Label, target and selector */
++(id) itemWithLabel:(CocosNode<CocosNodeLabel,CocosNodeRGBA>*)label target:(id)target selector:(SEL)selector;
+
+/** initializes a MenuItemLabel with a Label, target and selector */
+-(id) initWithLabel:(CocosNode<CocosNodeLabel,CocosNodeRGBA>*)label target:(id)target selector:(SEL)selector;
+
+/** sets a new string to the inner label */
+-(void) setString:(NSString*)label;
+
+/** Enable or disabled the MenuItemFont
+ @warning setIsEnabled changes the RGB color of the font
+ */
+-(void) setIsEnabled: (BOOL)enabled;
+@end
+
+/** A MenuItemAtlasFont
+ Helper class that creates a MenuItemLabel class with a LabelAtlas
+ */
+@interface MenuItemAtlasFont : MenuItemLabel
+{
+}
 
 /** creates a menu item from a string and atlas with a target/selector */
 +(id) itemFromString: (NSString*) value charMapFile:(NSString*) charMapFile itemWidth:(int)itemWidth itemHeight:(int)itemHeight startCharMap:(char)startCharMap;
@@ -80,24 +102,15 @@
 /** initializes a menu item from a string and atlas with a target/selector */
 -(id) initFromString: (NSString*) value charMapFile:(NSString*) charMapFile itemWidth:(int)itemWidth itemHeight:(int)itemHeight startCharMap:(char)startCharMap target:(id) rec selector:(SEL) cb;
 
-/** Change this menuitem's label's string **/
--(void) setString:(NSString *)string;
-
-/** Enable or disabled the MenuItemFont
- @warning setIsEnabled changes the RGB color of the font
- */
--(void) setIsEnabled: (BOOL)enabled;
 
 @end
 
-/** A MenuItemFont */
-@interface MenuItemFont : MenuItem
+/** A MenuItemFont
+ Helper class that creates a MenuItemLabel class with a Label
+ */
+@interface MenuItemFont : MenuItemLabel
 {
-	Label *label;
 }
-
-@property (readwrite, retain) Label* label;
-
 /** set font size */
 +(void) setFontSize: (int) s;
 
@@ -118,31 +131,28 @@
 
 /** initializes a menu item from a string with a target/selector */
 -(id) initFromString: (NSString*) value target:(id) r selector:(SEL) s;
-
-/** Change this menuitem's label's string **/
--(void) setString:(NSString *)string;
-
-/** Enable or disabled the MenuItemFont
- @warning setIsEnabled changes the RGB color of the font
- */
--(void) setIsEnabled: (BOOL)enabled;
-
 @end
 
-
-/** A MenuItemImage */
-@interface MenuItemImage : MenuItem
+/** A MenuItemImage
+ A class that creates a MenuItem with 3 images:
+ - unselected image
+ - selected image
+ - disabled image
+ 
+ For best results try that all images are of the same size
+ */
+@interface MenuItemImage : MenuItem <CocosNodeRGBA>
 {
 	BOOL selected;
-	Sprite *normalImage, *selectedImage, *disabledImage;
+	Sprite *normalImage_, *selectedImage_, *disabledImage_;
 }
 
 /// Sprite (image) that is displayed when the MenuItem is not selected
-@property (readonly) Sprite *normalImage;
+@property (readwrite,retain) Sprite *normalImage;
 /// Sprite (image) that is displayed when the MenuItem is selected
-@property (readonly) Sprite *selectedImage;
+@property (readwrite,retain) Sprite *selectedImage;
 /// Sprite (image) that is displayed when the MenuItem is disabled
-@property (readonly) Sprite *disabledImage;
+@property (readwrite,retain) Sprite *disabledImage;
 
 /** creates a menu item with a normal and selected image*/
 +(id) itemFromNormalImage: (NSString*)value selectedImage:(NSString*) value2;
@@ -156,15 +166,26 @@
 
 
 
-/** A MenuItemToggle */
-@interface MenuItemToggle : MenuItem
+/** A MenuItemToggle
+ A simple container class that "toggles" it's inner items
+ The inner itmes can be any MenuItem
+ */
+@interface MenuItemToggle : MenuItem <CocosNodeRGBA>
 {
-	NSUInteger selectedIndex;
-	NSMutableArray* subItems;
+	NSUInteger selectedIndex_;
+	NSMutableArray* subItems_;
+	GLubyte opacity_, r_, g_, b_;
 }
+
+/** conforms with CocosNodeRGBA protocol */
+@property (readonly) GLubyte opacity,r,g,b;
 
 /** returns the selected item */
 @property (readwrite) NSUInteger selectedIndex;
+/** NSMutableArray that contains the subitems. You can add/remove items in runtime, and you can replace the array with a new one.
+ @since v0.7.2
+ */
+@property (readwrite,retain) NSMutableArray *subItems;
 
 /** creates a menu item from a list of items with a target/selector */
 +(id) itemWithTarget:(id)t selector:(SEL)s items:(MenuItem*) item, ... NS_REQUIRES_NIL_TERMINATION;

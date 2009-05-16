@@ -18,10 +18,10 @@
 @implementation PASoundListener
 
 - (id)init {
-    return [self initWithPosition:cpv(240,160)]; // middle of screen
+    return [self initWithPosition:ccp(240,160)]; // middle of screen
 }
-- (id)initWithPosition:(cpVect)pos {
-    if (self = [super init]) {
+- (id)initWithPosition:(CGPoint)pos {
+    if ((self = [super init])) {
         self.position = pos;
         self.orientation = 0;
     }
@@ -29,20 +29,33 @@
 }
 
 
-- (cpVect)position {
+- (CGPoint)position {
     return position;
 }
-- (void)setPosition:(cpVect)pos {
+- (void)setPosition:(CGPoint)pos {
     position = pos;
     float x,y;
-    if ([[Director sharedDirector] landscape]) {
-        x = pos.x - 240.0;
-        y = 160.0 - pos.y;
-    } else {
-        x = pos.x;
-        y = pos.y;
-    }
-    float listenerPosAL[] = {x, y, 0.};
+	switch ( [[Director sharedDirector] deviceOrientation] ) {
+		case CCDeviceOrientationLandscapeLeft:
+			x = pos.x - 240.0f;
+			y = 160.0f - pos.y;
+			break;		
+		case CCDeviceOrientationLandscapeRight:
+			// XXX: set correct orientation
+			x = pos.x - 240.0f;
+			y = 160.0f - pos.y;
+			break;		
+		case CCDeviceOrientationPortrait:
+			x = pos.x;
+			y = pos.y;
+			break;		
+		case CCDeviceOrientationPortraitUpsideDown:
+			// XXX: set correct orientation
+			x = pos.x;
+			y = pos.y;
+			break;		
+	}
+    float listenerPosAL[] = {x, y, 0.0f};
 	// Move our listener coordinates
 	alListenerfv(AL_POSITION, listenerPosAL);    
 }
@@ -53,7 +66,7 @@
 - (void)setOrientation:(float)o {
     orientation = o;
 //    float ori[] = {cos(o + M_PI_2), sin(o + M_PI_2), 0., 0., 0., 1.};
-    float ori[] = {0., 1., 0., 0., 0., 1.}; // I want my listener to stay heads-up always, regardless of the ship's orientation
+    float ori[] = {0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f}; // I want my listener to stay heads-up always, regardless of the ship's orientation
 	// Set our listener orientation (rotation)
 	alListenerfv(AL_ORIENTATION, ori);
 }

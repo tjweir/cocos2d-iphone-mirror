@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 29
-/svn/!svn/ver/683/trunk/tests
+/svn/!svn/ver/950/trunk/tests
 END
 main.m
 K 25
@@ -9,191 +9,215 @@ svn:wc:ra_dav:version-url
 V 35
 /svn/!svn/ver/65/trunk/tests/main.m
 END
-IntervalDemo.h
+SpritesTest.h
 K 25
 svn:wc:ra_dav:version-url
-V 44
-/svn/!svn/ver/482/trunk/tests/IntervalDemo.h
+V 43
+/svn/!svn/ver/905/trunk/tests/SpritesTest.h
 END
-IntervalDemo.m
+Texture2dTest.m
 K 25
 svn:wc:ra_dav:version-url
-V 44
-/svn/!svn/ver/638/trunk/tests/IntervalDemo.m
+V 45
+/svn/!svn/ver/942/trunk/tests/Texture2dTest.m
+END
+AtlasSpriteTest.h
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/925/trunk/tests/AtlasSpriteTest.h
+END
+SpritesTest.m
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/949/trunk/tests/SpritesTest.m
+END
+AtlasSpriteTest.m
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/950/trunk/tests/AtlasSpriteTest.m
 END
 MenuTest.h
 K 25
 svn:wc:ra_dav:version-url
 V 40
-/svn/!svn/ver/656/trunk/tests/MenuTest.h
-END
-Chipmunk_Accel.h
-K 25
-svn:wc:ra_dav:version-url
-V 46
-/svn/!svn/ver/482/trunk/tests/Chipmunk_Accel.h
+/svn/!svn/ver/804/trunk/tests/MenuTest.h
 END
 EffectsAdvancedTest.h
 K 25
 svn:wc:ra_dav:version-url
 V 51
-/svn/!svn/ver/534/trunk/tests/EffectsAdvancedTest.h
+/svn/!svn/ver/732/trunk/tests/EffectsAdvancedTest.h
 END
-RotateWorld.h
+RotateWorldTest.h
 K 25
 svn:wc:ra_dav:version-url
-V 43
-/svn/!svn/ver/482/trunk/tests/RotateWorld.h
-END
-ParticleDemo.h
-K 25
-svn:wc:ra_dav:version-url
-V 44
-/svn/!svn/ver/482/trunk/tests/ParticleDemo.h
+V 47
+/svn/!svn/ver/732/trunk/tests/RotateWorldTest.h
 END
 MenuTest.m
 K 25
 svn:wc:ra_dav:version-url
 V 40
-/svn/!svn/ver/683/trunk/tests/MenuTest.m
+/svn/!svn/ver/949/trunk/tests/MenuTest.m
 END
-Chipmunk_Accel.m
+ChipmunkAccelTouchTest.h
 K 25
 svn:wc:ra_dav:version-url
-V 46
-/svn/!svn/ver/642/trunk/tests/Chipmunk_Accel.m
+V 54
+/svn/!svn/ver/732/trunk/tests/ChipmunkAccelTouchTest.h
+END
+drawPrimitivesTest.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/801/trunk/tests/drawPrimitivesTest.h
 END
 EffectsAdvancedTest.m
 K 25
 svn:wc:ra_dav:version-url
 V 51
-/svn/!svn/ver/638/trunk/tests/EffectsAdvancedTest.m
+/svn/!svn/ver/949/trunk/tests/EffectsAdvancedTest.m
 END
-RotateWorld.m
+RotateWorldTest.m
 K 25
 svn:wc:ra_dav:version-url
-V 43
-/svn/!svn/ver/638/trunk/tests/RotateWorld.m
-END
-AccelViewportDemo.h
-K 25
-svn:wc:ra_dav:version-url
-V 49
-/svn/!svn/ver/557/trunk/tests/AccelViewportDemo.h
+V 47
+/svn/!svn/ver/939/trunk/tests/RotateWorldTest.m
 END
 cocosnodeTest.h
 K 25
 svn:wc:ra_dav:version-url
 V 45
-/svn/!svn/ver/645/trunk/tests/cocosnodeTest.h
+/svn/!svn/ver/834/trunk/tests/cocosnodeTest.h
 END
-ParticleDemo.m
+ChipmunkAccelTouchTest.m
 K 25
 svn:wc:ra_dav:version-url
-V 44
-/svn/!svn/ver/638/trunk/tests/ParticleDemo.m
+V 54
+/svn/!svn/ver/948/trunk/tests/ChipmunkAccelTouchTest.m
+END
+drawPrimitivesTest.m
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/939/trunk/tests/drawPrimitivesTest.m
 END
 cocosnodeTest.m
 K 25
 svn:wc:ra_dav:version-url
 V 45
-/svn/!svn/ver/645/trunk/tests/cocosnodeTest.m
+/svn/!svn/ver/949/trunk/tests/cocosnodeTest.m
 END
-AccelViewportDemo.m
+IntervalTest.h
 K 25
 svn:wc:ra_dav:version-url
-V 49
-/svn/!svn/ver/638/trunk/tests/AccelViewportDemo.m
+V 44
+/svn/!svn/ver/732/trunk/tests/IntervalTest.h
 END
-TransitionsDemo.h
+IntervalTest.m
 K 25
 svn:wc:ra_dav:version-url
-V 47
-/svn/!svn/ver/495/trunk/tests/TransitionsDemo.h
-END
-TransitionsDemo.m
-K 25
-svn:wc:ra_dav:version-url
-V 47
-/svn/!svn/ver/638/trunk/tests/TransitionsDemo.m
-END
-Texture2dDemo.h
-K 25
-svn:wc:ra_dav:version-url
-V 45
-/svn/!svn/ver/575/trunk/tests/Texture2dDemo.h
+V 44
+/svn/!svn/ver/939/trunk/tests/IntervalTest.m
 END
 SceneTest.h
 K 25
 svn:wc:ra_dav:version-url
 V 41
-/svn/!svn/ver/482/trunk/tests/SceneTest.h
+/svn/!svn/ver/808/trunk/tests/SceneTest.h
 END
-SpritesDemo.h
+EaseActionsTest.h
 K 25
 svn:wc:ra_dav:version-url
-V 43
-/svn/!svn/ver/563/trunk/tests/SpritesDemo.h
+V 47
+/svn/!svn/ver/734/trunk/tests/EaseActionsTest.h
 END
-ClickAndMove.h
+ClickAndMoveTest.h
 K 25
 svn:wc:ra_dav:version-url
-V 44
-/svn/!svn/ver/492/trunk/tests/ClickAndMove.h
-END
-Texture2dDemo.m
-K 25
-svn:wc:ra_dav:version-url
-V 45
-/svn/!svn/ver/638/trunk/tests/Texture2dDemo.m
+V 48
+/svn/!svn/ver/732/trunk/tests/ClickAndMoveTest.h
 END
 SceneTest.m
 K 25
 svn:wc:ra_dav:version-url
 V 41
-/svn/!svn/ver/638/trunk/tests/SceneTest.m
+/svn/!svn/ver/949/trunk/tests/SceneTest.m
 END
-SpritesDemo.m
-K 25
-svn:wc:ra_dav:version-url
-V 43
-/svn/!svn/ver/675/trunk/tests/SpritesDemo.m
-END
-TestParallax.h
+ParticleTest.h
 K 25
 svn:wc:ra_dav:version-url
 V 44
-/svn/!svn/ver/482/trunk/tests/TestParallax.h
+/svn/!svn/ver/862/trunk/tests/ParticleTest.h
 END
-ClickAndMove.m
+EaseActionsTest.m
 K 25
 svn:wc:ra_dav:version-url
-V 44
-/svn/!svn/ver/653/trunk/tests/ClickAndMove.m
+V 47
+/svn/!svn/ver/939/trunk/tests/EaseActionsTest.m
 END
-TestAtlas.h
+AtlasTest.h
 K 25
 svn:wc:ra_dav:version-url
 V 41
-/svn/!svn/ver/669/trunk/tests/TestAtlas.h
+/svn/!svn/ver/822/trunk/tests/AtlasTest.h
 END
-TestAtlas.m
+ClickAndMoveTest.m
 K 25
 svn:wc:ra_dav:version-url
-V 41
-/svn/!svn/ver/675/trunk/tests/TestAtlas.m
+V 48
+/svn/!svn/ver/948/trunk/tests/ClickAndMoveTest.m
 END
-TestParallax.m
+ParallaxTest.h
 K 25
 svn:wc:ra_dav:version-url
 V 44
-/svn/!svn/ver/638/trunk/tests/TestParallax.m
+/svn/!svn/ver/919/trunk/tests/ParallaxTest.h
+END
+AccelViewportTest.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/827/trunk/tests/AccelViewportTest.h
+END
+ParticleTest.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/948/trunk/tests/ParticleTest.m
+END
+ParallaxTest.m
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/949/trunk/tests/ParallaxTest.m
+END
+AtlasTest.m
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/949/trunk/tests/AtlasTest.m
+END
+AccelViewportTest.m
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/948/trunk/tests/AccelViewportTest.m
+END
+TransitionsTest.h
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/!svn/ver/734/trunk/tests/TransitionsTest.h
 END
 EffectsTest.h
 K 25
 svn:wc:ra_dav:version-url
 V 43
-/svn/!svn/ver/484/trunk/tests/EffectsTest.h
+/svn/!svn/ver/732/trunk/tests/EffectsTest.h
 END
 Prefix.pch
 K 25
@@ -201,21 +225,21 @@ svn:wc:ra_dav:version-url
 V 39
 /svn/!svn/ver/65/trunk/tests/Prefix.pch
 END
-EaseDemo.h
+TransitionsTest.m
 K 25
 svn:wc:ra_dav:version-url
-V 40
-/svn/!svn/ver/666/trunk/tests/EaseDemo.h
+V 47
+/svn/!svn/ver/949/trunk/tests/TransitionsTest.m
 END
 EffectsTest.m
 K 25
 svn:wc:ra_dav:version-url
 V 43
-/svn/!svn/ver/638/trunk/tests/EffectsTest.m
+/svn/!svn/ver/949/trunk/tests/EffectsTest.m
 END
-EaseDemo.m
+Texture2dTest.h
 K 25
 svn:wc:ra_dav:version-url
-V 40
-/svn/!svn/ver/667/trunk/tests/EaseDemo.m
+V 45
+/svn/!svn/ver/902/trunk/tests/Texture2dTest.h
 END

@@ -1,15 +1,15 @@
 8
 
 dir
-688
+951
 http://cocos2d-iphone.googlecode.com/svn/trunk/external/Chipmunk/Demo
 http://cocos2d-iphone.googlecode.com/svn
 
 
 
-2009-03-10T23:12:43.743994Z
-638
-ricardoquesada
+2009-05-15T12:28:29.306128Z
+948
+valentin.milea
 
 
 svn:special svn:externals svn:needs-lock
@@ -33,10 +33,10 @@ file
 
 
 2009-03-15T04:08:21.000000Z
-03ee5d8001887e65145ab8a0f67363c3
-2009-03-10T23:12:43.743994Z
-638
-ricardoquesada
+b946d35897fbf136cb0456f53949824c
+2009-05-15T12:28:29.306128Z
+948
+valentin.milea
 
 Demo1.m
 file

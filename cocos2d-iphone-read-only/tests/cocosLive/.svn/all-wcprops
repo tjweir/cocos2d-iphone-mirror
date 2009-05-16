@@ -1,25 +1,25 @@
 K 25
 svn:wc:ra_dav:version-url
 V 39
-/svn/!svn/ver/615/trunk/tests/cocosLive
+/svn/!svn/ver/917/trunk/tests/cocosLive
 END
 dataDelegate.m
 K 25
 svn:wc:ra_dav:version-url
 V 54
-/svn/!svn/ver/609/trunk/tests/cocosLive/dataDelegate.m
+/svn/!svn/ver/870/trunk/tests/cocosLive/dataDelegate.m
 END
 cocosLiveDemo.h
 K 25
 svn:wc:ra_dav:version-url
 V 55
-/svn/!svn/ver/594/trunk/tests/cocosLive/cocosLiveDemo.h
+/svn/!svn/ver/779/trunk/tests/cocosLive/cocosLiveDemo.h
 END
 cocosLiveDemo.m
 K 25
 svn:wc:ra_dav:version-url
 V 55
-/svn/!svn/ver/615/trunk/tests/cocosLive/cocosLiveDemo.m
+/svn/!svn/ver/917/trunk/tests/cocosLive/cocosLiveDemo.m
 END
 cocoslive.xib
 K 25
@@ -31,7 +31,7 @@ dataDelegate.h
 K 25
 svn:wc:ra_dav:version-url
 V 54
-/svn/!svn/ver/475/trunk/tests/cocosLive/dataDelegate.h
+/svn/!svn/ver/779/trunk/tests/cocosLive/dataDelegate.h
 END
 cocosLiveInfo.plist
 K 25

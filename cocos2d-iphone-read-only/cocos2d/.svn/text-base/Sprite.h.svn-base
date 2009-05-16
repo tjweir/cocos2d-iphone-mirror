@@ -22,7 +22,18 @@
 #pragma mark Sprite
 
 @class Animation;
-/** a 2D sprite */
+/** Sprite is a subclass of TextureNode that implements the CocosNodeFrames protocol.
+ *
+ * Sprite supports ALL CocosNode transformations, but in contrast to AtlasSprite it is much slower.
+ * ONLY use Sprite if you can't achieve the same with effect with AtlasSprite, otherwise the use of
+ * AtlasSprite is recommended.
+ *
+ * All features from TextureNode are valid, plus the following new features:
+ *  - it supports animations (frames)
+ *
+ * Limitations of Sprite:
+ *  - It doesn't perform as well as AtlasSprite
+ */
 @interface Sprite : TextureNode <CocosNodeFrames>
 {
 	NSMutableDictionary *animations;	
@@ -30,35 +41,17 @@
 
 /** creates an sprite with an image file */
 + (id) spriteWithFile:(NSString *)imageFile;
-/** creates an sprite with a PVRTC image file
- * It can only load square images: width == height, and it must be a power of 2 (128,256,512...)
- * bpp can only be 2 or 4. 2 means more compression but lower quality.
- * hasAlpha: whether or not the image contains alpha channel
- * @deprecated This method will be removed in v0.8. Use spriteWithFile instead. It supports PVRTC (non Raw) format
- */
-+ (id) spriteWithPVRTCFile: (NSString*) fileimage bpp:(int)bpp hasAlpha:(BOOL)alpha width:(int)w __attribute__ ((deprecated));
 /** creates an sprite from a CGImageRef image */
 + (id) spriteWithCGImage:(CGImageRef)image;
 
 /** initializes the sprite with an image file */
 - (id) initWithFile:(NSString *) imageFile;
-/** creates an sprite with a PVRTC image file
- * It can only load square images: width == height, and it must be a power of 2 (128,256,512...)
- * bpp can only be 2 or 4. 2 means more compression but lower quality.
- * hasAlpha: whether or not the image contains alpha channel
- * @deprecated This method will be removed in v0.8. Use initWithFile instead. It supports PVRTC (non Raw) format
- */
-- (id) initWithPVRTCFile: (NSString*) fileimage bpp:(int)bpp hasAlpha:(BOOL)alpha width:(int)w __attribute__ ((deprecated));
 /** creates an sprite from a CGImageRef image */
 - (id) initWithCGImage:(CGImageRef)image;
 /** creates an sprite with a Texture2D instance */
 +(id) spriteWithTexture:(Texture2D*) tex;
 /** initializes the sprite with a Texture2D instance */
 -(id) initWithTexture:(Texture2D*) tex;
-
-
-/** changes the display frame based on an animation and an index */
--(void) setDisplayFrame: (NSString*) animationName index:(int) frameIndex;
 @end
 
 #pragma mark Animation
@@ -98,11 +91,6 @@
 /** initializes an Animation with name, delay and frames from image files
  */
 -(id) initWithName: (NSString*) name delay:(float)delay firstImage:(NSString*)filename vaList:(va_list) args;
-
-/** adds a frame to an Animation
- @deprecated Use addFrameWithFilename instead. Will be removed in v0.8
- */
--(void) addFrame: (NSString*) filename __attribute__((deprecated));
 
 /** adds a frame to an Animation */
 -(void) addFrameWithFilename: (NSString*) filename;

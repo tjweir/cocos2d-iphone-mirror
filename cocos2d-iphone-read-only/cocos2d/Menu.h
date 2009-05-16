@@ -16,12 +16,24 @@
 
 #import "MenuItem.h"
 #import "Layer.h"
+#import "TargetedTouchDelegate.h"
 
-/** A Menu */
-@interface Menu : Layer <CocosNodeOpacity>
+typedef enum  {
+	kMenuStateWaiting,
+	kMenuStateTrackingTouch
+} MenuState;
+
+/** A Menu
+ * 
+ * Features and Limitation:
+ *  - You can add MenuItem objects in runtime using addChild:
+ *  - But the only accecpted children are MenuItem objects
+ */
+@interface Menu : CocosNode <TargetedTouchDelegate, CocosNodeRGBA>
 {
-	int selectedItem;
-	GLubyte opacity;
+	MenuState state;
+	MenuItem *selectedItem;
+	GLubyte opacity_, r_, g_, b_;
 }
 
 /** creates a menu with it's items */
@@ -32,9 +44,18 @@
 
 /** align items vertically */
 -(void) alignItemsVertically;
+/** align items vertically with padding
+ @since v0.7.2
+ */
+-(void) alignItemsVerticallyWithPadding:(float) padding;
 
 /** align items horizontally */
 -(void) alignItemsHorizontally;
+/** align items horizontally with padding
+ @since v0.7.2
+ */
+-(void) alignItemsHorizontallyWithPadding: (float) padding;
+
 
 /** align items in rows of columns */
 -(void) alignItemsInColumns: (NSNumber *) columns, ... NS_REQUIRES_NIL_TERMINATION;
@@ -45,6 +66,7 @@
 -(void) alignItemsInRows: (NSNumber *) rows vaList: (va_list) args;
 
 
-@property (readwrite,assign) GLubyte opacity;
+/** conforms to CocosNodeRGBA protocol */
+@property (readonly) GLubyte opacity, r, g, b;
 
 @end

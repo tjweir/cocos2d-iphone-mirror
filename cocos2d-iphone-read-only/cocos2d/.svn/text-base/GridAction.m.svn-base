@@ -81,24 +81,23 @@
 	return [Grid3D gridWithSize:gridSize];
 }
 
--(ccVertex3D)vertex:(ccGridSize)pos
+-(ccVertex3F)vertex:(ccGridSize)pos
 {
 	Grid3D *g = (Grid3D *)target.grid;
 	return [g vertex:pos];
 }
 
--(ccVertex3D)originalVertex:(ccGridSize)pos
+-(ccVertex3F)originalVertex:(ccGridSize)pos
 {
 	Grid3D *g = (Grid3D *)target.grid;
 	return [g originalVertex:pos];
 }
 
--(void)setVertex:(ccGridSize)pos vertex:(ccVertex3D)vertex
+-(void)setVertex:(ccGridSize)pos vertex:(ccVertex3F)vertex
 {
 	Grid3D *g = (Grid3D *)target.grid;
 	return [g setVertex:pos vertex:vertex];
 }
-
 @end
 
 ////////////////////////////////////////////////////////////
@@ -133,17 +132,17 @@
 ////////////////////////////////////////////////////////////
 
 @interface IntervalAction (Amplitude)
--(void)setAmplitudeRate:(cpFloat)amp;
--(cpFloat)getAmplitudeRate;
+-(void)setAmplitudeRate:(CGFloat)amp;
+-(CGFloat)getAmplitudeRate;
 @end
 
 @implementation IntervalAction (Amplitude)
--(void)setAmplitudeRate:(cpFloat)amp
+-(void)setAmplitudeRate:(CGFloat)amp
 {
 	[NSException raise:@"IntervalAction (Amplitude)" format:@"Abstract class needs implementation"];
 }
 
--(cpFloat)getAmplitudeRate
+-(CGFloat)getAmplitudeRate
 {
 	[NSException raise:@"IntervalAction (Amplitude)" format:@"Abstract class needs implementation"];
 	return 0;

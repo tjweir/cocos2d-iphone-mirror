@@ -22,16 +22,22 @@
 
 /** AtlasSpriteManager is the object that draws all the AtlasSprite objects
  * that belongs to this Manager. Use 1 AtlasSpriteManager per TextureAtlas
+*
+ * Limitations:
+ *  - The only object that is accepted as children are AtlasSprite
+ *  - It's children are all Aliased or all Antialiased. They can't be some Aliased and some Antialiased
+ * 
+ * @since v0.7.1
  */
-@interface AtlasSpriteManager : CocosNode
+@interface AtlasSpriteManager : CocosNode <CocosNodeTexture>
 {
 @private
-	unsigned int mTotalSprites;
-	TextureAtlas *mAtlas;
+	unsigned int totalSprites_;
+	TextureAtlas *textureAtlas_;
 }
 
 /** returns the TextureAtlas that is used */
-@property (readonly) TextureAtlas * atlas;
+@property (readwrite,retain) TextureAtlas * textureAtlas;
 
 /** creates an AtlasSpriteManager with a texture2d */
 +(id)spriteManagerWithTexture:(Texture2D *)tex;
@@ -47,12 +53,18 @@
 /** initializes an AtlasSpriteManager with a file image (.png, .jpeg, .pvr, etc) */
 -(id)initWithFile:(NSString*)fileImage capacity:(NSUInteger)capacity;
 
--(int)indexForNewChild;
+-(NSUInteger)indexForNewChildAtZ:(int)z;
 
 /** creates an sprite with a rect in the AtlasSpriteManage */
 -(AtlasSprite*) createSpriteWithRect:(CGRect)rect;
 
-/** removes a child given a certain index. It will also cleanup the running actions depending on the cleanup parameter */
+/** removes a child given a certain index. It will also cleanup the running actions depending on the cleanup parameter.
+ @warning Removing a child from an AtlasSpriteManager is very slow
+ */
 -(void)removeChildAtIndex:(NSUInteger)index cleanup:(BOOL)doCleanup;
 
+/** removes a child given a reference. It will also cleanup the running actions depending on the cleanup parameter.
+ @warning Removing a child from an AtlasSpriteManager is very slow
+ */
+-(void)removeChild: (AtlasSprite *)sprite cleanup:(BOOL)doCleanup;
 @end

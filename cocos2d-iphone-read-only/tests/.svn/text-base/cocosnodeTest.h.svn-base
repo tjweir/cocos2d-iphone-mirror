@@ -1,4 +1,3 @@
-#import <UIKit/UIKit.h>
 
 @class Sprite;
 
@@ -36,5 +35,9 @@
 @end
 
 @interface Test6 : TestDemo
+{}
+@end
+
+@interface Test7 : TestDemo
 {}
 @end

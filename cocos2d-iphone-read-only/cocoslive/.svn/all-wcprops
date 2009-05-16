@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 33
-/svn/!svn/ver/634/trunk/cocoslive
+/svn/!svn/ver/917/trunk/cocoslive
 END
 cocoslive.m
 K 25
@@ -13,13 +13,13 @@ ScoreServerRequest.h
 K 25
 svn:wc:ra_dav:version-url
 V 54
-/svn/!svn/ver/594/trunk/cocoslive/ScoreServerRequest.h
+/svn/!svn/ver/771/trunk/cocoslive/ScoreServerRequest.h
 END
 ScoreServerPost.m
 K 25
 svn:wc:ra_dav:version-url
 V 51
-/svn/!svn/ver/633/trunk/cocoslive/ScoreServerPost.m
+/svn/!svn/ver/917/trunk/cocoslive/ScoreServerPost.m
 END
 ScoreServerRequest.m
 K 25
@@ -31,11 +31,11 @@ cocoslive.h
 K 25
 svn:wc:ra_dav:version-url
 V 45
-/svn/!svn/ver/611/trunk/cocoslive/cocoslive.h
+/svn/!svn/ver/917/trunk/cocoslive/cocoslive.h
 END
 ScoreServerPost.h
 K 25
 svn:wc:ra_dav:version-url
 V 51
-/svn/!svn/ver/634/trunk/cocoslive/ScoreServerPost.h
+/svn/!svn/ver/917/trunk/cocoslive/ScoreServerPost.h
 END

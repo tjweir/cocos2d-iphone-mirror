@@ -14,21 +14,26 @@
 
 #import "AtlasSpriteManager.h"
 #import "AtlasSprite.h"
+#import "Support/CGPointExtension.h"
 
 #pragma mark -
 #pragma mark AltasSprite
 
+enum {
+	kIndexNotInitialized = 0xffffffff,
+};
+
 @interface AtlasSprite (Private)
 -(void)updateTextureCoords;
--(void)updatePosition;
 -(void) initAnimationDictionary;
 @end
 
 @implementation AtlasSprite
 
 @synthesize dirty;
-@synthesize atlasIndex = mAtlasIndex;
-@synthesize textureRect = mRect;
+@synthesize quad = quad_;
+@synthesize atlasIndex = atlasIndex_;
+@synthesize textureRect = rect_;
 
 +(id)spriteWithRect:(CGRect)rect spriteManager:(AtlasSpriteManager*)manager
 {
@@ -38,11 +43,27 @@
 -(id)initWithRect:(CGRect)rect spriteManager:(AtlasSpriteManager*)manager
 {
 	if( (self = [super init])) {
-		mAtlas = [manager atlas];	// weak reference. Don't release
+		textureAtlas_ = [manager textureAtlas];	// weak reference. Don't release
 		
-		dirty = YES;
+		atlasIndex_ = kIndexNotInitialized;
 
+		dirty = YES;
+		
+		flipY_ = flipX_ = NO;
+		
+		// default transform anchor: center
+		anchorPoint_ = ccp(0.5f, 0.5f);
+
+		// RGB and opacity
+		r_ = g_ = b_ = opacity_ = 255;
+		ccColor4B tmpColor = {255,255,255,255};
+		quad_.bl.colors = tmpColor;
+		quad_.br.colors = tmpColor;
+		quad_.tl.colors = tmpColor;
+		quad_.tr.colors = tmpColor;
+		
 		animations = nil;		// lazy alloc
+		
 		[self setTextureRect:rect];
 	}
 
@@ -51,7 +72,7 @@
 
 - (NSString*) description
 {
-	return [NSString stringWithFormat:@"<%@ = %08X | Rect = (%.2f,%.2f,%.2f,%.2f) | tag = %i>", [self class], self, mRect.origin.x, mRect.origin.y, mRect.size.width, mRect.size.height, tag];
+	return [NSString stringWithFormat:@"<%@ = %08X | Rect = (%.2f,%.2f,%.2f,%.2f) | tag = %i>", [self class], self, rect_.origin.x, rect_.origin.y, rect_.size.width, rect_.size.height, tag];
 }
 
 - (void) dealloc
@@ -60,33 +81,54 @@
 	[super dealloc];
 }
 
+-(void) initAnimationDictionary
+{
+	animations = [[NSMutableDictionary dictionaryWithCapacity:2] retain];
+}
+
 -(void)setTextureRect:(CGRect) rect
 {
-	mRect = rect;
-	transformAnchor = cpv( mRect.size.width / 2, mRect.size.height /2 );
+	rect_ = rect;
 
 	[self updateTextureCoords];
-	[self updateAtlas];
+	
+	// Don't update Atlas if index == -1. issue #283
+	if( atlasIndex_ == kIndexNotInitialized)
+		dirty = YES;
+	else
+		[textureAtlas_ updateQuad:&quad_ atIndex:atlasIndex_];
+
+	if( ! CGSizeEqualToSize(rect.size, contentSize_))  {
+		[self setContentSize:rect.size];
+		dirty = YES;
+	}
 }
 
 -(void)updateTextureCoords
 {
-	float atlasWidth = mAtlas.texture.pixelsWide;
-	float atlasHeight = mAtlas.texture.pixelsHigh;
+	float atlasWidth = textureAtlas_.texture.pixelsWide;
+	float atlasHeight = textureAtlas_.texture.pixelsHigh;
 
-	float left = mRect.origin.x / atlasWidth;
-	float right = (mRect.origin.x + mRect.size.width) / atlasWidth;
-	float top = mRect.origin.y / atlasHeight;
-	float bottom = (mRect.origin.y + mRect.size.height) / atlasHeight;
+	float left = rect_.origin.x / atlasWidth;
+	float right = (rect_.origin.x + rect_.size.width) / atlasWidth;
+	float top = rect_.origin.y / atlasHeight;
+	float bottom = (rect_.origin.y + rect_.size.height) / atlasHeight;
 
-	ccQuad2 newCoords = {
-		left, bottom,
-		right, bottom,
-		left, top,
-		right, top,
-	};
+	
+	if( flipX_)
+		CC_SWAP(left,right);
+	if( flipY_)
+		CC_SWAP(top,bottom);
+	
+	quad_.bl.texCoords.u = left;
+	quad_.bl.texCoords.v = bottom;
+	quad_.br.texCoords.u = right;
+	quad_.br.texCoords.v = bottom;
+	quad_.tl.texCoords.u = left;
+	quad_.tl.texCoords.v = top;
+	quad_.tr.texCoords.u = right;
+	quad_.tr.texCoords.v = top;
 
-	mTexCoords = newCoords;
 }
 
 -(void)updatePosition
@@ -96,31 +138,21 @@
 	// if not visible
 	// then everything is 0
 	if( ! visible ) {		
-		ccQuad3 newVertices = {
-			0,0,0,
-			0,0,0,
-			0,0,0,
-			0,0,0,			
-		};
-		
-		mVertices = newVertices;
+		quad_.br.vertices = quad_.tl.vertices = quad_.tr.vertices = quad_.bl.vertices = (ccVertex3F){0,0,0};
+
 	}
 	
 	// rotation ? -> update: rotation, scale, position
-	else if( rotation ) {
-		float x1 = -transformAnchor.x * scaleX;
-		float y1 = -transformAnchor.y * scaleY;
+	else if( rotation_ ) {
+		float x1 = -transformAnchor_.x * scaleX_;
+		float y1 = -transformAnchor_.y * scaleY_;
 
-		float x2 = x1 + mRect.size.width * scaleX;
-		float y2 = y1 + mRect.size.height * scaleY;
-		float x = position.x;
-		float y = position.y;
-//		if (relativeTransformAnchor) {
-//			x -= transformAnchor.x;
-//			y -= transformAnchor.y;
-//		}
+		float x2 = x1 + rect_.size.width * scaleX_;
+		float y2 = y1 + rect_.size.height * scaleY_;
+		float x = position_.x;
+		float y = position_.y;
 		
-		float r = (float)-CC_DEGREES_TO_RADIANS(rotation);
+		float r = -CC_DEGREES_TO_RADIANS(rotation_);
 		float cr = cosf(r);
 		float sr = sinf(r);
 		float ax = x1 * cr - y1 * sr + x;
@@ -131,77 +163,62 @@
 		float cy = x2 * sr + y2 * cr + y;
 		float dx = x1 * cr - y2 * sr + x;
 		float dy = x1 * sr + y2 * cr + y;
-
-		ccQuad3 newVertices = 
-					{ax, ay, 0,
-					bx, by, 0,
-					dx, dy, 0,
-					cx, cy, 0};
-		mVertices = newVertices;		
+		quad_.bl.vertices = (ccVertex3F) { (int)ax, (int)ay, vertexZ_ };
+		quad_.br.vertices = (ccVertex3F) { (int)bx, (int)by, vertexZ_ };
+		quad_.tl.vertices = (ccVertex3F) { (int)dx, (int)dy, vertexZ_ };
+		quad_.tr.vertices = (ccVertex3F) { (int)cx, (int)cy, vertexZ_ };
+		
 	}
 	
 	// scale ? -> update: scale, position
-	else if(scaleX != 1 || scaleY != 1)
+	else if(scaleX_ != 1 || scaleY_ != 1)
 	{
-		float x = position.x;
-		float y = position.y;
-//		if (relativeTransformAnchor) {
-//			x -= transformAnchor.x;
-//			y -= transformAnchor.y;
-//		}
+		float x = position_.x;
+		float y = position_.y;
 		
-		float x1 = (x- transformAnchor.x * scaleX);
-		float y1 = (y- transformAnchor.y * scaleY);
-		float x2 = (x1 + mRect.size.width * scaleX);
-		float y2 = (y1 + mRect.size.height * scaleY);
-		ccQuad3 newVertices = {
-			x1,y1,0,
-			x2,y1,0,
-			x1,y2,0,
-			x2,y2,0,
-		};
+		float x1 = (x- transformAnchor_.x * scaleX_);
+		float y1 = (y- transformAnchor_.y * scaleY_);
+		float x2 = (x1 + rect_.size.width * scaleX_);
+		float y2 = (y1 + rect_.size.height * scaleY_);
 
-		mVertices = newVertices;	
+		quad_.bl.vertices = (ccVertex3F) { (int)x1, (int)y1, vertexZ_ };
+		quad_.br.vertices = (ccVertex3F) { (int)x2, (int)y1, vertexZ_ };
+		quad_.tl.vertices = (ccVertex3F) { (int)x1, (int)y2, vertexZ_ };
+		quad_.tr.vertices = (ccVertex3F) { (int)x2, (int)y2, vertexZ_ };
 	}
 	
 	// update position
 	else {
-		float x = position.x;
-		float y = position.y;
-//		if (relativeTransformAnchor) {
-//			x -= transformAnchor.x;
-//			y -= transformAnchor.y;
-//		}
+		float x = position_.x;
+		float y = position_.y;
 		
-		float x1 = (x-transformAnchor.x);
-		float y1 = (y-transformAnchor.y);
-		float x2 = (x1 + mRect.size.width);
-		float y2 = (y1 + mRect.size.height);
-		ccQuad3 newVertices = {
-			x1,y1,0,
-			x2,y1,0,
-			x1,y2,0,
-			x2,y2,0,
-		};
-		
-		mVertices = newVertices;
-	}
+		float x1 = (x-transformAnchor_.x);
+		float y1 = (y-transformAnchor_.y);
+		float x2 = (x1 + rect_.size.width);
+		float y2 = (y1 + rect_.size.height);
 
-	[mAtlas updateQuadWithTexture:&mTexCoords vertexQuad:&mVertices atIndex:mAtlasIndex];
+		quad_.bl.vertices = (ccVertex3F) { (int)x1, (int)y1, vertexZ_ };
+		quad_.br.vertices = (ccVertex3F) { (int)x2, (int)y1, vertexZ_ };
+		quad_.tl.vertices = (ccVertex3F) { (int)x1, (int)y2, vertexZ_ };
+		quad_.tr.vertices = (ccVertex3F) { (int)x2, (int)y2, vertexZ_ };
+	}
+	
+	[textureAtlas_ updateQuad:&quad_ atIndex:atlasIndex_];
 	dirty = NO;
 	return;
 }
 
--(void)updateAtlas
+-(void)insertInAtlasAtIndex:(NSUInteger)index
 {
-	[mAtlas updateQuadWithTexture:&mTexCoords vertexQuad:&mVertices atIndex:mAtlasIndex];
+	atlasIndex_ = index;
+	[textureAtlas_ insertQuad:&quad_ atIndex:atlasIndex_];
 }
 
 //
 // CocosNode property overloads
 //
 #pragma mark AltasSprite - property overloads
--(void)setPosition:(cpVect)pos
+-(void)setPosition:(CGPoint)pos
 {
 	[super setPosition:pos];
 	dirty = YES;
@@ -231,9 +248,15 @@
 	dirty = YES;
 }
 
--(void)setTransformAnchor:(cpVect)anchor
+-(void) setVertexZ:(float)z
 {
-	[super setTransformAnchor:anchor];
+	[super setVertexZ:z];
+	dirty = YES;
+}
+
+-(void)setAnchorPoint:(CGPoint)anchor
+{
+	[super setAnchorPoint:anchor];
 	dirty = YES;
 }
 
@@ -248,12 +271,99 @@
 	dirty = YES;
 }
 
+-(void)setFlipX:(BOOL)b
+{
+	if( flipX_ != b ) {
+		flipX_ = b;
+		[self setTextureRect:rect_];
+	}
+}
+-(BOOL) flipX
+{
+	return flipX_;
+}
+
+-(void) setFlipY:(BOOL)b
+{
+	if( flipY_ != b ) {
+		flipY_ = b;	
+		[self setTextureRect:rect_];
+	}	
+}
+-(BOOL) flipY
+{
+	return flipY_;
+}
+
+//
+// Composition overload
+//
+-(id) addChild:(CocosNode*)child z:(int)z tag:(int) aTag
+{
+	NSAssert(NO, @"AtlasSprite can't have children");
+	return nil;
+}
+
+//
+// Opacity protocol
+//
+-(void) setOpacity:(GLubyte) anOpacity
+{
+	opacity_ = anOpacity;
+	
+	// special opacity for premultiplied textures
+	if( [[textureAtlas_ texture] hasPremultipliedAlpha] )
+		r_ = g_ = b_ = opacity_;
+
+	ccColor4B color = (ccColor4B) {r_, g_, b_, opacity_ };
+
+	quad_.bl.colors = color;
+	quad_.br.colors = color;
+	quad_.tl.colors = color;
+	quad_.tr.colors = color;
+
+	[textureAtlas_ updateQuad:&quad_ atIndex:atlasIndex_];
+}
+-(GLubyte)opacity
+{
+	return opacity_;
+}
+
+//
+// RGB protocol
+//
+-(void) setRGB: (GLubyte)r :(GLubyte)g :(GLubyte)b
+{
+	r_ = r;
+	g_ = g;
+	b_ = b;
+	ccColor4B color = {r_, g_, b_, opacity_ };
+	quad_.bl.colors = color;
+	quad_.br.colors = color;
+	quad_.tl.colors = color;
+	quad_.tr.colors = color;
+	
+	[textureAtlas_ updateQuad:&quad_ atIndex:atlasIndex_];
+}
+-(GLubyte) r
+{
+	return r_;
+}
+-(GLubyte) g
+{
+	return g_;
+}
+-(GLubyte) b
+{
+	return b_;
+}
+
 //
 // CocosNodeSize protocol
 //
 -(CGSize)contentSize
 {
-	return mRect.size;
+	return rect_.size;
 }
 
 //
@@ -262,19 +372,36 @@
 -(void) setDisplayFrame:(id)newFrame
 {
 	AtlasSpriteFrame *frame = (AtlasSpriteFrame*)newFrame;
-	[self setTextureRect: [frame rect]];
+	CGRect rect = [frame rect];
+
+	[self setTextureRect: rect];	
+}
+
+-(void) setDisplayFrame: (NSString*) animationName index:(int) frameIndex
+{
+	if( ! animations )
+		[self initAnimationDictionary];
+	
+	AtlasAnimation *a = [animations objectForKey: animationName];
+	AtlasSpriteFrame *frame = [[a frames] objectAtIndex:frameIndex];
+	
+	NSAssert( frame, @"AtlasSprite#setDisplayFrame. Invalid frame");
+	CGRect rect = [frame rect];
+
+	[self setTextureRect: rect];
+	
 }
 
 -(BOOL) isFrameDisplayed:(id)frame 
 {
 	AtlasSpriteFrame *spr = (AtlasSpriteFrame*)frame;
 	CGRect r = [spr rect];
-	return CGRectEqualToRect(r, mRect);
+	return CGRectEqualToRect(r, rect_);
 }
 
 -(id) displayFrame
 {
-	return [AtlasSpriteFrame frameWithRect:mRect];
+	return [AtlasSpriteFrame frameWithRect:rect_];
 }
 // XXX: duplicated code. Sprite.m and AtlasSprite.m share this same piece of code
 -(void) addAnimation: (id<CocosAnimation>) anim
@@ -321,7 +448,7 @@
 	return [self initWithName:t delay:d firstFrame:nil vaList:nil];
 }
 
-/** initializes an AtlasAnimation with an AtlasSpriteManager, a name, and the frames from AtlasSpriteFrames */
+/* initializes an AtlasAnimation with an AtlasSpriteManager, a name, and the frames from AtlasSpriteFrames */
 -(id) initWithName:(NSString*)t delay:(float)d firstFrame:(AtlasSpriteFrame*)frame vaList:(va_list)args
 {
 	if( (self=[super init]) ) {
