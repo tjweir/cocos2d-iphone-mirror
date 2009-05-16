@@ -1,163 +1,0 @@
-8
-
-dir
-951
-http://cocos2d-iphone.googlecode.com/svn/trunk
-http://cocos2d-iphone.googlecode.com/svn
-
-
-
-2009-05-15T17:07:58.323545Z
-950
-ricardoquesada
-has-props
-
-svn:special svn:externals svn:needs-lock
-
-
-
-
-
-
-
-
-
-
-
-79afc9a6-2f50-0410-804d-6f1bdedaafc9
-
-doxygen.config
-file
-
-
-
-
-2009-05-16T12:56:24.000000Z
-9b4e4d8f0c8db56633f6e0b71acfda2a
-2009-04-12T07:47:26.180936Z
-783
-ricardoquesada
-
-external
-dir
-
-LICENSE
-file
-
-
-
-
-2009-03-15T04:09:25.000000Z
-63e89d1bed59e17abf0e96af185ff2d0
-2008-12-23T23:00:01.795293Z
-395
-ricardoquesada
-
-AUTHORS
-file
-
-
-
-
-2009-05-16T12:56:24.000000Z
-e01e250d04adba69943ca9b22accbdd8
-2009-05-10T17:23:53.291257Z
-909
-ricardoquesada
-
-cocoslive
-dir
-
-CHANGELOG
-file
-
-
-
-
-2009-05-16T12:56:24.000000Z
-8f690350f2cf48a037b496a93ad208cb
-2009-05-15T16:09:21.330221Z
-949
-ricardoquesada
-
-cocos2d
-dir
-
-cocos2d-iphone.xcclassmodel
-dir
-
-experimental
-dir
-
-LICENSE.TouchJSON
-file
-
-
-
-
-2009-03-15T04:09:25.000000Z
-5e1978bb6420fd2792b533297057a708
-2009-03-13T02:01:24.607462Z
-673
-ricardoquesada
-
-README
-file
-
-
-
-
-2009-05-16T12:56:24.000000Z
-e53cf6869c614cc1f9adc407ad042d30
-2009-05-09T09:35:41.361476Z
-908
-ricardoquesada
-
-LICENSE.chipmunk
-file
-
-
-
-
-2009-03-15T04:09:25.000000Z
-1f8f975fa02de7e821005afd4004e866
-2008-10-20T15:33:30.828155Z
-271
-ricardoquesada
-
-tools
-dir
-
-tests
-dir
-
-DONORS
-file
-
-
-
-
-2009-05-16T12:56:24.000000Z
-cafcdbd6695984f3b0f0d22c70a79786
-2009-05-06T18:08:25.832236Z
-894
-ricardoquesada
-
-cocos2d-iphone.xcodeproj
-dir
-
-Resources
-dir
-
-LICENSE.artwork
-file
-
-
-
-
-2009-03-15T04:09:25.000000Z
-36cc47e743bc094f9ba147bb15b8e846
-2009-03-13T17:42:40.480996Z
-675
-ricardoquesada
-
