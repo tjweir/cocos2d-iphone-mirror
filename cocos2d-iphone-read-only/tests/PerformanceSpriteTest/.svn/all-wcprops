@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/942/trunk/tests/PerformanceSpriteTest
+END
+AppController.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/939/trunk/tests/PerformanceSpriteTest/AppController.m
+END
+CocosNodePerformance.h
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/839/trunk/tests/PerformanceSpriteTest/CocosNodePerformance.h
+END
+MainScene.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/839/trunk/tests/PerformanceSpriteTest/MainScene.h
+END
+CocosNodePerformance.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/839/trunk/tests/PerformanceSpriteTest/CocosNodePerformance.m
+END
+AppController.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/839/trunk/tests/PerformanceSpriteTest/AppController.h
+END
+MainScene.m
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/942/trunk/tests/PerformanceSpriteTest/MainScene.m
+END

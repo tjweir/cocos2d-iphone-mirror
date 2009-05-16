@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/948/trunk/external/Chipmunk
+END
+.DS_Store
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/472/trunk/external/Chipmunk/.DS_Store
+END
+LICENSE.txt
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/472/trunk/external/Chipmunk/LICENSE.txt
+END
+chipmunk-docs.html
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/472/trunk/external/Chipmunk/chipmunk-docs.html
+END
+README.txt
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/472/trunk/external/Chipmunk/README.txt
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/472/trunk/external/Chipmunk/CMakeLists.txt
+END

@@ -1,0 +1,95 @@
+8
+
+dir
+951
+http://cocos2d-iphone.googlecode.com/svn/trunk/external/Chipmunk
+http://cocos2d-iphone.googlecode.com/svn
+
+
+
+2009-05-15T12:28:29.306128Z
+948
+valentin.milea
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+79afc9a6-2f50-0410-804d-6f1bdedaafc9
+
+.DS_Store
+file
+
+
+
+
+2009-05-16T12:59:42.000000Z
+5f9d8eea9c03928d013a4bfbcf7ce057
+2008-06-23T20:02:29.569743Z
+58
+riq
+has-props
+
+LICENSE.txt
+file
+
+
+
+
+2009-05-16T12:59:42.000000Z
+514a577bab9de63941bc3db758a519f8
+2008-06-23T20:02:29.569743Z
+58
+riq
+
+Demo
+dir
+
+src
+dir
+
+chipmunk-docs.html
+file
+
+
+
+
+2009-05-16T12:59:42.000000Z
+0b2a9816da4d8449b1200ad14fb9c245
+2008-06-23T20:02:29.569743Z
+58
+riq
+
+README.txt
+file
+
+
+
+
+2009-05-16T12:59:42.000000Z
+16c0b21f5e4b1e1398a4d931f4cb036f
+2008-06-23T20:02:29.569743Z
+58
+riq
+
+CMakeLists.txt
+file
+
+
+
+
+2009-05-16T12:59:42.000000Z
+043985498deea37fa1e6d0741699c35c
+2008-06-23T20:02:29.569743Z
+58
+riq
+
