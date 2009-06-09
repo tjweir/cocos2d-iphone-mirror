@@ -141,7 +141,7 @@ Class restartAction()
 
 		AtlasSpriteManager *mgr = [AtlasSpriteManager spriteManagerWithFile:@"grossini_dance_atlas.png" capacity:50];
 		[self addChild:mgr z:0 tag:kTagSpriteManager];
-		
+		 
 		[self addNewSpriteWithCoords:ccp(480/2, 320/2)];
 		
 	}	
