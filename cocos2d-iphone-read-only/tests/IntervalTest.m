@@ -14,12 +14,12 @@
 	[super init];
 		
 	// sun
-	ParticleSystem* sun = [ParticleSun node];
-	sun.position = ccp(480-32,320-32);
-
-	sun.totalParticles = 130;
-	sun.life = 0.6f;
-	[self addChild:sun];
+//	ParticleSystem* sun = [ParticleSun node];
+//	sun.position = ccp(480-32,320-32);
+//
+//	sun.totalParticles = 130;
+//	sun.life = 0.6f;
+//	[self addChild:sun];
 
 	// timers
 	label1 = [Label labelWithString:@"0" fontName:@"Courier" fontSize:32];
@@ -27,7 +27,7 @@
 	label3 = [Label labelWithString:@"0" fontName:@"Courier" fontSize:32];
 	
 	[self schedule: @selector(step1:) interval: 0.5f];
-	[self schedule: @selector(step2:) interval:1.0f];
+	[self schedule: @selector(step2:) interval: 1.0f];
 	[self schedule: @selector(step3:) interval: 1.5f];
 	
 	label1.position = ccp(80,160);
@@ -39,16 +39,16 @@
 	[self addChild:label3];
 	
 	// Sprite
-	Sprite *sprite = [Sprite spriteWithFile:@"grossini.png"];
-	sprite.position = ccp(40,50);
-	
-	id jump = [JumpBy actionWithDuration:3 position:ccp(400,0) height:50 jumps:4];
-	
-	[self addChild:sprite];
-	[sprite runAction: [RepeatForever actionWithAction:
-					[Sequence actions: jump, [jump reverse], nil]
-						]
-	 ];
+//	Sprite *sprite = [Sprite spriteWithFile:@"grossini.png"];
+//	sprite.position = ccp(40,50);
+//	
+//	id jump = [JumpBy actionWithDuration:3 position:ccp(400,0) height:50 jumps:4];
+//	
+//	[self addChild:sprite];
+//	[sprite runAction: [RepeatForever actionWithAction:
+//					[Sequence actions: jump, [jump reverse], nil]
+//						]
+//	 ];
 
 	// pause button
 	MenuItem *item1 = [MenuItemFont itemFromString: @"Pause" target:self selector:@selector(pause:)];
@@ -93,9 +93,9 @@
 
 -(void) step2: (ccTime) delta
 {
-//	time2 +=delta;
 	time2 +=1;
-	[label2 setString: [NSString stringWithFormat:@"%2.1f", time2] ];
+	[label2 setString: [NSString stringWithFormat:@"%2.1f", time2]];
+  NSLog(@"interval fired");
 }
 
 -(void) step3: (ccTime) delta
