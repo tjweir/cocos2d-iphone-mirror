@@ -39,7 +39,7 @@
 @implementation BitmapFontAtlas
 
 @synthesize opacity=opacity_,r=r_,g=g_,b=b_;
-@synthesize contentSize = contentSize_;
+@synthesize contentSize = contentSize;
 
 #pragma mark BitmapFontAtlas - Creation & Init
 +(id) bitmapFontAtlasWithString:(NSString*)string fntFile:(NSString*)fntFile
